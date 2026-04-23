@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # aerothemeplasma-nix.url = "github:nyakase/aerothemeplasma-nix";
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,6 +25,7 @@
       };
       modules = [
         ./configuration.nix
+        # inputs.aerothemeplasma-nix.nixosModules.aerothemeplasma-nix
         home-manager.nixosModules.home-manager
         {
           home-manager.useGlobalPkgs = true;

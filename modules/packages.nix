@@ -14,10 +14,15 @@
     git
     kdePackages.ark
     kdePackages.kate
+    qemu
     ripgrep
     sbctl
+    spice
+    spice-gtk
     sublime4
+    virt-viewer
     inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor
+    posy-cursors
   ];
 }

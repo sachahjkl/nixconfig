@@ -8,7 +8,17 @@
   };
 
   services.displayManager.sddm.enable = true;
+  # services.displayManager.defaultSession = "aerothemeplasma";
   services.desktopManager.plasma6.enable = true;
+
+  # programs.aeroshell = {
+  #   enable = true;
+  #   polkit.enable = true;
+  #   aerothemeplasma = {
+  #     enable = true;
+  #     sddm.enable = true;
+  #   };
+  # };
 
   programs.firefox.enable = true;
   programs.partition-manager.enable = true;
@@ -41,6 +51,4 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
-
-
 }
