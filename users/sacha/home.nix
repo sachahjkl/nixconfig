@@ -49,7 +49,6 @@ in
 
   programs.direnv = {
     enable = true;
-    enableFishIntegration = true;
     nix-direnv.enable = true;
   };
 
@@ -166,7 +165,9 @@ in
   fonts.fontconfig.enable = true;
 
   xdg.configFile = {
-    "kdeglobals".text = ''
+    "kdeglobals" = {
+      force = true;
+      text = ''
       [Icons]
       Theme=Papirus
 
@@ -175,17 +176,24 @@ in
 
       [UiSettings]
       ColorScheme=Plastik
-    '';
+      '';
+    };
 
-    "kcminputrc".text = ''
-      [Mouse]
-      cursorTheme=Posy_Cursor_Black_125_175
-    '';
+    "kcminputrc" = {
+      force = true;
+      text = ''
+        [Mouse]
+        cursorTheme=Posy_Cursor_Black_125_175
+      '';
+    };
 
-    "kwinrc".text = ''
-      [org.kde.kdecoration2]
-      theme=Plastik
-    '';
+    "kwinrc" = {
+      force = true;
+      text = ''
+        [org.kde.kdecoration2]
+        theme=Plastik
+      '';
+    };
   };
 
   home.packages = with pkgs; [
