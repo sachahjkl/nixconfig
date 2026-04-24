@@ -47,6 +47,12 @@ in
     enableFishIntegration = true;
   };
 
+  programs.direnv = {
+    enable = true;
+    enableFishIntegration = true;
+    nix-direnv.enable = true;
+  };
+
   programs.fzf = {
     enable = true;
     enableFishIntegration = true;
@@ -159,6 +165,29 @@ in
 
   fonts.fontconfig.enable = true;
 
+  xdg.configFile = {
+    "kdeglobals".text = ''
+      [Icons]
+      Theme=Papirus
+
+      [KDE]
+      widgetStyle=Fusion
+
+      [UiSettings]
+      ColorScheme=Plastik
+    '';
+
+    "kcminputrc".text = ''
+      [Mouse]
+      cursorTheme=Posy_Cursor_Black_125_175
+    '';
+
+    "kwinrc".text = ''
+      [org.kde.kdecoration2]
+      theme=Plastik
+    '';
+  };
+
   home.packages = with pkgs; [
     # Nerd Fonts (icons + programming ligatures)
     nerd-fonts.jetbrains-mono
@@ -174,5 +203,8 @@ in
 
     # Liberation (metric-compatible with Arial/Times/Courier)
     liberation_ttf
+
+    # KDE themes
+    papirus-icon-theme
   ];
 }
