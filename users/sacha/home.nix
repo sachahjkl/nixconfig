@@ -27,10 +27,6 @@ in
     enableFishIntegration = true;
     settings = {
       add_newline = false;
-      character = {
-        success_symbol = ">";
-        error_symbol = "[>](red)";
-      };
       directory.truncation_length = 5;
     };
   };
