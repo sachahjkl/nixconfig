@@ -18,7 +18,7 @@ This secret is configured with ASCII armor, so it uses the
 Create or update it with:
 
 ```sh
-cd /home/sacha/nixos-flake-setup/users/sacha/secrets
+cd /home/sacha/Devel/dotfiles/users/sacha/secrets
 RULES=./secrets.nix agenix -e sacha-gpg-private-keys.asc.age
 ```
 
@@ -31,10 +31,16 @@ gpg --armor --export-secret-keys YOUR_KEY_ID
 Once the encrypted file exists, remove any raw export you may have used during
 setup and keep only the `.age` file in the repo.
 
-To decrypt it manually for import:
+If you want to import it in one go:
 
 ```sh
-cd /home/sacha/nixos-flake-setup/users/sacha/secrets
+agenix -d users/sacha/secrets/sacha-gpg-private-keys.asc.age | gpg --import
+```
+
+Or, to decrypt it manually for import:
+
+```sh
+cd /home/sacha/Devel/dotfiles/users/sacha/secrets
 RULES=./secrets.nix agenix -d sacha-gpg-private-keys.asc.age > /tmp/sacha-gpg-private.key
 ```
 

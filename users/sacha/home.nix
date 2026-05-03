@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, osConfig, ... }:
 
 let
   gpgSigningKey = "21D64EBC463D12DFE373AE4F1EFE264F809A2118";
@@ -18,7 +18,7 @@ in
       gpgconf --launch gpg-agent >/dev/null 2>&1
     '';
     shellAliases = {
-      rebuild-switch = "sudo nixos-rebuild switch --flake /home/sacha/Devel/dotfiles/#nixos";
+      rebuild-switch = "sudo nixos-rebuild switch --flake /home/sacha/Devel/dotfiles#${osConfig.networking.hostName}";
     };
   };
 
@@ -164,6 +164,8 @@ in
 
   fonts.fontconfig.enable = true;
 
+  home.file.".face.icon" = { source = ./face.icon; };
+
   xdg.configFile = {
     "kdeglobals" = {
       force = true;
@@ -182,8 +184,14 @@ in
     "kcminputrc" = {
       force = true;
       text = ''
+        [Keyboard]
+        KeyRepeat=true
+        RepeatRate=20
+        RepeatDelay=220
+
         [Mouse]
         cursorTheme=Posy_Cursor_Black_125_175
+        cursorSize=48
       '';
     };
 
@@ -191,7 +199,30 @@ in
       force = true;
       text = ''
         [org.kde.kdecoration2]
-        theme=Plastik
+        library=org.kde.kwin.aurorae
+        theme=kwin4_decoration_qml_plastik
+
+        [Plugins]
+        kwin4_effect_dimscreenEnabled=false
+        kwin4_effect_fadeEnabled=false
+        kwin4_effect_fadingpopupsEnabled=false
+        kwin4_effect_fallapartEnabled=false
+        kwin4_effect_glideEnabled=false
+        kwin4_effect_loginEnabled=false
+        kwin4_effect_logoutEnabled=false
+        kwin4_effect_magiclampEnabled=false
+        kwin4_effect_maximizeEnabled=false
+        kwin4_effect_morphingpopupsEnabled=false
+        kwin4_effect_overviewEnabled=false
+        kwin4_effect_scaleEnabled=false
+        kwin4_effect_slideEnabled=false
+        kwin4_effect_slidingpopupsEnabled=false
+        kwin4_effect_squashEnabled=false
+        kwin4_effect_startupfeedbackEnabled=false
+        kwin4_effect_thumbnailasideEnabled=false
+        kwin4_effect_translucencyEnabled=false
+        kwin4_effect_windowviewEnabled=false
+        kwin4_effect_wobblywindowsEnabled=false
       '';
     };
   };

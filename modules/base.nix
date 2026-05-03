@@ -12,14 +12,9 @@
   boot.kernelParams = [
     "quiet"
     "splash"
-    # Disable NVMe APST entirely to avoid the Kingston boot error on this machine.
-    "nvme_core.default_ps_max_latency_us=0"
-    # Force the legacy Intel HDA driver instead of the newer AVS DSP stack.
-    "snd-intel-dspcfg.dsp_driver=1"
   ];
   boot.plymouth.enable = true;
 
-  networking.hostName = "nixos";
   networking.networkmanager.enable = true;
 
   services.fstrim.enable = true;
@@ -30,13 +25,6 @@
 
   security.sudo.wheelNeedsPassword = false;
   security.sudo.execWheelOnly = true;
-
-  system.autoUpgrade = {
-    enable = true;
-    flake = "/home/sacha/nixos-flake-setup";
-    dates = "daily";
-    randomizedDelaySec = "45min";
-  };
 
   virtualisation.podman = {
     enable = true;
@@ -85,6 +73,7 @@
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
+    download-buffer-size = "100M";
     trusted-users = [ "root" "@wheel" ];
     substituters = [
       "https://cache.nixos.org"

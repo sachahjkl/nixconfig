@@ -10,10 +10,10 @@
     fd
     fastfetch
     fff
-    freeoffice
     git
     kdePackages.ark
     kdePackages.kate
+    kdePackages.kpipewire
     qemu
     ripgrep
     sbctl
