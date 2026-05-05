@@ -1,4 +1,9 @@
 { pkgs, config, lib, ... }: {
+  imports = [ ../../modules/gaming.nix ];
+
+  desktop.environment = "hyprland";
+  gaming.steam.gamescopeSession.enable = true;
+
   networking.hostName = "house-desktop";
 
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -7,6 +12,7 @@
 
   hardware.nvidia = {
     modesetting.enable = true;
+    nvidiaSettings = true;
     open = true;
     nvidiaPersistenced = true;
     powerManagement.enable = true;
@@ -23,7 +29,7 @@
 
   system.autoUpgrade = {
     enable = true;
-    flake = "/home/sacha/Devel/dotfiles#house-desktop";
+    flake = "${config.sacha.dotfilesPath}#house-desktop";
     dates = "daily";
     randomizedDelaySec = "45min";
   };

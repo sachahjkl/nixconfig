@@ -1,9 +1,10 @@
-{ pkgs, pkgs-unstable, inputs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
     age
     alsa-utils
+    bc
     bcompare
     discord
     efibootmgr
@@ -11,9 +12,26 @@
     fastfetch
     fff
     git
+    jq
+    btop
+    bat
+    eza
+    tree
+    unzip
+    curl
+    wget
+    htop
     kdePackages.ark
+    kdePackages.elisa
     kdePackages.kate
+    kdePackages.kolourpaint
     kdePackages.kpipewire
+    kdePackages.gwenview
+    audacity
+    ffmpeg-full
+    imagemagick
+    mediainfo
+    mpv
     qemu
     ripgrep
     sbctl
@@ -21,6 +39,7 @@
     spice-gtk
     sublime4
     virt-viewer
+    vlc
     inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor
     posy-cursors

@@ -1,12 +1,15 @@
-{ pkgs, pkgs-unstable, osConfig, ... }:
+{ lib, pkgs, osConfig, inputs, ... }:
 
 let
   gpgSigningKey = "21D64EBC463D12DFE373AE4F1EFE264F809A2118";
+  isKDE = lib.elem osConfig.desktop.environment [ "kde" "both" ];
 in
 {
-  home.username = "sacha";
-  home.homeDirectory = "/home/sacha";
-  home.stateVersion = "25.11";
+  imports = [ inputs.helium.homeModules.helium ];
+
+  home.username = osConfig.sacha.userName;
+  home.homeDirectory = osConfig.sacha.homeDirectory;
+  home.stateVersion = "26.05";
 
   programs.fish = {
     enable = true;
@@ -18,7 +21,7 @@ in
       gpgconf --launch gpg-agent >/dev/null 2>&1
     '';
     shellAliases = {
-      rebuild-switch = "sudo nixos-rebuild switch --flake /home/sacha/Devel/dotfiles#${osConfig.networking.hostName}";
+      rebuild-switch = "sudo nixos-rebuild switch --flake ${osConfig.sacha.dotfilesPath}#${osConfig.networking.hostName}";
     };
   };
 
@@ -37,6 +40,12 @@ in
   };
 
   programs.chromium.enable = true;
+
+  programs.helium = {
+    enable = true;
+    defaultBrowser = true;
+    extraFlags = [ "--force-dark-mode" ];
+  };
 
   programs.zoxide = {
     enable = true;
@@ -143,12 +152,12 @@ in
 
   programs.opencode = {
     enable = true;
-    package = pkgs-unstable.opencode;
+    package = pkgs.opencode;
   };
 
   programs.gitui = {
     enable = true;
-    package = pkgs-unstable.gitui;
+    package = pkgs.gitui;
   };
 
   programs.difftastic = {
@@ -159,68 +168,85 @@ in
   programs.mergiraf.enable = true;
 
   fonts.fontconfig.enable = true;
+  fonts.fontconfig.defaultFonts.emoji = [ "Noto Color Emoji" ];
 
-  home.file.".face.icon" = { source = ./face.icon; };
+  home.file.".face.icon" = { source = osConfig.sacha.assets.faceIcon; };
 
-  xdg.configFile = {
-    "kdeglobals" = {
-      force = true;
-      text = ''
-      [Icons]
-      Theme=Papirus
+  xdg.configFile = lib.mkMerge [
+    (lib.mkIf isKDE {
+      "kdeglobals" = {
+        force = true;
+        text = ''
+        [Icons]
+        Theme=Papirus
 
-      [KDE]
-      widgetStyle=Fusion
+        [KDE]
+        widgetStyle=Fusion
 
-      [UiSettings]
-      ColorScheme=Plastik
-      '';
-    };
+        [UiSettings]
+        ColorScheme=Plastik
+        '';
+      };
 
-    "kcminputrc" = {
-      force = true;
-      text = ''
-        [Keyboard]
-        KeyRepeat=true
-        RepeatRate=20
-        RepeatDelay=220
+      "kcminputrc" = {
+        force = true;
+        text = ''
+          [Keyboard]
+          KeyRepeat=repeat
+          RepeatRate=40
+          RepeatDelay=200
+          NumLock=0
 
-        [Mouse]
-        cursorTheme=Posy_Cursor_Black_125_175
-        cursorSize=48
-      '';
-    };
+          [Mouse]
+          cursorTheme=${osConfig.sacha.theme.cursor}
+          cursorSize=${toString osConfig.sacha.theme.cursorSize}
 
-    "kwinrc" = {
-      force = true;
-      text = ''
-        [org.kde.kdecoration2]
-        library=org.kde.kwin.aurorae
-        theme=kwin4_decoration_qml_plastik
+          [Libinput][Defaults]
+          PointerAcceleration=0.20
+          PointerAccelerationProfile=1
+        '';
+      };
 
-        [Plugins]
-        kwin4_effect_dimscreenEnabled=false
-        kwin4_effect_fadeEnabled=false
-        kwin4_effect_fadingpopupsEnabled=false
-        kwin4_effect_fallapartEnabled=false
-        kwin4_effect_glideEnabled=false
-        kwin4_effect_loginEnabled=false
-        kwin4_effect_logoutEnabled=false
-        kwin4_effect_magiclampEnabled=false
-        kwin4_effect_maximizeEnabled=false
-        kwin4_effect_morphingpopupsEnabled=false
-        kwin4_effect_overviewEnabled=false
-        kwin4_effect_scaleEnabled=false
-        kwin4_effect_slideEnabled=false
-        kwin4_effect_slidingpopupsEnabled=false
-        kwin4_effect_squashEnabled=false
-        kwin4_effect_startupfeedbackEnabled=false
-        kwin4_effect_thumbnailasideEnabled=false
-        kwin4_effect_translucencyEnabled=false
-        kwin4_effect_windowviewEnabled=false
-        kwin4_effect_wobblywindowsEnabled=false
-      '';
-    };
+      "kwinrc" = {
+        force = true;
+        text = ''
+          [org.kde.kdecoration2]
+          library=org.kde.kwin.aurorae
+          theme=kwin4_decoration_qml_plastik
+
+          [Plugins]
+          dimscreenEnabled=false
+          fadeEnabled=false
+          fadingpopupsEnabled=false
+          fallapartEnabled=false
+          glideEnabled=false
+          loginEnabled=false
+          logoutEnabled=false
+          magiclampEnabled=false
+          maximizeEnabled=false
+          morphingpopupsEnabled=false
+          overviewEnabled=false
+          scaleEnabled=false
+          slideEnabled=false
+          slidingpopupsEnabled=false
+          squashEnabled=false
+          startupfeedbackEnabled=false
+          thumbnailasideEnabled=false
+          translucencyEnabled=false
+          windowviewEnabled=false
+          wobblywindowsEnabled=false
+        '';
+      };
+    })
+  ];
+
+  xdg.desktopEntries.sublime_text = {
+    name = "Sublime Text";
+    exec = "sublime_text --enable-features=UseOzonePlatform --ozone-platform=wayland %F";
+    icon = "sublime_text";
+    type = "Application";
+    categories = [ "TextEditor" "Development" ];
+    mimeType = [ "text/plain" ];
   };
 
   home.packages = with pkgs; [

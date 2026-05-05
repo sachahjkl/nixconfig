@@ -1,4 +1,6 @@
 { config, ... }: {
+  desktop.environment = "kde";
+
   networking.hostName = "house-laptop";
 
   boot.kernelParams = [
@@ -8,7 +10,7 @@
 
   system.autoUpgrade = {
     enable = true;
-    flake = "/home/sacha/Devel/dotfiles#house-laptop";
+    flake = "${config.sacha.dotfilesPath}#house-laptop";
     dates = "daily";
     randomizedDelaySec = "45min";
   };
