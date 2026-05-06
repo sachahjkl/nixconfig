@@ -77,7 +77,7 @@ in
     })
 
     (lib.mkIf isHyprland {
-      qt.platformTheme = "qt5ct";
+      qt.platformTheme = "kde";
       qt.style = "kvantum";
       xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
     })

@@ -250,6 +250,8 @@ in
   };
 
   home.packages = with pkgs; [
+    brave
+
     # Nerd Fonts (icons + programming ligatures)
     nerd-fonts.jetbrains-mono
     nerd-fonts.fira-code

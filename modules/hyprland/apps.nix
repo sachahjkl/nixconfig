@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   isHypr = lib.elem config.desktop.environment [ "hyprland" "both" ];
@@ -10,6 +10,8 @@ lib.mkIf isHypr {
       export XCURSOR_SIZE=${toString config.sacha.theme.cursorSize}
       export HYPRCURSOR_SIZE=${toString config.sacha.theme.cursorSize}
       export QT_QPA_PLATFORM=wayland
+      export QT_QPA_PLATFORMTHEME=kde
+      export QT_STYLE_OVERRIDE=kvantum
       export TERMINAL=kitty
       export NIXOS_OZONE_WL=1
       export QT_SCALE_FACTOR=1
@@ -32,7 +34,7 @@ lib.mkIf isHypr {
 
     "qt5ct/qt5ct.conf".text = ''
       [Appearance]
-      color_scheme_path=
+      color_scheme_path=${pkgs.kdePackages.qtstyleplugin-kvantum}/share/color-schemes/${config.sacha.theme.kvantumTheme}.colors
       custom_palette=false
       icon_theme=${config.sacha.theme.iconTheme}
       standard_dialogs=default
@@ -45,7 +47,7 @@ lib.mkIf isHypr {
 
     "qt6ct/qt6ct.conf".text = ''
       [Appearance]
-      color_scheme_path=
+      color_scheme_path=${pkgs.kdePackages.qtstyleplugin-kvantum}/share/color-schemes/${config.sacha.theme.kvantumTheme}.colors
       custom_palette=false
       icon_theme=${config.sacha.theme.iconTheme}
       standard_dialogs=default

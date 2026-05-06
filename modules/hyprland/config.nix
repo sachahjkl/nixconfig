@@ -9,6 +9,8 @@ lib.mkIf isHypr {
     XCURSOR_SIZE = toString config.sacha.theme.cursorSize;
     HYPRCURSOR_SIZE = toString config.sacha.theme.cursorSize;
     QT_QPA_PLATFORM = "wayland";
+    QT_QPA_PLATFORMTHEME = "kde";
+    QT_STYLE_OVERRIDE = "kvantum";
     TERMINAL = "kitty";
     NIXOS_OZONE_WL = "1";
     QT_SCALE_FACTOR = "1";
@@ -47,6 +49,7 @@ lib.mkIf isHypr {
           "uwsm app -- udiskie"
           "uwsm app -- copyq --start-server"
           "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+          "${pkgs.kdePackages.kservice}/bin/kbuildsycoca6"
           "waybar"
           "hyprpaper"
           "hypridle"
@@ -63,8 +66,6 @@ lib.mkIf isHypr {
           allow_tearing = 0;
           layout = "master";
         };
-
-        xwayland.force_zero_scaling = 1;
 
         decoration = {
           rounding = 0;
@@ -112,6 +113,10 @@ lib.mkIf isHypr {
         };
 
         binds.scroll_event_delay = 0;
+
+        windowrule = [
+          "match:class (com.github.hluk.copyq), float on"
+        ];
       };
 
       extraConfig = ''
@@ -148,6 +153,7 @@ lib.mkIf isHypr {
         bind = $mainMod SHIFT, E, exec, rofi -show power-menu -modi "power-menu:rofi-power-menu --choices=lockscreen/logout/shutdown/reboot"
         bind = $mainMod, E, exec, $fileManager
         bind = $mainMod SHIFT, SPACE, togglefloating
+        bind = CTRL SHIFT, ugrave, exec, copyq toggle
         bind = $mainMod, D, exec, $menu
         bind = $mainMod, P, pseudo
         bind = $mainMod, J, layoutmsg, togglesplit

@@ -17,6 +17,7 @@ lib.mkIf isHypr {
     hyprshot
     hyprpicker
     kitty
+    kdePackages.kservice
     libsForQt5.qt5ct
     networkmanagerapplet
     papirus-icon-theme

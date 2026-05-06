@@ -1,16 +1,19 @@
 # Dotfiles / NixOS config
 
-## Rebuild
+## Desktop environment
 
-For the desktop:
+Set `desktop.environment` in the machine config:
+
+- `"hyprland"` — Hyprland + SDDM (with UWSM)
+- `"kde"` — KDE Plasma 6 + SDDM
+- `"both"` — both sessions available in SDDM
+
+The desktop is set to `"hyprland"`, laptop to `"kde"`.
+
+## Rebuild
 
 ```bash
 sudo nixos-rebuild switch --flake /home/sacha/Devel/dotfiles#house-desktop
-```
-
-For the laptop:
-
-```bash
 sudo nixos-rebuild switch --flake /home/sacha/Devel/dotfiles#house-laptop
 ```
 
