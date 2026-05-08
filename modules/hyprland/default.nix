@@ -31,10 +31,14 @@ in
       after = [ hyprSessionTarget ];
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${pkgs-hyprnix.hyprpolkitagent}/bin/hyprpolkitagent";
+        ExecStart = "${pkgs-hyprnix.hyprpolkitagent}/libexec/hyprpolkitagent";
         Restart = "on-failure";
         RestartSec = 1;
       };
+    };
+
+    systemd.user.services.xdg-desktop-portal-hyprland.serviceConfig = {
+      Restart = lib.mkForce "no";
     };
   };
 }

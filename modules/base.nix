@@ -18,6 +18,7 @@
 
   networking.networkmanager.enable = true;
 
+  services.pcscd.enable = true;
   services.fstrim.enable = true;
   services.fwupd.enable = true;
   services.flatpak.enable = true;

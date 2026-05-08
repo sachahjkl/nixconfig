@@ -40,7 +40,6 @@
     sublime4
     virt-viewer
     vlc
-    inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor
     posy-cursors
   ];

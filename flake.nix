@@ -25,12 +25,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     # aerothemeplasma-nix.url = "github:nyakase/aerothemeplasma-nix";
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
-    mt7927.url = "github:noaccOS/mt7927-nixos/push-nstmptpzyqls";
+    mt7927.url = "github:cmspam/mt7927-nixos";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -39,7 +35,7 @@
     hyprnix.url = "github:hyprwm/hyprnix";
   };
 
-  outputs = inputs@{ nixpkgs, agenix, home-manager, helium, hyprnix, ... }:
+  outputs = inputs@{ nixpkgs, home-manager, helium, hyprnix, ... }:
     let
       mkNixosConfig =
         { hardwareConfig, machineConfig }:

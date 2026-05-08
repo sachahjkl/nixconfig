@@ -25,6 +25,7 @@ lib.mkIf isHypr {
     pwvucontrol
     qt6.qtwayland
     rofi
+    satty
     slurp
     udiskie
     waybar

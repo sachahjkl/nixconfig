@@ -3,7 +3,7 @@
 {
   options.sacha.dotfilesPath = lib.mkOption {
     type = lib.types.str;
-    default = "/home/sacha/Devel/dotfiles";
+    default = "/home/sacha/Projects/dotfiles";
     description = "Local path to this dotfiles flake checkout.";
   };
 

@@ -1,7 +1,9 @@
-{ lib, pkgs, osConfig, inputs, ... }:
+{ config, lib, pkgs, osConfig, inputs, ... }:
 
 let
-  gpgSigningKey = "21D64EBC463D12DFE373AE4F1EFE264F809A2118";
+  gitPrincipal = "sacha@sacha.house";
+  sshIdentityKey = "~/.ssh/id_ed25519_sk";
+  sshSigningKey = "~/.ssh/id_ed25519_sk.pub";
   isKDE = lib.elem osConfig.desktop.environment [ "kde" "both" ];
 in
 {
@@ -15,10 +17,6 @@ in
     enable = true;
     shellInit = ''
       set fish_greeting
-    '';
-    interactiveShellInit = ''
-      set -gx SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
-      gpgconf --launch gpg-agent >/dev/null 2>&1
     '';
     shellAliases = {
       rebuild-switch = "sudo nixos-rebuild switch --flake ${osConfig.sacha.dotfilesPath}#${osConfig.networking.hostName}";
@@ -67,6 +65,32 @@ in
   };
 
   programs.neovim.enable = true;
+
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    matchBlocks = {
+      "*" = {
+        checkHostIP = true;
+        controlMaster = "no";
+        controlPath = "~/.ssh/master-%r@%n:%p";
+        controlPersist = "no";
+        forwardX11 = false;
+        forwardX11Trusted = false;
+        serverAliveCountMax = 3;
+        serverAliveInterval = 0;
+        userKnownHostsFile = "~/.ssh/known_hosts";
+      };
+      "github.com" = {
+        identitiesOnly = true;
+        identityFile = sshIdentityKey;
+      };
+      "gitlab.com" = {
+        identitiesOnly = true;
+        identityFile = sshIdentityKey;
+      };
+    };
+  };
 
   programs.git = {
     enable = true;
@@ -125,30 +149,28 @@ in
         name = "sachahjkl";
         email = "sacha@sacha.house";
       };
-      gpg.format = "openpgp";
+      gpg = {
+        format = "ssh";
+        ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+      };
     };
     signing = {
       signByDefault = true;
-      key = gpgSigningKey;
+      key = sshSigningKey;
     };
   };
 
-  programs.gpg = {
-    enable = true;
-    settings.default-key = gpgSigningKey;
-  };
+  home.activation.gitAllowedSigners = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    signer_file="${config.home.homeDirectory}/.ssh/allowed_signers"
+    public_key_file="${config.home.homeDirectory}/.ssh/id_ed25519_sk.pub"
 
-  services.gpg-agent = {
-    enable = true;
-    enableFishIntegration = true;
-    enableSshSupport = true;
-    defaultCacheTtl = 1800;
-    defaultCacheTtlSsh = 1800;
-    maxCacheTtl = 7200;
-    maxCacheTtlSsh = 7200;
-    pinentry.package = pkgs.pinentry-qt;
-    sshKeys = [ "08C261B4109E7FED5761D7C296AEA7ACE17BBBE8" ];
-  };
+    if [ -f "$public_key_file" ]; then
+      mkdir -p "$(dirname "$signer_file")"
+      key=$(tr -d '\n' < "$public_key_file")
+      printf '%s %s\n' '${gitPrincipal}' "$key" > "$signer_file"
+      chmod 644 "$signer_file"
+    fi
+  '';
 
   programs.opencode = {
     enable = true;

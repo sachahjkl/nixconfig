@@ -48,7 +48,7 @@ lib.mkIf isHypr {
           "uwsm app -- nm-applet"
           "uwsm app -- udiskie"
           "uwsm app -- copyq --start-server"
-          "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+          "dbus-update-activation-environment --systemd --all"
           "${pkgs.kdePackages.kservice}/bin/kbuildsycoca6"
           "waybar"
           "hyprpaper"
@@ -116,6 +116,7 @@ lib.mkIf isHypr {
 
         windowrule = [
           "match:class (com.github.hluk.copyq), float on"
+          "match:class (satty|org.satty.Satty), float on"
         ];
       };
 
@@ -146,9 +147,9 @@ lib.mkIf isHypr {
         bind = $mainMod SHIFT, Q, killactive
         bind = $mainMod SHIFT, F, fullscreen
         bind = $mainMod, L, exec, pidof hyprlock || hyprlock
-        bind = $mainMod, PRINT, exec, hyprshot -m window
-        bind = , PRINT, exec, hyprshot -m output
-        bind = $mainMod SHIFT, PRINT, exec, hyprshot -m region
+        bind = CTRL, PRINT, exec, hypr-screenshot window
+        bind = , PRINT, exec, hypr-screenshot output
+        bind = CTRL SHIFT, PRINT, exec, hypr-screenshot region
         bind = SUPER, V, exec, copyq menu
         bind = $mainMod SHIFT, E, exec, rofi -show power-menu -modi "power-menu:rofi-power-menu --choices=lockscreen/logout/shutdown/reboot"
         bind = $mainMod, E, exec, $fileManager
@@ -157,8 +158,8 @@ lib.mkIf isHypr {
         bind = $mainMod, D, exec, $menu
         bind = $mainMod, P, pseudo
         bind = $mainMod, J, layoutmsg, togglesplit
-        bind = ALT, Tab, cyclenext
-        bind = ALT SHIFT, Tab, cyclenext, prev
+        bind = ALT, Tab, workspace, e+1
+        bind = ALT SHIFT, Tab, workspace, e-1
         bind = $mainMod, left, movefocus, l
         bind = $mainMod, right, movefocus, r
         bind = $mainMod, up, movefocus, u
