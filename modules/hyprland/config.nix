@@ -39,7 +39,7 @@ lib.mkIf isHypr {
 
       settings = {
         "$terminal" = "uwsm app -- kitty";
-        "$fileManager" = "uwsm app -- dolphin";
+        "$fileManager" = "uwsm app -- thunar";
         "$menu" = "uwsm app -- rofi -show drun -show-icons -run-command \"uwsm app -- {cmd}\"";
         "$mainMod" = "SUPER";
         monitor = ",preferred,auto,1.875";

@@ -21,6 +21,7 @@ lib.mkIf isHypr {
     libsForQt5.qt5ct
     networkmanagerapplet
     papirus-icon-theme
+    pasystray
     playerctl
     pwvucontrol
     qt6.qtwayland

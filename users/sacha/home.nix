@@ -41,7 +41,7 @@ in
 
   programs.helium = {
     enable = true;
-    defaultBrowser = true;
+    defaultBrowser = false;
     extraFlags = [ "--force-dark-mode" ];
   };
 
@@ -269,6 +269,44 @@ in
     type = "Application";
     categories = [ "TextEditor" "Development" ];
     mimeType = [ "text/plain" ];
+  };
+
+  xdg.desktopEntries.brave-browser = {
+    name = "Brave Web Browser";
+    genericName = "Web Browser";
+    exec = "brave --password-store=basic %U";
+    icon = "brave-browser";
+    terminal = false;
+    type = "Application";
+    categories = [ "Network" "WebBrowser" ];
+    mimeType = [
+      "application/pdf"
+      "application/rdf+xml"
+      "application/rss+xml"
+      "application/xhtml+xml"
+      "application/xml"
+      "image/gif"
+      "image/jpeg"
+      "image/png"
+      "image/webp"
+      "text/html"
+      "text/xml"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+      "x-scheme-handler/chromium"
+    ];
+  };
+
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "application/xhtml+xml" = [ "brave-browser.desktop" ];
+      "inode/directory" = [ "thunar.desktop" ];
+      "text/html" = [ "brave-browser.desktop" ];
+      "x-scheme-handler/chrome" = [ "brave-browser.desktop" ];
+      "x-scheme-handler/http" = [ "brave-browser.desktop" ];
+      "x-scheme-handler/https" = [ "brave-browser.desktop" ];
+    };
   };
 
   home.packages = with pkgs; [

@@ -7,6 +7,7 @@
     bc
     bcompare
     discord
+    equibop
     efibootmgr
     fd
     fastfetch
@@ -42,5 +43,6 @@
     vlc
     inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor
     posy-cursors
+    pwvucontrol
   ];
 }

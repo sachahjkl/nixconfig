@@ -48,11 +48,24 @@ in
 
       qt.enable = true;
 
+      programs.xfconf.enable = true;
+      programs.thunar = {
+        enable = true;
+        plugins = with pkgs; [
+          thunar-archive-plugin
+          thunar-media-tags-plugin
+          thunar-volman
+        ];
+      };
+
       xdg.portal.enable = true;
 
       services.printing.enable = true;
       services.printing.listenAddresses = [ "localhost:631" ];
       services.printing.defaultShared = false;
+      services.gvfs.enable = true;
+      services.tumbler.enable = true;
+      services.udisks2.enable = true;
 
       services.avahi = {
         enable = true;
@@ -80,6 +93,10 @@ in
       qt.platformTheme = "kde";
       qt.style = "kvantum";
       xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+      xdg.portal.config.common = {
+        default = [ "hyprland" "gtk" ];
+        "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+      };
     })
   ];
 }
