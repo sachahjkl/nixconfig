@@ -46,6 +46,7 @@ lib.mkIf isHypr {
 
         exec-once = [
           "uwsm app -- nm-applet"
+          "uwsm app -- thunar --daemon"
           "uwsm app -- udiskie"
           "uwsm app -- copyq --start-server"
           "dbus-update-activation-environment --systemd --all"
