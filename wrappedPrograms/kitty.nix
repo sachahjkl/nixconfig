@@ -12,7 +12,7 @@
       settings = {
         enable_audio_bell = "no";
         font_family = "JetBrainsMono Nerd Font";
-        font_size = 15;
+        font_size = 12;
         allow_remote_control = "yes";
         shell_integration = "enabled";
         background = self.lib.terminalTheme.background;
@@ -35,6 +35,8 @@
         color13 = self.lib.terminalTheme.brightPurple;
         color14 = self.lib.terminalTheme.brightCyan;
         color15 = self.lib.terminalTheme.brightWhite;
+        background_opacity = "0.85";
+        background_blur = "5";
       };
     };
   };

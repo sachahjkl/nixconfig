@@ -93,14 +93,5 @@ lib.mkIf isHypr {
         valign = center
       }
     '';
-
-    "hypr/hyprpaper.conf".text = ''
-      wallpaper {
-          monitor =
-          path = ${config.sacha.assets.wallpaper}
-          fit_mode = cover
-      }
-      splash = false
-    '';
   };
 }

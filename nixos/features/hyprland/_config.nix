@@ -15,7 +15,8 @@ lib.mkIf isHypr {
     QT_SCALE_FACTOR = "1";
   };
 
-  hjem.users.${userName}.xdg.config.files."hypr/hyprland.conf".text = ''
+  hjem.users.${userName}.xdg.config.files = {
+    "hypr/hyprland.conf".text = ''
         $terminal = uwsm app -- kitty
         $fileManager = uwsm app -- thunar
         $menu = uwsm app -- rofi -show drun -show-icons -run-command "uwsm app -- {cmd}"
@@ -194,5 +195,16 @@ lib.mkIf isHypr {
         bindl = , XF86AudioPause, exec, playerctl play-pause
         bindl = , XF86AudioPlay, exec, playerctl play-pause
         bindl = , XF86AudioPrev, exec, playerctl previous
-  '';
+    '';
+
+    "hypr/hyprpaper.conf".text = ''
+      wallpaper {
+          monitor =
+          path = ${config.sacha.assets.wallpaper}
+          fit_mode = cover
+      }
+      splash = false
+    '';
+
+  };
 }

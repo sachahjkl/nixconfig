@@ -79,6 +79,8 @@
             };
           };
         };
+        # The service is useless on ephemeral rootfs (already handled by preservation).
+        systemd.services.systemd-machine-id-commit.enable = false;
       };
     };
 }

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, self, ... }:
 
 let
   isHypr = lib.elem config.desktop.environment [ "hyprland" "both" "all" ];
@@ -16,7 +16,6 @@ lib.mkIf isHypr {
     hyprlock
     hyprshot
     hyprpicker
-    kitty
     libsForQt5.qt5ct
     networkmanagerapplet
     papirus-icon-theme
@@ -35,5 +34,6 @@ lib.mkIf isHypr {
     xdg-user-dirs
     inter
     posy-cursors
+    self.packages.${pkgs.stdenv.hostPlatform.system}.terminal
   ];
 }

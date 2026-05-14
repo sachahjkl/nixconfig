@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 
 {
   flake.nixosModules.base = { config, pkgs, ... }: {
@@ -39,6 +39,7 @@
     };
 
     virtualisation.libvirtd.enable = true;
+    systemd.services.libvirtd.serviceConfig.LoadCredential = lib.mkForce "";
     virtualisation.spiceUSBRedirection.enable = true;
     programs.virt-manager.enable = true;
 
