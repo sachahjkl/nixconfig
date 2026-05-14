@@ -1,5 +1,5 @@
 {
-  description = "NixOS system configuration";
+  description = "Sacha's NixOS system configuration";
 
   nixConfig = {
     auto-optimise-store = true;
@@ -24,55 +24,52 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # aerothemeplasma-nix.url = "github:nyakase/aerothemeplasma-nix";
-    nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
-    mt7927.url = "github:cmspam/mt7927-nixos";
-    home-manager = {
-      url = "github:nix-community/home-manager";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+
+    disko = {
+      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    preservation.url = "github:nix-community/preservation";
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    wrappers.url = "github:Lassulus/wrappers";
+    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
+
+    nh = {
+      url = "github:nix-community/nh";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-fast-build = {
+      url = "github:Mic92/nix-fast-build";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
+    mt7927.url = "github:cmspam/mt7927-nixos";
     helium.url = "gitlab:ntgn/helium-flake";
     hyprnix.url = "github:hyprwm/hyprnix";
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, helium, hyprnix, ... }:
+  outputs = inputs:
     let
-      mkNixosConfig =
-        { hardwareConfig, machineConfig }:
-        nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = {
-            inherit inputs;
-            pkgs-hyprnix = hyprnix.packages.x86_64-linux;
-          };
-          modules = [
-            hardwareConfig
-            machineConfig
-            inputs.mt7927.nixosModules.default
-            ./configuration.nix
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = {
-                inherit inputs;
-                pkgs-hyprnix = hyprnix.packages.x86_64-linux;
-              };
-              home-manager.users.sacha = import ./users/sacha/home.nix;
-            }
-          ];
-        };
+      inherit (inputs.nixpkgs) lib;
+      inherit (lib.fileset) fileFilter toList;
+
+      isFlakePart = file:
+        file.hasExt "nix"
+        && file.name != "flake.nix"
+        && !lib.hasPrefix "_" file.name;
+
+      importTree = path: toList (fileFilter isFlakePart path);
     in
-    {
-      nixosConfigurations = {
-        house-laptop = mkNixosConfig {
-          hardwareConfig = ./machines/house-laptop/hardware-configuration.nix;
-          machineConfig = ./machines/house-laptop;
-        };
-        house-desktop = mkNixosConfig {
-          hardwareConfig = ./machines/house-desktop/hardware-configuration.nix;
-          machineConfig = ./machines/house-desktop;
-        };
-      };
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = importTree ./.;
     };
 }
