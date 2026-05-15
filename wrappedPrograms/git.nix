@@ -52,6 +52,13 @@
           rebase = true
         [http]
           sslVerify = true
+        [merge]
+          tool = mergiraf
+        [mergetool "mergiraf"]
+          cmd = mergiraf --mode=merge3 --base="$BASE" --left="$LOCAL" --right="$REMOTE" --output="$MERGED"
+          trustExitCode = true
+        [mergetool]
+          keepBackup = false
         [user]
           name = ${config.sacha.git.authorName}
           email = ${config.sacha.git.authorEmail}
@@ -66,7 +73,7 @@
       packages.git = inputs.wrappers.lib.wrapPackage {
         inherit pkgs;
         package = pkgs.git;
-        runtimeInputs = [ pkgs.difftastic pkgs.fzf pkgs.git-lfs pkgs.gnugrep ];
+        runtimeInputs = [ pkgs.difftastic pkgs.fzf pkgs.git-lfs pkgs.gnugrep pkgs.mergiraf ];
         env = rec {
           GIT_AUTHOR_NAME = config.sacha.git.authorName;
           GIT_AUTHOR_EMAIL = config.sacha.git.authorEmail;
