@@ -1,43 +1,64 @@
 { inputs, self, ... }:
 
 {
-  flake.nixosModules.packages = { pkgs, ... }: {
-    environment.systemPackages = with pkgs; [
-      age
-      alsa-utils
-      bc
-      bcompare
-      equibop
-      efibootmgr
-      fd
-      fastfetch
-      fff
-      git
-      jq
-      btop
-      bat
-      eza
-      tree
-      unzip
-      curl
-      wget
-      htop
-      audacity
-      ffmpeg-full
-      imagemagick
-      mediainfo
-      mpv
-      qemu
-      ripgrep
-      sbctl
-      spice
-      spice-gtk
-      sublime4
-      virt-viewer
-      vlc
-      inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor
-      posy-cursors
-      pwvucontrol
-    ];
-  };
+  flake.nixosModules.packages = { pkgs, ... }:
+    let
+      selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+    in
+    {
+      environment.systemPackages = with pkgs; [
+        selfPkgs.environment
+        selfPkgs.git
+        selfPkgs.nh
+        selfPkgs.nix-fast-build
+        age
+        alsa-utils
+        audacity
+        bat
+        bc
+        bcompare
+        btop
+        brave
+        carapace
+        curl
+        difftastic
+        direnv
+        equibop
+        efibootmgr
+        eza
+        fastfetch
+        fd
+        fff
+        ffmpeg-full
+        fzf
+        git-lfs
+        gitui
+        htop
+        imagemagick
+        jq
+        mergiraf
+        mediainfo
+        mpv
+        neovim
+        opencode
+        posy-cursors
+        pwvucontrol
+        qemu
+        ripgrep
+        sbctl
+        spice
+        spice-gtk
+        starship
+        sublime4
+        tmux
+        tree
+        unzip
+        virt-viewer
+        vlc
+        wget
+        zellij
+        zoxide
+        inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor
+      ];
+    };
 }

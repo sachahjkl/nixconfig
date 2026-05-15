@@ -6,6 +6,15 @@
       desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
       isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+      rofiPkg = self.lib.mkRofi {
+        inherit pkgs;
+        theme = config.sacha.theme.rofiTheme;
+      };
+      hyprlockPkg = self.lib.mkHyprlock {
+        inherit pkgs;
+        wallpaper = config.sacha.assets.wallpaper;
+        faceIcon = config.sacha.assets.faceIcon;
+      };
     in
     lib.mkIf isHypr {
       environment.systemPackages = with pkgs; [
@@ -17,7 +26,6 @@
         grim
         hyprpaper
         hypridle
-        hyprlock
         hyprshot
         hyprpicker
         libsForQt5.qt5ct
@@ -27,7 +35,6 @@
         playerctl
         pwvucontrol
         qt6.qtwayland
-        rofi
         satty
         slurp
         udiskie
@@ -38,6 +45,8 @@
         xdg-user-dirs
         inter
         posy-cursors
+        rofiPkg
+        hyprlockPkg
         selfPkgs.terminal
       ];
     };

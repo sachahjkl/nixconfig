@@ -2,10 +2,10 @@
 
 {
   options.sacha = {
-    dotfilesPath = lib.mkOption {
+    nixConfigPath = lib.mkOption {
       type = lib.types.str;
-      default = "/home/sacha/Projects/dotfiles";
-      description = "Local path to this dotfiles flake checkout.";
+      default = "/home/sacha/Projects/nixconfig";
+      description = "Local path to this Nix flake checkout.";
     };
 
     userName = lib.mkOption {
@@ -50,10 +50,10 @@
   };
 
   config.flake.nixosModules.common = { lib, ... }: {
-    options.sacha.dotfilesPath = lib.mkOption {
+    options.sacha.nixConfigPath = lib.mkOption {
       type = lib.types.str;
-      default = config.sacha.dotfilesPath;
-      description = "Local path to this dotfiles flake checkout.";
+      default = config.sacha.nixConfigPath;
+      description = "Local path to this Nix flake checkout.";
     };
 
     options.sacha.userName = lib.mkOption {
@@ -72,6 +72,18 @@
       type = lib.types.str;
       default = config.sacha.homeDirectory;
       description = "Primary local home directory.";
+    };
+
+    options.sacha.git.authorName = lib.mkOption {
+      type = lib.types.str;
+      default = config.sacha.git.authorName;
+      description = "Default Git author name for wrapped Git.";
+    };
+
+    options.sacha.git.authorEmail = lib.mkOption {
+      type = lib.types.str;
+      default = config.sacha.git.authorEmail;
+      description = "Default Git author email for wrapped Git.";
     };
 
     options.sacha.kitty.useThemeColors = lib.mkOption {

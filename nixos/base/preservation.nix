@@ -16,6 +16,34 @@
           default = /persist;
           description = "Persistent storage root used by preservation.";
         };
+
+        system = {
+          directories = lib.mkOption {
+            type = lib.types.listOf (lib.types.oneOf [ lib.types.str lib.types.attrs ]);
+            default = [ ];
+            description = "Additional system directories to persist, typically declared by service or app modules.";
+          };
+
+          files = lib.mkOption {
+            type = lib.types.listOf (lib.types.oneOf [ lib.types.str lib.types.attrs ]);
+            default = [ ];
+            description = "Additional system files to persist, typically declared by service or app modules.";
+          };
+        };
+
+        user = {
+          directories = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
+            description = "Additional user directories to persist, typically declared by app modules.";
+          };
+
+          files = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
+            description = "Additional user files to persist, typically declared by app modules.";
+          };
+        };
       };
 
       config = lib.mkIf config.sacha.preservation.enable {
@@ -32,38 +60,24 @@
               "/var/lib/AccountsService"
               "/var/lib/NetworkManager"
               "/var/lib/bluetooth"
-              "/var/lib/flatpak"
               "/var/lib/libvirt"
               "/var/lib/nixos"
               "/var/lib/systemd/coredump"
               "/var/lib/tailscale"
               "/var/log"
-            ];
+            ] ++ config.sacha.preservation.system.directories;
 
             files = [
               { file = "/etc/machine-id"; inInitrd = true; }
-            ];
+            ] ++ config.sacha.preservation.system.files;
 
             users.${user} = {
-              directories = [
+              directories = lib.unique ([
                 ".cache"
-                ".config/BraveSoftware"
-                ".config/chromium"
-                ".config/helium"
-                ".config/nvim"
-                ".config/obs-studio"
                 ".gnupg"
-                ".local/share/Steam"
                 ".local/share/applications"
-                ".local/share/direnv"
-                ".local/share/fish"
-                ".local/share/flatpak"
                 ".local/share/keyrings"
-                ".local/share/nvim"
-                ".local/share/wireplumber"
-                ".local/share/zoxide"
                 ".local/state"
-                ".mozilla"
                 ".ssh"
                 "Desktop"
                 "Documents"
@@ -74,7 +88,9 @@
                 "Public"
                 "Templates"
                 "Videos"
-              ];
+              ] ++ config.sacha.preservation.user.directories);
+
+              files = config.sacha.preservation.user.files;
             };
           };
         };

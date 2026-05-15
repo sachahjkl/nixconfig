@@ -1,14 +1,10 @@
-{ inputs
+{ config
 , lib
 , ...
 }:
 
 {
-  perSystem =
-    { pkgs
-    , self'
-    , ...
-    }:
+  flake.wrappers.fish = { pkgs, wlib, ... }:
     let
       fishConf = pkgs.writeText "fish-config" ''
         function fish_prompt
@@ -18,6 +14,9 @@
         set fish_greeting
         fish_vi_key_bindings
 
+        alias rebuild-switch 'sudo nixos-rebuild switch --flake ${config.sacha.nixConfigPath}#(hostname)'
+        ${lib.getExe pkgs.starship} init fish | source
+        ${lib.getExe pkgs.carapace} _carapace fish | source
         ${lib.getExe pkgs.zoxide} init fish | source
 
         function lf --wraps="lf" --description="lf - Terminal file manager (changing directory on exit)"
@@ -30,11 +29,9 @@
       '';
     in
     {
-      packages.fish = inputs.wrappers.lib.wrapPackage {
-        inherit pkgs;
-        package = pkgs.fish;
-        runtimeInputs = [ pkgs.carapace pkgs.direnv pkgs.starship pkgs.zoxide ];
-        flags."-C" = "source ${fishConf}";
-      };
+      imports = [ wlib.modules.default ];
+      package = pkgs.fish;
+      extraPackages = [ pkgs.carapace pkgs.direnv pkgs.starship pkgs.zoxide ];
+      flags."-C" = "source ${fishConf}";
     };
 }

@@ -58,7 +58,6 @@
 
     nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
     mt7927.url = "github:cmspam/mt7927-nixos";
-    helium.url = "gitlab:ntgn/helium-flake";
     hyprnix.url = "github:hyprwm/hyprnix";
   };
 

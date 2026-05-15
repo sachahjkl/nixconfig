@@ -25,7 +25,6 @@
             variant = "";
           };
 
-          programs.firefox.enable = true;
           security.polkit.enable = true;
           security.polkit.extraConfig = ''
             polkit.addRule(function(action, subject) {

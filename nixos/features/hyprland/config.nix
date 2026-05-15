@@ -1,11 +1,21 @@
-{ ... }:
+{ self, ... }:
 
 {
-  flake.nixosModules.hyprlandConfig = { config, lib, ... }:
+  flake.nixosModules.hyprlandConfig = { config, lib, pkgs, ... }:
     let
       desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
       isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
       userName = config.sacha.userName;
+      selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+      rofiPkg = self.lib.mkRofi {
+        inherit pkgs;
+        theme = config.sacha.theme.rofiTheme;
+      };
+      hyprlockPkg = self.lib.mkHyprlock {
+        inherit pkgs;
+        wallpaper = config.sacha.assets.wallpaper;
+        faceIcon = config.sacha.assets.faceIcon;
+      };
     in
     lib.mkIf isHypr {
       environment.sessionVariables = {
@@ -22,7 +32,7 @@
         "hypr/hyprland.conf".text = ''
           $terminal = uwsm app -- kitty
           $fileManager = uwsm app -- thunar
-          $menu = uwsm app -- rofi -show drun -show-icons -run-command "uwsm app -- {cmd}"
+          $menu = uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command "uwsm app -- {cmd}"
           $mainMod = SUPER
 
           monitor = ,preferred,auto,1.875
@@ -136,12 +146,12 @@
           bind = $mainMod, RETURN, exec, $terminal
           bind = $mainMod SHIFT, Q, killactive
           bind = $mainMod SHIFT, F, fullscreen
-          bind = $mainMod, L, exec, pidof hyprlock || hyprlock
+          bind = $mainMod, L, exec, pidof hyprlock || ${lib.getExe hyprlockPkg}
           bind = CTRL, PRINT, exec, hypr-screenshot window
           bind = , PRINT, exec, hypr-screenshot output
           bind = CTRL SHIFT, PRINT, exec, hypr-screenshot region
           bind = SUPER, V, exec, copyq menu
-          bind = $mainMod SHIFT, E, exec, rofi -show power-menu -modi "power-menu:rofi-power-menu --choices=lockscreen/logout/shutdown/reboot"
+            bind = $mainMod SHIFT, E, exec, ${lib.getExe rofiPkg} -show power-menu -modi "power-menu:rofi-power-menu --choices=lockscreen/logout/shutdown/reboot"
           bind = $mainMod, E, exec, $fileManager
           bind = $mainMod SHIFT, SPACE, togglefloating
           bind = CTRL SHIFT, ugrave, exec, copyq toggle

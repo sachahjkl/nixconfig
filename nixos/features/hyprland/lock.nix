@@ -1,99 +1,29 @@
-{ ... }:
+{ self, ... }:
 
 {
-  flake.nixosModules.hyprlandLock = { config, lib, ... }:
+  flake.nixosModules.hyprlandLock = { config, lib, pkgs, ... }:
     let
       desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
       isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
       userName = config.sacha.userName;
+      hyprlockPkg = self.lib.mkHyprlock {
+        inherit pkgs;
+        wallpaper = config.sacha.assets.wallpaper;
+        faceIcon = config.sacha.assets.faceIcon;
+      };
     in
     lib.mkIf isHypr {
       hjem.users.${userName}.xdg.config.files = {
         "hypr/hypridle.conf".text = ''
           general {
-            lock_cmd = pidof hyprlock || hyprlock
-            before_sleep_cmd = pidof hyprlock || hyprlock
+            lock_cmd = pidof hyprlock || ${lib.getExe hyprlockPkg}
+            before_sleep_cmd = pidof hyprlock || ${lib.getExe hyprlockPkg}
             after_sleep_cmd = hyprctl dispatch dpms on
           }
 
           listener {
             timeout = 300
-            on-timeout = pidof hyprlock || hyprlock
-          }
-        '';
-
-        "hypr/hyprlock.conf".text = ''
-          background {
-            path = ${config.sacha.assets.wallpaper}
-            blur_passes = 3
-            noise = 0.05
-          }
-
-          general {
-            no_fade_in = true
-            no_fade_out = true
-            hide_cursor = false
-            disable_loading_bar = true
-            grace = 0
-          }
-
-          input-field {
-            size = 20%, 5%
-            outline_thickness = 3
-            inner_color = rgba(0, 0, 0, 1)
-            outer_color = rgba(255, 255, 255, 1)
-            check_color = rgba(59, 130, 246, 1)
-            fail_color = rgba(220, 38, 38, 1)
-            font_color = rgb(255, 255, 255)
-            fade_on_empty = false
-            rounding = 0
-            position = 0, -40
-            halign = center
-            valign = center
-          }
-
-          label {
-            shadow_passes = 1
-            text = cmd[update:1000] echo "$(date +"%A, %B %d")"
-            color = rgb(255,255,255)
-            font_size = 22
-            font_family = sans-serif
-            position = 0, 300
-            halign = center
-            valign = center
-          }
-
-          label {
-            shadow_passes = 1
-            text = cmd[update:1000] echo "$(date +"%-I:%M")"
-            color = rgb(255,255,255)
-            font_size = 95
-            font_family = sans-serif
-            position = 0, 200
-            halign = center
-            valign = center
-          }
-
-          image {
-            shadow_passes = 1
-            path = ${config.sacha.assets.faceIcon}
-            size = 300
-            border_size = 2
-            border_color = black
-            position = 0, 500
-            halign = center
-            valign = center
-          }
-
-          label {
-            shadow_passes = 1
-            text = Nah, you out, $USER
-            color = rgba(200, 200, 200, 1.0)
-            font_size = 25
-            font_family = sans-serif
-            position = 0, 80
-            halign = center
-            valign = center
+            on-timeout = pidof hyprlock || ${lib.getExe hyprlockPkg}
           }
         '';
       };

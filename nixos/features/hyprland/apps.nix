@@ -20,15 +20,6 @@
           export QT_SCALE_FACTOR=1
         '';
 
-        "rofi/config.rasi".text = ''
-          @theme "${config.sacha.theme.rofiTheme}"
-
-          configuration {
-            modi: "drun,run,window";
-            show-icons: true;
-          }
-        '';
-
         "fontconfig/fonts.conf".text = ''
           <?xml version='1.0'?>
           <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>

@@ -1,4 +1,4 @@
-{ ... }:
+{ self, ... }:
 
 {
   flake.nixosModules.hyprlandDunst = { config, lib, pkgs, ... }:
@@ -6,6 +6,10 @@
       desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
       isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
       userName = config.sacha.userName;
+      rofiPkg = self.lib.mkRofi {
+        inherit pkgs;
+        theme = config.sacha.theme.rofiTheme;
+      };
     in
     lib.mkIf isHypr {
       hjem.users.${userName}.xdg.config.files."dunst/dunstrc".text = ''
@@ -57,7 +61,7 @@
         max_icon_size = 64
         sticky_history = yes
         history_length = 20
-        dmenu = ${pkgs.rofi}/bin/rofi -dmenu -p dunst:
+        dmenu = ${lib.getExe rofiPkg} -dmenu -p dunst:
         browser = ${pkgs.xdg-utils}/bin/xdg-open
         always_run_script = true
         title = Dunst

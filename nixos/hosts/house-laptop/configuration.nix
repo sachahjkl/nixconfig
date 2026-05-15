@@ -14,12 +14,21 @@
     imports = [
       self.nixosModules.disko
       self.nixosModules.external-preservation
-      self.nixosModules.helium
+      self.nixosModules.flatpak
+      self.nixosModules.firefox
+      self.nixosModules.brave
+      self.nixosModules.direnv
+      self.nixosModules.fish
       self.nixosModules.hjem
       self.nixosModules.mt7927
+      self.nixosModules.neovim
+      self.nixosModules.obsStudio
       self.nixosModules.common
       self.nixosModules.base
+      self.nixosModules.steam
       self.nixosModules.wallpaper
+      self.nixosModules.wireplumber
+      self.nixosModules.zoxide
       self.nixosModules.face-icon
       self.nixosModules.desktop
       self.nixosModules.hyprlandCore
@@ -50,7 +59,7 @@
 
     system.autoUpgrade = {
       enable = true;
-      flake = "${config.sacha.dotfilesPath}#house-laptop";
+      flake = "${config.sacha.nixConfigPath}#house-laptop";
       dates = "daily";
       randomizedDelaySec = "45min";
     };

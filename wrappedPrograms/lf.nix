@@ -46,7 +46,7 @@
         map gv cd ${home}/Videos
         map go cd ${home}/Documents
         map gc cd ${home}/.config
-        map gn cd ${config.sacha.dotfilesPath}
+        map gn cd ${config.sacha.nixConfigPath}
         map gp cd ${home}/Projects
         map gs cd ${home}/.local/share
         map gm cd /run/media

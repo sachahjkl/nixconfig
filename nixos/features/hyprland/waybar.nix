@@ -1,12 +1,16 @@
-{ ... }:
+{ self, ... }:
 
 {
-  flake.nixosModules.hyprlandWaybar = { config, lib, ... }:
+  flake.nixosModules.hyprlandWaybar = { config, lib, pkgs, ... }:
     let
       desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
       isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
       u = cp: builtins.fromJSON ("\"\\u" + cp + "\"");
       userName = config.sacha.userName;
+      rofiPkg = self.lib.mkRofi {
+        inherit pkgs;
+        theme = config.sacha.theme.rofiTheme;
+      };
     in
     lib.mkIf isHypr {
       hjem.users.${userName}.xdg.config.files = {
@@ -24,8 +28,8 @@
           modules-right = [ "custom/power-button" "cpu" "temperature" "memory" "disk" "tray" "pipewire" "network" "battery" "hyprland/language" "clock" ];
           "hyprland/language" = { format = "{}"; format-en = "ENG"; format-ru = "${u "0420"}${u "0423"}${u "0421"}"; };
           "hyprland/workspaces" = { icon-size = 32; spacing = 16; on-scroll-up = "hyprctl dispatch workspace r+1"; on-scroll-down = "hyprctl dispatch workspace r-1"; };
-          "custom/os_button" = { format = u "F17C"; on-click = "rofi -show drun -show-icons"; tooltip = false; };
-          "custom/power-button" = { format = u "F011"; on-click = "rofi -show power-menu -modi 'power-menu:rofi-power-menu --choices=logout/shutdown/reboot'"; tooltip-format = "Power menu"; };
+          "custom/os_button" = { format = u "F17C"; on-click = "${lib.getExe rofiPkg} -show drun -show-icons"; tooltip = false; };
+          "custom/power-button" = { format = u "F011"; on-click = "${lib.getExe rofiPkg} -show power-menu -modi 'power-menu:rofi-power-menu --choices=logout/shutdown/reboot'"; tooltip-format = "Power menu"; };
           cpu = { interval = 5; format = "${u "F2DB"}  {usage}%"; max-length = 10; };
           temperature = { hwmon-path-abs = "/sys/devices/platform/coretemp.0/hwmon"; input-filename = "temp2_input"; critical-threshold = 75; tooltip = false; format-critical = "({temperatureC}°C)"; format = "({temperatureC}°C)"; };
           disk = { interval = 30; format = "${u "F0C7"} {percentage_used}%"; path = "/"; tooltip = true; unit = "GB"; tooltip-format = "Available {free} of {total}"; };

@@ -24,7 +24,6 @@
     services.pcscd.enable = true;
     services.fstrim.enable = true;
     services.fwupd.enable = true;
-    services.flatpak.enable = true;
     services.gnome.gnome-keyring.enable = true;
     services.gnome.gcr-ssh-agent.enable = false;
     programs.ssh.startAgent = true;
@@ -34,7 +33,7 @@
     programs.appimage.binfmt = true;
     programs.nh = {
       enable = true;
-      flake = config.sacha.dotfilesPath;
+      flake = config.sacha.nixConfigPath;
     };
 
     security.sudo.wheelNeedsPassword = false;
