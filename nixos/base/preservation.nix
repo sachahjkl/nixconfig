@@ -49,7 +49,6 @@
                 ".cache"
                 ".config/BraveSoftware"
                 ".config/chromium"
-                ".config/discord"
                 ".config/helium"
                 ".config/nvim"
                 ".config/obs-studio"

@@ -1,10 +1,28 @@
 { inputs, lib, self, ... }:
 
 {
+  flake.lib.mkTerminal =
+    { pkgs
+    , shell ? ""
+    , useThemeColors ? false
+    ,
+    }:
+    (inputs.wrappers.wrapperModules.kitty.apply {
+      inherit pkgs;
+      imports = [ self.wrappersModules.kitty ];
+      inherit shell useThemeColors;
+    }).wrapper;
+
   flake.wrappersModules.kitty = { config, lib, ... }: {
     options.shell = lib.mkOption {
       type = lib.types.str;
       default = "";
+    };
+
+    options.useThemeColors = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Whether to apply the shared terminal color palette to Kitty.";
     };
 
     config = {
@@ -15,6 +33,9 @@
         font_size = 12;
         allow_remote_control = "yes";
         shell_integration = "enabled";
+        background_opacity = "0.85";
+        background_blur = "5";
+      } // lib.optionalAttrs config.useThemeColors {
         background = self.lib.terminalTheme.background;
         foreground = self.lib.terminalTheme.foreground;
         cursor = self.lib.terminalTheme.cursorColor;
@@ -35,17 +56,14 @@
         color13 = self.lib.terminalTheme.brightPurple;
         color14 = self.lib.terminalTheme.brightCyan;
         color15 = self.lib.terminalTheme.brightWhite;
-        background_opacity = "0.85";
-        background_blur = "5";
       };
     };
   };
 
   perSystem = { pkgs, self', ... }: {
-    packages.terminal = (inputs.wrappers.wrapperModules.kitty.apply {
+    packages.terminal = self.lib.mkTerminal {
       inherit pkgs;
-      imports = [ self.wrappersModules.kitty ];
       shell = lib.getExe self'.packages.environment;
-    }).wrapper;
+    };
   };
 }

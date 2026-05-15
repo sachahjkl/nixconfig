@@ -22,14 +22,21 @@
       self.nixosModules.wallpaper
       self.nixosModules.face-icon
       self.nixosModules.desktop
-      self.nixosModules.hyprland
+      self.nixosModules.hyprlandCore
+      self.nixosModules.hyprlandPackages
+      self.nixosModules.hyprlandConfig
+      self.nixosModules.hyprlandLock
+      self.nixosModules.hyprlandWaybar
+      self.nixosModules.hyprlandDunst
+      self.nixosModules.hyprlandApps
+      self.nixosModules.hyprlandScripts
       self.nixosModules.niri
       self.nixosModules.packages
       self.nixosModules.preservation
       self.nixosModules.shell
       self.nixosModules.sacha-hjem
       self.nixosModules.sacha-user
-      ./_hardware.nix
+      self.nixosModules.house-laptop-hardware
     ];
 
     desktop.environment = "niri";

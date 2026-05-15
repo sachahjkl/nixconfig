@@ -1,29 +1,83 @@
-{ ... }:
+{ config, lib, ... }:
 
 {
-  flake.nixosModules.common = { lib, ... }: {
-    options.sacha.dotfilesPath = lib.mkOption {
+  options.sacha = {
+    dotfilesPath = lib.mkOption {
       type = lib.types.str;
       default = "/home/sacha/Projects/dotfiles";
       description = "Local path to this dotfiles flake checkout.";
     };
 
-    options.sacha.userName = lib.mkOption {
+    userName = lib.mkOption {
       type = lib.types.str;
       default = "sacha";
       description = "Primary local username.";
     };
 
-    options.sacha.fullName = lib.mkOption {
+    fullName = lib.mkOption {
       type = lib.types.str;
       default = "Sacha";
       description = "Primary local full name.";
     };
 
-    options.sacha.homeDirectory = lib.mkOption {
+    homeDirectory = lib.mkOption {
       type = lib.types.str;
       default = "/home/sacha";
       description = "Primary local home directory.";
+    };
+
+    git = {
+      authorName = lib.mkOption {
+        type = lib.types.str;
+        default = "sachahjkl";
+        description = "Default Git author name for wrapped Git.";
+      };
+
+      authorEmail = lib.mkOption {
+        type = lib.types.str;
+        default = "sacha@sacha.house";
+        description = "Default Git author email for wrapped Git.";
+      };
+    };
+
+    kitty = {
+      useThemeColors = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Whether Kitty should use the shared terminal color palette on this host.";
+      };
+    };
+  };
+
+  config.flake.nixosModules.common = { lib, ... }: {
+    options.sacha.dotfilesPath = lib.mkOption {
+      type = lib.types.str;
+      default = config.sacha.dotfilesPath;
+      description = "Local path to this dotfiles flake checkout.";
+    };
+
+    options.sacha.userName = lib.mkOption {
+      type = lib.types.str;
+      default = config.sacha.userName;
+      description = "Primary local username.";
+    };
+
+    options.sacha.fullName = lib.mkOption {
+      type = lib.types.str;
+      default = config.sacha.fullName;
+      description = "Primary local full name.";
+    };
+
+    options.sacha.homeDirectory = lib.mkOption {
+      type = lib.types.str;
+      default = config.sacha.homeDirectory;
+      description = "Primary local home directory.";
+    };
+
+    options.sacha.kitty.useThemeColors = lib.mkOption {
+      type = lib.types.bool;
+      default = config.sacha.kitty.useThemeColors;
+      description = "Whether Kitty should use the shared terminal color palette on this host.";
     };
 
     options.sacha.assets = {

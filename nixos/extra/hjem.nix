@@ -9,6 +9,11 @@
       sshIdentityKey = "~/.ssh/id_ed25519_sk";
       sshSigningKey = "~/.ssh/id_ed25519_sk.pub";
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+      terminalPkg = self.lib.mkTerminal {
+        inherit pkgs;
+        shell = lib.getExe selfPkgs.environment;
+        useThemeColors = config.sacha.kitty.useThemeColors;
+      };
     in
     {
       hjem = {
@@ -134,7 +139,7 @@
       environment.systemPackages = [
         selfPkgs.environment
         selfPkgs.git
-        selfPkgs.terminal
+        terminalPkg
         pkgs.brave
         pkgs.carapace
         pkgs.direnv

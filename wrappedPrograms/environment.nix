@@ -25,6 +25,7 @@
           tree
           unzip
           wget
+          self'.packages.lf
           self'.packages.git
         ];
         env.EDITOR = lib.getExe pkgs.neovim;

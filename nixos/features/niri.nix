@@ -1,23 +1,33 @@
-{ self, ... }:
+{ inputs, self, ... }:
 
 {
   flake.nixosModules.niri = { config, lib, pkgs, ... }:
     let
       isNiri = lib.elem config.desktop.environment [ "niri" "both" "all" ];
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+      terminalPkg = self.lib.mkTerminal {
+        inherit pkgs;
+        shell = lib.getExe selfPkgs.environment;
+        useThemeColors = config.sacha.kitty.useThemeColors;
+      };
+      niriPkg = inputs.wrapper-modules.wrappers.niri.wrap {
+        inherit pkgs;
+        imports = [ self.wrappersModules.niri ];
+        terminal = lib.getExe terminalPkg;
+      };
     in
     {
       config = lib.mkIf isNiri {
         programs.niri = {
           enable = true;
-          package = selfPkgs.niri;
+          package = niriPkg;
         };
 
         environment.systemPackages = [
-          selfPkgs.niri
+          niriPkg
           selfPkgs.noctalia-shell
           selfPkgs.quickshell
-          selfPkgs.terminal
+          terminalPkg
           pkgs.xwayland-satellite
           pkgs.swaybg
           pkgs.grim

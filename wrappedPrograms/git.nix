@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ config, inputs, ... }:
 
 {
   perSystem = { pkgs, ... }: {
@@ -7,8 +7,8 @@
       package = pkgs.git;
       runtimeInputs = [ pkgs.git-lfs pkgs.difftastic ];
       env = rec {
-        GIT_AUTHOR_NAME = "sachahjkl";
-        GIT_AUTHOR_EMAIL = "sacha@sacha.house";
+        GIT_AUTHOR_NAME = config.sacha.git.authorName;
+        GIT_AUTHOR_EMAIL = config.sacha.git.authorEmail;
         GIT_COMMITTER_NAME = GIT_AUTHOR_NAME;
         GIT_COMMITTER_EMAIL = GIT_AUTHOR_EMAIL;
       };

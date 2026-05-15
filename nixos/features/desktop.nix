@@ -16,6 +16,7 @@
       config = lib.mkMerge [
         {
           services.displayManager.ly.enable = true;
+          services.displayManager.ly.settings.session_log = null;
           services.accounts-daemon.enable = true;
 
           services.xserver.enable = false;

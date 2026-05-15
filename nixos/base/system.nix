@@ -10,11 +10,13 @@
 
     # Use latest kernel.
     boot.kernelPackages = pkgs.linuxPackages_latest;
+    boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
     boot.kernelParams = [
       "quiet"
       "splash"
       "pcie_aspm=off"
     ];
+    boot.supportedFilesystems.ntfs = true;
     boot.plymouth.enable = true;
 
     networking.networkmanager.enable = true;
@@ -28,6 +30,8 @@
     programs.ssh.startAgent = true;
 
     programs.nix-ld.enable = true;
+    programs.appimage.enable = true;
+    programs.appimage.binfmt = true;
     programs.nh = {
       enable = true;
       flake = config.sacha.dotfilesPath;
@@ -39,6 +43,7 @@
     virtualisation.podman = {
       enable = true;
       dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true;
     };
 
     virtualisation.libvirtd.enable = true;

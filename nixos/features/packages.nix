@@ -7,7 +7,6 @@
       alsa-utils
       bc
       bcompare
-      discord
       equibop
       efibootmgr
       fd

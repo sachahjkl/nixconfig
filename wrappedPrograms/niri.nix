@@ -10,6 +10,32 @@
     config.settings =
       let
         noctaliaExe = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell;
+        mkWhichKeyExe = menu:
+          let
+            yaml = (pkgs.formats.yaml { }).generate "wlr-which-key.yaml" {
+              inherit menu;
+              font = "JetBrainsMono Nerd Font 12";
+              background = self.lib.theme.base00;
+              color = self.lib.theme.base06;
+              border = self.lib.theme.base0F;
+              separator = " -> ";
+              border_width = 2;
+              corner_r = 15;
+              padding = 15;
+              rows_per_column = 5;
+              column_padding = 25;
+              anchor = "bottom-right";
+              margin_right = 0;
+              margin_bottom = 5;
+              margin_left = 5;
+              margin_top = 0;
+            };
+          in
+          lib.getExe (inputs.wrappers.lib.wrapPackage {
+            inherit pkgs;
+            package = pkgs.wlr-which-key;
+            args = [ (toString yaml) ];
+          });
       in
       {
         prefer-no-csd = _: { };
@@ -35,6 +61,38 @@
           "Mod+F".maximize-column = _: { };
           "Mod+G".fullscreen-window = _: { };
           "Mod+Shift+F".toggle-window-floating = _: { };
+          "Mod+D".spawn-sh = mkWhichKeyExe [
+            {
+              key = "b";
+              desc = "Bluetooth";
+              cmd = "${noctaliaExe} ipc call bluetooth togglePanel";
+            }
+            {
+              key = "w";
+              desc = "WiFi";
+              cmd = "${noctaliaExe} ipc call wifi togglePanel";
+            }
+            {
+              key = "t";
+              desc = "Terminal";
+              cmd = config.terminal;
+            }
+            {
+              key = "f";
+              desc = "Firefox";
+              cmd = "firefox";
+            }
+            {
+              key = "e";
+              desc = "Equibop";
+              cmd = "equibop";
+            }
+            {
+              key = "p";
+              desc = "Audio";
+              cmd = "${lib.getExe pkgs.pwvucontrol}";
+            }
+          ];
           "Mod+H".focus-column-left = _: { };
           "Mod+L".focus-column-right = _: { };
           "Mod+K".focus-window-up = _: { };

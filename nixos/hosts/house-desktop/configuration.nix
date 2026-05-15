@@ -22,7 +22,14 @@
       self.nixosModules.wallpaper
       self.nixosModules.face-icon
       self.nixosModules.desktop
-      self.nixosModules.hyprland
+      self.nixosModules.hyprlandCore
+      self.nixosModules.hyprlandPackages
+      self.nixosModules.hyprlandConfig
+      self.nixosModules.hyprlandLock
+      self.nixosModules.hyprlandWaybar
+      self.nixosModules.hyprlandDunst
+      self.nixosModules.hyprlandApps
+      self.nixosModules.hyprlandScripts
       self.nixosModules.niri
       self.nixosModules.packages
       self.nixosModules.preservation
@@ -30,11 +37,12 @@
       self.nixosModules.sacha-hjem
       self.nixosModules.sacha-user
       self.nixosModules.gaming
-      ./_hardware.nix
+      self.nixosModules.house-desktop-hardware
     ];
 
     desktop.environment = "both";
     gaming.steam.gamescopeSession.enable = true;
+    programs.corectrl.enable = true;
 
     networking.hostName = "house-desktop";
 

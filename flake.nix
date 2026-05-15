@@ -51,6 +51,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
     mt7927.url = "github:cmspam/mt7927-nixos";
     helium.url = "gitlab:ntgn/helium-flake";
