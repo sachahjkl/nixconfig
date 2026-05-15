@@ -1,15 +1,15 @@
 { self, ... }:
 
 {
-  flake.nixosModules.sacha-hjem = { config, lib, pkgs, ... }:
+  flake.nixosModules.user-home = { config, lib, pkgs, ... }:
     let
-      user = config.sacha.userName;
-      home = config.sacha.homeDirectory;
+      user = config.userName;
+      home = config.homeDirectory;
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
       terminalPkg = self.lib.mkTerminal {
         inherit pkgs;
-        shell = lib.getExe selfPkgs.environment;
-        useThemeColors = config.sacha.kitty.useThemeColors;
+        shell = lib.getExe selfPkgs.userShell;
+        useThemeColors = config.preferences.kitty.useThemeColors;
       };
     in
     {
@@ -24,11 +24,11 @@
             environment.sessionVariables = {
               EDITOR = "nvim";
               TERMINAL = "kitty";
-              NH_FLAKE = "${config.sacha.nixConfigPath}";
+              NH_FLAKE = "${config.nixConfigPath}";
             };
 
             files = {
-              ".face.icon".source = config.sacha.assets.faceIcon;
+              ".face.icon".source = config.assets.faceIcon;
             };
           };
         };

@@ -3,24 +3,22 @@
 {
   flake.nixosModules.hyprlandConfig = { config, lib, pkgs, ... }:
     let
-      desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
-      isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
-      userName = config.sacha.userName;
+      userName = config.userName;
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
-        theme = config.sacha.theme.rofiTheme;
+        theme = config.preferences.theme.rofiTheme;
       };
       hyprlockPkg = self.lib.mkHyprlock {
         inherit pkgs;
-        wallpaper = config.sacha.assets.wallpaper;
-        faceIcon = config.sacha.assets.faceIcon;
+        wallpaper = config.assets.wallpaper;
+        faceIcon = config.assets.faceIcon;
       };
     in
-    lib.mkIf isHypr {
+    {
       environment.sessionVariables = {
-        XCURSOR_SIZE = toString config.sacha.theme.cursorSize;
-        HYPRCURSOR_SIZE = toString config.sacha.theme.cursorSize;
+        XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+        HYPRCURSOR_SIZE = toString config.preferences.theme.cursorSize;
         QT_QPA_PLATFORM = "wayland";
         QT_QPA_PLATFORMTHEME = "qt5ct";
         TERMINAL = "kitty";
@@ -213,7 +211,7 @@
         "hypr/hyprpaper.conf".text = ''
           wallpaper {
               monitor =
-              path = ${config.sacha.assets.wallpaper}
+              path = ${config.assets.wallpaper}
               fit_mode = cover
           }
           splash = false

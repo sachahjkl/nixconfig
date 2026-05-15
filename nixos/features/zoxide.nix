@@ -2,6 +2,6 @@
 
 {
   flake.nixosModules.zoxide = {
-    sacha.preservation.user.directories = [ ".local/share/zoxide" ];
+    preferences.preservation.user.directories = [ ".local/share/zoxide" ];
   };
 }

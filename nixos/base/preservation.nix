@@ -3,10 +3,10 @@
 {
   flake.nixosModules.preservation = { config, lib, ... }:
     let
-      user = config.sacha.userName;
+      user = config.userName;
     in
     {
-      options.sacha.preservation = {
+      options.preferences.preservation = {
         enable = lib.mkEnableOption "ephemeral root state preservation" // {
           default = true;
         };
@@ -46,10 +46,10 @@
         };
       };
 
-      config = lib.mkIf config.sacha.preservation.enable {
+      config = lib.mkIf config.preferences.preservation.enable {
         preservation = {
           enable = true;
-          preserveAt.${toString config.sacha.preservation.persistentStoragePath} = {
+          preserveAt.${toString config.preferences.preservation.persistentStoragePath} = {
             commonMountOptions = [
               "x-gvfs-hide"
               "x-gdu.hide"
@@ -65,11 +65,11 @@
               "/var/lib/systemd/coredump"
               "/var/lib/tailscale"
               "/var/log"
-            ] ++ config.sacha.preservation.system.directories;
+            ] ++ config.preferences.preservation.system.directories;
 
             files = [
               { file = "/etc/machine-id"; inInitrd = true; }
-            ] ++ config.sacha.preservation.system.files;
+            ] ++ config.preferences.preservation.system.files;
 
             users.${user} = {
               directories = lib.unique ([
@@ -88,9 +88,9 @@
                 "Public"
                 "Templates"
                 "Videos"
-              ] ++ config.sacha.preservation.user.directories);
+              ] ++ config.preferences.preservation.user.directories);
 
-              files = config.sacha.preservation.user.files;
+              files = config.preferences.preservation.user.files;
             };
           };
         };

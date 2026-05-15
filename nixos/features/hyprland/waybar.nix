@@ -3,16 +3,14 @@
 {
   flake.nixosModules.hyprlandWaybar = { config, lib, pkgs, ... }:
     let
-      desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
-      isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
       u = cp: builtins.fromJSON ("\"\\u" + cp + "\"");
-      userName = config.sacha.userName;
+      userName = config.userName;
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
-        theme = config.sacha.theme.rofiTheme;
+        theme = config.preferences.theme.rofiTheme;
       };
     in
-    lib.mkIf isHypr {
+    {
       hjem.users.${userName}.xdg.config.files = {
         "waybar/config".text = builtins.toJSON {
           layer = "bottom";
@@ -50,13 +48,13 @@
           @define-color border_main rgba(255, 255, 255, 0.2);
           @define-color content_main white;
           @define-color content_inactive rgba(255, 255, 255, 0.25);
-          * { text-shadow: none; box-shadow: none; border: none; border-radius: 0; font-family: "${config.sacha.theme.fonts.sans}", "Noto Sans"; font-weight: 600; font-size: 12.7px; }
-          #cpu, #memory, #disk, #network, #battery, #pulseaudio, #custom-power-button { font-family: "${config.sacha.theme.fonts.mono}", "${config.sacha.theme.fonts.sans}", "Noto Sans"; }
+          * { text-shadow: none; box-shadow: none; border: none; border-radius: 0; font-family: "${config.preferences.theme.fonts.sans}", "Noto Sans"; font-weight: 600; font-size: 12.7px; }
+          #cpu, #memory, #disk, #network, #battery, #pulseaudio, #custom-power-button { font-family: "${config.preferences.theme.fonts.mono}", "${config.preferences.theme.fonts.sans}", "Noto Sans"; }
           window#waybar { background: @bg_main; border-top: 1px solid @border_main; color: @content_main; }
           tooltip { background: @bg_main_tooltip; border-radius: 5px; border-width: 1px; border-style: solid; border-color: @border_main; }
           tooltip label { color: @content_main; }
           #custom-power-button { padding: 0px 12px; }
-          #custom-os_button { font-family: "${config.sacha.theme.fonts.mono}"; font-size: 24px; padding-left: 12px; padding-right: 20px; transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1); }
+          #custom-os_button { font-family: "${config.preferences.theme.fonts.mono}"; font-size: 24px; padding-left: 12px; padding-right: 20px; transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1); }
           #custom-os_button:hover { background: @bg_hover; color: @content_main; }
           #workspaces { color: transparent; margin-right: 1.5px; margin-left: 1.5px; }
           #workspaces button { padding: 3px; color: @content_inactive; transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1); }
@@ -77,7 +75,7 @@
           #tray > .needs-attention { border-bottom: 3px dashed orange; }
           #tray > widget { transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1); }
           #tray > widget:hover { background: @bg_hover; }
-          #pulseaudio { font-family: "${config.sacha.theme.fonts.mono}"; padding-left: 3px; padding-right: 3px; transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1); }
+          #pulseaudio { font-family: "${config.preferences.theme.fonts.mono}"; padding-left: 3px; padding-right: 3px; transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1); }
           #pulseaudio:hover { background: @bg_hover; }
           #network { padding-left: 3px; padding-right: 3px; }
           #language { padding-left: 5px; padding-right: 5px; }

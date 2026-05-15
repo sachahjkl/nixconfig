@@ -1,10 +1,10 @@
-{ lib
-, pkgs
+{ inputs
+, lib
 , ...
 }:
 
 {
-  flake.wrappers.fish = { pkgs, wlib, ... }:
+  perSystem = { pkgs, self', ... }:
     let
       fishConf = pkgs.writeText "fish-config" ''
         function fish_prompt
@@ -28,9 +28,11 @@
       '';
     in
     {
-      imports = [ wlib.modules.default ];
-      package = pkgs.fish;
-      extraPackages = [ pkgs.carapace pkgs.direnv pkgs.starship pkgs.zoxide ];
-      flags."-C" = "source ${fishConf}";
+      packages.fish = inputs.wrappers.lib.wrapPackage {
+        inherit pkgs;
+        package = pkgs.fish;
+        runtimeInputs = [ self'.packages.lf pkgs.carapace pkgs.direnv pkgs.starship pkgs.zoxide ];
+        flags."-C" = "source ${fishConf}";
+      };
     };
 }

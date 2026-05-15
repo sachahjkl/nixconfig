@@ -3,10 +3,10 @@
 {
   flake.nixosModules.lf = { config, pkgs, ... }:
     let
-      home = config.sacha.homeDirectory;
+      home = config.homeDirectory;
     in
     {
-      hjem.users.${config.sacha.userName}.xdg.config.files."lf/lfrc".text = ''
+      hjem.users.${config.userName}.xdg.config.files."lf/lfrc".text = ''
         set reverse true
         set preview true
         set hidden true
@@ -44,7 +44,7 @@
         map gv cd ${home}/Videos
         map go cd ${home}/Documents
         map gc cd ${home}/.config
-        map gn cd ${config.sacha.nixConfigPath}
+        map gn cd ${config.nixConfigPath}
         map gp cd ${home}/Projects
         map gs cd ${home}/.local/share
         map gm cd /run/media
@@ -62,6 +62,6 @@
         setlocal ${home}/Downloads/ sortby time
       '';
 
-      sacha.preservation.user.directories = [ ".local/share/lf" ];
+      preferences.preservation.user.directories = [ ".local/share/lf" ];
     };
 }

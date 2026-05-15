@@ -61,7 +61,7 @@
   };
 
   flake.nixosModules.kitty = { lib, ... }: {
-    options.sacha.kitty = {
+    options.preferences.kitty = {
       useThemeColors = lib.mkOption {
         type = lib.types.bool;
         default = false;
@@ -73,7 +73,7 @@
   perSystem = { pkgs, self', ... }: {
     packages.terminal = self.lib.mkTerminal {
       inherit pkgs;
-      shell = lib.getExe self'.packages.environment;
+      shell = lib.getExe self'.packages.userShell;
     };
   };
 }

@@ -1,0 +1,9 @@
+result
+result-*
+.direnv/
+.devenv/
+
+# Local Nix helper state
+.nix-profile
+.nix-defexpr/
+.nix-channels

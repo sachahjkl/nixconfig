@@ -1,60 +1,55 @@
 { ... }:
 
 {
-  flake.nixosModules.hyprlandScripts = { config, lib, pkgs, ... }:
-    let
-      desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
-      isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
-    in
-    lib.mkIf isHypr {
-      environment.systemPackages =
-        let
-          rofi-power-menu = pkgs.writeShellApplication {
-            name = "rofi-power-menu";
-            runtimeInputs = with pkgs; [ systemd uwsm ];
-            text = builtins.readFile ./rofi-power-menu.sh;
-          };
+  flake.nixosModules.hyprlandScripts = { pkgs, ... }: {
+    environment.systemPackages =
+      let
+        rofi-power-menu = pkgs.writeShellApplication {
+          name = "rofi-power-menu";
+          runtimeInputs = with pkgs; [ systemd uwsm ];
+          text = builtins.readFile ./rofi-power-menu.sh;
+        };
 
-          hypr-screenshot = pkgs.writeShellApplication {
-            name = "hypr-screenshot";
-            runtimeInputs = with pkgs; [ coreutils hyprshot satty uwsm wl-clipboard ];
-            text = ''
-              set -eu
+        hypr-screenshot = pkgs.writeShellApplication {
+          name = "hypr-screenshot";
+          runtimeInputs = with pkgs; [ coreutils hyprshot satty uwsm wl-clipboard ];
+          text = ''
+            set -eu
 
-              mode="''${1:-region}"
+            mode="''${1:-region}"
 
-              case "$mode" in
-                region|window|output)
-                  ;;
-                *)
-                  printf 'usage: %s [region|window|output]\n' "$0" >&2
-                  exit 1
-                  ;;
-              esac
+            case "$mode" in
+              region|window|output)
+                ;;
+              *)
+                printf 'usage: %s [region|window|output]\n' "$0" >&2
+                exit 1
+                ;;
+            esac
 
-              screenshot_dir="''${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
-              mkdir -p "$screenshot_dir"
+            screenshot_dir="''${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
+            mkdir -p "$screenshot_dir"
 
-              timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
-              output_file="$screenshot_dir/$timestamp.png"
+            timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
+            output_file="$screenshot_dir/$timestamp.png"
 
-              hyprshot -m "$mode" -o "$screenshot_dir" -f "$timestamp.png"
+            hyprshot -m "$mode" -o "$screenshot_dir" -f "$timestamp.png"
 
-              exec uwsm app -- satty \
-                --filename "$output_file" \
-                --output-filename "$output_file" \
-                --copy-command wl-copy \
-                --actions-on-enter save-to-clipboard,save-to-file,exit \
-                --actions-on-right-click save-to-clipboard,save-to-file,exit \
-                --floating-hack \
-                --no-window-decoration \
-                --fullscreen current-screen
-            '';
-          };
-        in
-        [
-          rofi-power-menu
-          hypr-screenshot
-        ];
-    };
+            exec uwsm app -- satty \
+              --filename "$output_file" \
+              --output-filename "$output_file" \
+              --copy-command wl-copy \
+              --actions-on-enter save-to-clipboard,save-to-file,exit \
+              --actions-on-right-click save-to-clipboard,save-to-file,exit \
+              --floating-hack \
+              --no-window-decoration \
+              --fullscreen current-screen
+          '';
+        };
+      in
+      [
+        rofi-power-menu
+        hypr-screenshot
+      ];
+  };
 }

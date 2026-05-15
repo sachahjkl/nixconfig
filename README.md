@@ -4,87 +4,369 @@
 
 ```
 .
-├── flake.nix                  # Flake entrypoint; imports all .nix files via importTree
-├── parts.nix                  # flake-parts systems and module imports
-├── theme.nix                  # Base16 theme definitions and terminal palette
-├── wrappedPrograms/           # Wrapper constructors (mkGit, mkTerminal, mkRofi, etc.)
-├── nixos/
-│   ├── base/                  # Core system: bootloader, kernel, i18n, nix settings
-│   │   ├── assets.nix         # sacha.theme, sacha.assets options
-│   │   ├── external.nix       # External flake modules (disko, hjem, preservation, mt7927)
-│   │   ├── preservation.nix   # sacha.preservation option definition
-│   │   ├── shell.nix          # Shell-related base config
-│   │   ├── system.nix         # sacha.nixConfigPath, bootloader, nix, virtualisation
-│   │   └── user.nix           # sacha.userName, fullName, homeDirectory + user config
-│   ├── extra/                 # Cross-cutting concerns
-│   │   ├── formatter.nix      # nixpkgs-fmt via flake-parts
-│   │   └── hjem.nix           # Home file management (face icon, session vars)
-│   ├── features/              # Feature modules (self-contained options + config)
-│   │   ├── brave.nix
-│   │   ├── desktop.nix        # desktop.environment option (hyprland/kde/both/niri)
-│   │   ├── direnv.nix
-│   │   ├── face-icon/
-│   │   ├── firefox.nix
-│   │   ├── fish.nix           # Fish preservation
-│   │   ├── flatpak.nix
-│   │   ├── gaming.nix
-│   │   ├── hyprland/          # Split Hyprland: core, config, apps, waybar, dunst, lock, scripts, packages
-│   │   ├── lf.nix             # lf config via hjem + preservation
-│   │   ├── mimeapps.nix       # Default application associations
-│   │   ├── neovim.nix
-│   │   ├── niri.nix
-│   │   ├── obs-studio.nix
-│   │   ├── packages.nix       # Shared system packages + sacha.git options
-│   │   ├── ssh.nix            # SSH config + sacha.ssh.identityKey option
-│   │   ├── steam.nix
-│   │   ├── sublime.nix        # Sublime Text + OpenSSL 1.1.1 permit
-│   │   ├── wallpaper/
-│   │   ├── wireplumber.nix
-│   │   └── zoxide.nix
-│   └── hosts/                 # Host-specific configs
-│       ├── house-desktop/     # NVIDIA, mt7927, hyprland+niri (both)
-│       └── house-laptop/      # niri-only, power-saving kernel params
+├── flake.nix
+├── wrappedPrograms/
+│   ├── user-shell.nix
+│   ├── fish.nix
+│   ├── git.nix
+│   ├── kitty.nix
+│   └── ...
+└── nixos/
+    ├── base/
+    ├── extra/
+    ├── features/
+    │   └── hyprland/
+    └── hosts/
 ```
 
-## Desktop environment
+## Architecture
 
-Set `desktop.environment` in the host config:
+This repo has five main layers:
 
-- `"hyprland"` — Hyprland + SDDM (with UWSM)
-- `"niri"` — Niri compositor
-- `"both"` — both sessions available in SDDM
+1. `flake.nix`
+2. flake-parts exports
+3. NixOS modules
+4. wrapped packages
+5. host configs
 
-Desktop is set to `"both"` on house-desktop, `"niri"` on house-laptop.
+### Big picture
 
-## Options
+```text
+flake.nix
+  -> imports every .nix file as a flake-parts module
+  -> each file exports one or more of:
+       - flake.nixosModules.<name>
+       - perSystem.packages.<name>
+       - flake.lib.mkThing
+       - flake.wrappersModules.<name>
 
-All options are colocated in the modules that use them (vimjoyer pattern):
+hosts/house-*/configuration.nix
+  -> import aggregate modules like workstation / desktop / hyprland / niri
+  -> set a few host-specific values
+  -> produce nixosConfigurations.<host>
 
-| Option | Module |
-|---|---|
-| `sacha.userName` | `nixos/base/user.nix` |
-| `sacha.fullName` | `nixos/base/user.nix` |
-| `sacha.homeDirectory` | `nixos/base/user.nix` |
-| `sacha.nixConfigPath` | `nixos/base/system.nix` |
-| `sacha.theme` | `nixos/base/assets.nix` |
-| `sacha.assets` | `nixos/base/assets.nix` |
-| `sacha.ssh.identityKey` | `nixos/features/ssh.nix` |
-| `sacha.git.authorName` | `nixos/features/packages.nix` |
-| `sacha.git.authorEmail` | `nixos/features/packages.nix` |
-| `sacha.kitty.useThemeColors` | `wrappedPrograms/kitty.nix` |
-| `sacha.preservation.*` | `nixos/base/preservation.nix` |
-| `desktop.environment` | `nixos/features/desktop.nix` |
+workstation / desktop / hyprland
+  -> compose smaller feature modules
 
-## Wrapper constructors
+feature modules
+  -> define options and/or apply config
+  -> may call flake.lib.mkThing helpers
 
-Wrappers that depend on NixOS config are built via `flake.lib` constructors, called from NixOS modules:
+wrappedPrograms/*.nix
+  -> define reusable wrapped binaries and wrapper modules
+  -> expose either perSystem packages or flake.lib constructors
+```
 
-| Constructor | File | Used by |
-|---|---|---|
-| `mkGit { pkgs, authorName, authorEmail }` | `wrappedPrograms/git.nix` | `nixos/features/packages.nix` |
-| `mkTerminal { pkgs, shell, useThemeColors }` | `wrappedPrograms/kitty.nix` | `nixos/extra/hjem.nix` |
-| `mkRofi { pkgs, theme }` | `wrappedPrograms/rofi.nix` | Hyprland config, waybar, dunst |
-| `mkHyprlock { pkgs, wallpaper, faceIcon }` | `wrappedPrograms/hyprlock.nix` | Hyprland lock |
+### Import model
+
+`flake.nix` uses an import tree:
+
+```nix
+inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+  imports = importTree ./.;
+}
+```
+
+That means every matching `.nix` file is imported as a `flake-parts` module, not as a plain NixOS module by default.
+
+So a file in this repo usually exports one of these shapes:
+
+```nix
+{ ... }: {
+  flake.nixosModules.someModule = { ... }: { ... };
+}
+```
+
+```nix
+{ ... }: {
+  perSystem = { pkgs, ... }: {
+    packages.somePackage = ...;
+  };
+}
+```
+
+```nix
+{ ... }: {
+  flake.lib.mkThing = args: ...;
+}
+```
+
+## Module tree
+
+### `nixos/base/`
+
+Foundational system and identity pieces.
+
+- `system.nix`: boot, kernel, locale, nix settings, virtualization, `nixConfigPath`
+- `user.nix`: `userName`, `fullName`, `homeDirectory`, main user account
+- `assets.nix`: `assets.*` and `preferences.theme.*`
+- `preservation.nix`: `preferences.preservation.*` and mapping into upstream `preservation.*`
+- `external.nix`: external modules re-exported into this repo
+
+### `nixos/extra/`
+
+Cross-cutting helpers.
+
+- `hjem.nix`: exported here as `user-home`, wires home files/session variables
+- `formatter.nix`: flake formatter output
+
+### `nixos/features/`
+
+Normal feature modules.
+
+Small examples:
+
+- `brave.nix`
+- `firefox.nix`
+- `nix.nix`
+- `ssh.nix`
+- `packages.nix`
+
+Aggregate examples:
+
+- `workstation.nix`: common host stack
+- `desktop.nix`: shared desktop stack
+- `hyprland/default.nix`: Hyprland aggregate
+- `niri.nix`: Niri compositor module
+
+### `nixos/hosts/`
+
+Host entrypoints should stay thin.
+
+They mostly:
+
+1. import aggregates and host-specific modules
+2. set host-only config
+3. export `flake.nixosConfigurations.<host>`
+
+Example shape:
+
+```text
+house-desktop
+  -> workstation
+  -> hyprland
+  -> niri
+  -> gaming
+  -> hardware
+```
+
+## Wrapped packages
+
+`wrappedPrograms/` is where command wrappers live.
+
+There are two common patterns.
+
+### Per-system wrapped packages
+
+These export real packages under `perSystem.packages.*`.
+
+Examples:
+
+- `userShell`
+- `lf`
+- `nh`
+- `nix-fast-build`
+- `quickshell`
+
+`userShell` is the main wrapped interactive shell environment, and it is also used as the login shell.
+
+Example shape:
+
+```nix
+perSystem = { pkgs, ... }: {
+  packages.lf = inputs.wrappers.lib.wrapPackage {
+    inherit pkgs;
+    package = pkgs.lf;
+  };
+};
+```
+
+### `mkThing` constructors
+
+These are helper functions exposed under `flake.lib.*`.
+
+Use them when the wrapper depends on NixOS config values.
+
+Examples:
+
+- `mkGit`
+- `mkTerminal`
+- `mkRofi`
+- `mkHyprlock`
+
+Example flow:
+
+```text
+preferences.git.authorName
+  -> nixos/features/packages.nix
+  -> self.lib.mkGit { ... }
+  -> wrapped git derivation
+  -> added to environment.systemPackages
+```
+
+### Important wrapper idiom
+
+The shell wrapper in `wrappedPrograms/user-shell.nix` is special because it builds a `PATH` for your interactive shell.
+
+That means a plain package added there can shadow a wrapped package with the same executable name.
+
+Rule of thumb:
+
+- if this repo already exports a wrapped package for a command, prefer that wrapped package
+- only add plain packages to the shell wrapper when there is no repo wrapper for them
+
+## Options and preferences
+
+The rule now is:
+
+- use top-level options for machine/user identity or repo paths
+- use `preferences.*` for user-tunable behavior
+
+### Top-level options
+
+- `userName`
+- `fullName`
+- `homeDirectory`
+- `nixConfigPath`
+- `assets.wallpaper`
+- `assets.faceIcon`
+
+### Preferences
+
+- `preferences.theme.*`
+- `preferences.kitty.useThemeColors`
+- `preferences.git.authorName`
+- `preferences.git.authorEmail`
+- `preferences.ssh.identityKey`
+- `preferences.preservation.*`
+
+### Why `preferences.preservation.*` exists
+
+The upstream module already owns the real `preservation.*` option tree.
+
+This repo uses:
+
+```text
+preferences.preservation.*
+  -> local preference/input layer
+  -> nixos/base/preservation.nix
+  -> translated into upstream preservation.*
+```
+
+So local feature modules can append persisted files/directories without colliding with the upstream module namespace.
+
+## How composition works
+
+This repo now prefers import-based composition instead of feature gating with booleans like `isHypr`.
+
+That means:
+
+- import `self.nixosModules.niri` if a host should have Niri
+- import `self.nixosModules.hyprland` if a host should have Hyprland
+- import both if a host should offer both sessions
+
+This keeps modules normal and composable.
+
+## Repo-specific idioms
+
+### 1. Exported modules must evaluate standalone
+
+`nix flake check` evaluates `flake.nixosModules.*` directly, not only through hosts.
+
+So exported modules should not rely on some other module having already declared their options unless that dependency is explicit through imports.
+
+That is one reason the repo now prefers plain import-based composition:
+
+- `workstation` imports shared modules explicitly
+- `desktop` imports shared desktop modules explicitly
+- hosts import the compositor modules they want explicitly
+
+### 2. Aggregate modules should compose, not hide magic
+
+Good aggregate modules:
+
+- `workstation`
+- `desktop`
+- `hyprland`
+
+They are just named bundles of imports.
+
+They should stay easy to read and should not become another hidden configuration language.
+
+### 3. Thin hosts, fat features
+
+Hosts should mostly answer:
+
+- which aggregate stacks do I want?
+- which compositor(s) do I want?
+- what hardware or host-only overrides do I need?
+
+Most reusable behavior should live below the host layer.
+
+### 4. Keep scope boundaries clear
+
+There are three different worlds in play:
+
+1. `flake-parts` top-level exports
+2. `perSystem` package/wrapper exports
+3. NixOS module `config/options`
+
+Typical rule:
+
+- `self'` belongs to `perSystem`
+- `selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system}` belongs inside NixOS modules when you want wrapped packages
+- `config.*` belongs to NixOS module evaluation, not `perSystem`
+
+## Diagram
+
+```text
+                         +----------------------+
+                         |      flake.nix       |
+                         | importTree over repo |
+                         +----------+-----------+
+                                    |
+                +-------------------+-------------------+
+                |                   |                   |
+                v                   v                   v
+      +----------------+   +----------------+   +-------------------+
+      | flake.lib.*    |   | perSystem.*    |   | flake.nixosModules|
+      | mkGit,         |   | wrapped pkgs   |   | base, desktop,    |
+      | mkTerminal...  |   | userShell...   |   | hyprland, hosts   |
+      +--------+-------+   +--------+-------+   +---------+---------+
+               |                    |                     |
+               |                    |                     |
+               v                    |                     v
+      +------------------+          |          +----------------------+
+      | feature modules  |          |          | aggregate modules    |
+      | packages.nix     |          |          | workstation,         |
+      | ssh.nix          |          |          | desktop, hyprland    |
+      +--------+---------+          |          +----------+-----------+
+               |                    |                     |
+               +--------------------+---------------------+
+                                    |
+                                    v
+                        +--------------------------+
+                        | hosts/house-*            |
+                        | thin host composition    |
+                        +------------+-------------+
+                                     |
+                                     v
+                        +--------------------------+
+                        | nixosConfigurations.*    |
+                        +--------------------------+
+```
+
+## Current mental model
+
+If you are deciding where something belongs:
+
+1. Is it a reusable wrapped binary? Put it in `wrappedPrograms/`.
+2. Does it depend on NixOS config values? Expose a `flake.lib.mkThing` helper.
+3. Is it a small NixOS concern? Put it in `nixos/features/`.
+4. Is it a common bundle of features? Make an aggregate module like `workstation` or `hyprland`.
+5. Is it host-only? Keep it in `nixos/hosts/<host>/configuration.nix`.
+6. Is it a user-facing knob? Prefer `preferences.*`.
+7. Is it identity/path/foundation? Prefer top-level options.
 
 ## Rebuild
 
@@ -96,52 +378,14 @@ nh os switch --hostname house-laptop
 Or directly:
 
 ```bash
-sudo nixos-rebuild switch --flake /home/sacha/Projects/dotfiles#house-desktop
-sudo nixos-rebuild switch --flake /home/sacha/Projects/dotfiles#house-laptop
+sudo nixos-rebuild switch --flake /home/sacha/Projects/nixconfig#house-desktop
+sudo nixos-rebuild switch --flake /home/sacha/Projects/nixconfig#house-laptop
 ```
 
-## Limine Secure Boot
+## Verification
 
-This repo enables Limine with Secure Boot signing via `sbctl`.
-
-### 1. Generate Secure Boot keys
+For in-progress work, especially with untracked files:
 
 ```bash
-nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#sbctl -c sudo sbctl create-keys
+nix flake check "path:$PWD" --no-write-lock-file
 ```
-
-### 2. Put firmware into Setup Mode
-
-Reboot into UEFI firmware settings and reset Secure Boot keys / enter Setup Mode.
-The exact option name depends on the motherboard firmware.
-
-### 3. Enroll keys
-
-```bash
-nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#sbctl -c sudo sbctl enroll-keys --microsoft --firmware-builtin
-```
-
-### 4. Install the signed Limine bootloader
-
-```bash
-sudo nixos-rebuild boot --flake /home/sacha/Projects/dotfiles#house-desktop
-```
-
-### 5. Verify signatures and Secure Boot state
-
-```bash
-nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#sbctl -c sudo sbctl verify
-bootctl status
-```
-
-### 6. Re-enable Secure Boot
-
-If your firmware disables Secure Boot while in Setup Mode, re-enable it before the final reboot.
-
-## Flake-parts import model
-
-All `.nix` files (except `flake.nix` and files prefixed with `_`) are imported as `flake-parts` modules via `importTree` in `flake.nix`. This means:
-
-- Every file must export `flake.nixosModules.*`, `perSystem`, `flake.lib.*`, etc.
-- Plain NixOS module fragments must be wrapped inside a `flake.nixosModules.<name>` export
-- Host configs reference modules via `self.nixosModules.<name>`

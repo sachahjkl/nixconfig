@@ -3,15 +3,13 @@
 {
   flake.nixosModules.hyprlandDunst = { config, lib, pkgs, ... }:
     let
-      desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
-      isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
-      userName = config.sacha.userName;
+      userName = config.userName;
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
-        theme = config.sacha.theme.rofiTheme;
+        theme = config.preferences.theme.rofiTheme;
       };
     in
-    lib.mkIf isHypr {
+    {
       hjem.users.${userName}.xdg.config.files."dunst/dunstrc".text = ''
         [global]
         monitor = 0

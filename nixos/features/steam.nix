@@ -2,6 +2,6 @@
 
 {
   flake.nixosModules.steam = {
-    sacha.preservation.user.directories = [ ".local/share/Steam" ];
+    preferences.preservation.user.directories = [ ".local/share/Steam" ];
   };
 }

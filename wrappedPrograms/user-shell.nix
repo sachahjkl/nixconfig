@@ -3,10 +3,12 @@
 {
   perSystem = { pkgs, self', ... }: {
     packages = {
-      environment = inputs.wrappers.lib.wrapPackage {
+      userShell = inputs.wrappers.lib.wrapPackage {
         inherit pkgs;
         package = self'.packages.fish;
         runtimeInputs = with pkgs; [
+          # Only add plain packages here when they do not have a repo wrapper.
+          # A plain binary in this shell wrapper can shadow a wrapped one on PATH.
           age
           bat
           btop
@@ -16,22 +18,18 @@
           fzf
           htop
           jq
-          nil
           self'.packages.nh
           self'.packages.nix-fast-build
-          nixd
           ripgrep
-          statix
           tree
           unzip
           wget
           self'.packages.lf
-          pkgs.git
         ];
         env.EDITOR = lib.getExe pkgs.neovim;
       };
 
-      default = self'.packages.environment;
+      default = self'.packages.userShell;
     };
   };
 }

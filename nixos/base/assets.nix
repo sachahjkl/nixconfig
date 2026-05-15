@@ -2,7 +2,7 @@
 
 {
   flake.nixosModules.base-assets = { config, lib, ... }: {
-    options.sacha.assets = {
+    options.assets = {
       wallpaper = lib.mkOption {
         type = lib.types.path;
         description = "Shared wallpaper asset path.";
@@ -14,7 +14,7 @@
       };
     };
 
-    options.sacha.theme = {
+    options.preferences.theme = {
       cursor = lib.mkOption {
         type = lib.types.str;
         default = "Posy_Cursor_Black_125_175";

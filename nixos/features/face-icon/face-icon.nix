@@ -2,6 +2,6 @@
 
 {
   flake.nixosModules.face-icon = { lib, ... }: {
-    config.sacha.assets.faceIcon = lib.mkDefault ./face.icon;
+    config.assets.faceIcon = lib.mkDefault ./face.icon;
   };
 }

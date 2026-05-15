@@ -8,7 +8,7 @@
       "openssl-1.1.1w"
     ];
 
-    sacha.preservation.user.directories = [
+    preferences.preservation.user.directories = [
       ".config/sublime-text"
       ".local/share/sublime-text"
     ];

@@ -1,32 +1,34 @@
 { inputs, self, ... }:
 
 {
-  flake.nixosModules.packages = { config, pkgs, ... }:
+  flake.nixosModules.packages = { config, lib, pkgs, ... }:
     let
+      cfg = config.preferences.git;
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
       gitPkg = self.lib.mkGit {
         inherit pkgs;
-        authorName = config.sacha.git.authorName;
-        authorEmail = config.sacha.git.authorEmail;
+        authorName = cfg.authorName;
+        authorEmail = cfg.authorEmail;
       };
+      nixos-conf-editor = inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor;
     in
     {
-      options.sacha.git = {
-        authorName = pkgs.lib.mkOption {
-          type = pkgs.lib.types.str;
+      options.preferences.git = {
+        authorName = lib.mkOption {
+          type = lib.types.str;
           default = "sachahjkl";
           description = "Default Git author name for wrapped Git.";
         };
 
-        authorEmail = pkgs.lib.mkOption {
-          type = pkgs.lib.types.str;
+        authorEmail = lib.mkOption {
+          type = lib.types.str;
           default = "sacha@sacha.house";
           description = "Default Git author email for wrapped Git.";
         };
       };
 
       config.environment.systemPackages = with pkgs; [
-        selfPkgs.environment
+        selfPkgs.userShell
         gitPkg
         selfPkgs.nh
         selfPkgs.nix-fast-build
@@ -40,7 +42,6 @@
         carapace
         curl
         difftastic
-        direnv
         equibop
         efibootmgr
         eza
@@ -74,7 +75,7 @@
         wget
         zellij
         zoxide
-        inputs.nixos-conf-editor.packages.${pkgs.stdenv.hostPlatform.system}.nixos-conf-editor
+        nixos-conf-editor
       ];
     };
 }

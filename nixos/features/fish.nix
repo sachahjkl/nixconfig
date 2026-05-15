@@ -2,6 +2,6 @@
 
 {
   flake.nixosModules.fish = {
-    sacha.preservation.user.directories = [ ".local/share/fish" ];
+    preferences.preservation.user.directories = [ ".local/share/fish" ];
   };
 }

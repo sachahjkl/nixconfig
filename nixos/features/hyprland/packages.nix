@@ -1,22 +1,20 @@
 { ... }:
 
 {
-  flake.nixosModules.hyprlandPackages = { config, lib, pkgs, self, ... }:
+  flake.nixosModules.hyprlandPackages = { config, pkgs, self, ... }:
     let
-      desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
-      isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
-        theme = config.sacha.theme.rofiTheme;
+        theme = config.preferences.theme.rofiTheme;
       };
       hyprlockPkg = self.lib.mkHyprlock {
         inherit pkgs;
-        wallpaper = config.sacha.assets.wallpaper;
-        faceIcon = config.sacha.assets.faceIcon;
+        wallpaper = config.assets.wallpaper;
+        faceIcon = config.assets.faceIcon;
       };
     in
-    lib.mkIf isHypr {
+    {
       environment.systemPackages = with pkgs; [
         arc-theme
         brightnessctl

@@ -12,55 +12,20 @@
 
   flake.nixosModules.house-desktop = { pkgs, config, lib, self, ... }: {
     imports = [
-      self.nixosModules.disko
-      self.nixosModules.external-preservation
-      self.nixosModules.flatpak
-      self.nixosModules.firefox
-      self.nixosModules.brave
-      self.nixosModules.direnv
-      self.nixosModules.fish
-      self.nixosModules.hjem
-      self.nixosModules.mt7927
-      self.nixosModules.neovim
-      self.nixosModules.kitty
-      self.nixosModules.lf
-      self.nixosModules.mimeapps
-      self.nixosModules.sublime
-      self.nixosModules.obsStudio
-      self.nixosModules.base
-      self.nixosModules.base-assets
-      self.nixosModules.steam
-      self.nixosModules.wallpaper
-      self.nixosModules.wireplumber
-      self.nixosModules.zoxide
-      self.nixosModules.face-icon
-      self.nixosModules.desktop
-      self.nixosModules.hyprlandCore
-      self.nixosModules.hyprlandPackages
-      self.nixosModules.hyprlandConfig
-      self.nixosModules.hyprlandLock
-      self.nixosModules.hyprlandWaybar
-      self.nixosModules.hyprlandDunst
-      self.nixosModules.hyprlandApps
-      self.nixosModules.hyprlandScripts
+      self.nixosModules.workstation
+      self.nixosModules.hyprland
       self.nixosModules.niri
-      self.nixosModules.packages
-      self.nixosModules.preservation
-      self.nixosModules.shell
-      self.nixosModules.sacha-hjem
-      self.nixosModules.sacha-user
-      self.nixosModules.ssh
       self.nixosModules.gaming
+      self.nixosModules.mt7927
       self.nixosModules.house-desktop-hardware
     ];
 
-    desktop.environment = "both";
     gaming.steam.gamescopeSession.enable = true;
     programs.corectrl.enable = true;
 
     networking.hostName = "house-desktop";
 
-    sacha.kitty.useThemeColors = true;
+    preferences.kitty.useThemeColors = false;
 
     services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -85,7 +50,7 @@
 
     system.autoUpgrade = {
       enable = true;
-      flake = "${config.sacha.nixConfigPath}#house-desktop";
+      flake = "${config.nixConfigPath}#house-desktop";
       dates = "daily";
       randomizedDelaySec = "45min";
     };

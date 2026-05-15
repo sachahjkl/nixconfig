@@ -3,16 +3,14 @@
 {
   flake.nixosModules.hyprlandLock = { config, lib, pkgs, ... }:
     let
-      desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
-      isHypr = lib.elem desktopEnvironment [ "hyprland" "both" "all" ];
-      userName = config.sacha.userName;
+      userName = config.userName;
       hyprlockPkg = self.lib.mkHyprlock {
         inherit pkgs;
-        wallpaper = config.sacha.assets.wallpaper;
-        faceIcon = config.sacha.assets.faceIcon;
+        wallpaper = config.assets.wallpaper;
+        faceIcon = config.assets.faceIcon;
       };
     in
-    lib.mkIf isHypr {
+    {
       hjem.users.${userName}.xdg.config.files = {
         "hypr/hypridle.conf".text = ''
           general {

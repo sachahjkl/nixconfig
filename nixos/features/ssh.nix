@@ -2,13 +2,13 @@
 
 {
   flake.nixosModules.ssh = { config, lib, ... }: {
-    options.sacha.ssh.identityKey = lib.mkOption {
+    options.preferences.ssh.identityKey = lib.mkOption {
       type = lib.types.str;
       default = "~/.ssh/id_ed25519_sk";
       description = "Primary SSH identity key path.";
     };
 
-    config.hjem.users.${config.sacha.userName}.files.".ssh/config".text = ''
+    config.hjem.users.${config.userName}.files.".ssh/config".text = ''
       Host *
         CheckHostIP yes
         ControlMaster no
@@ -22,11 +22,11 @@
 
       Host github.com
         IdentitiesOnly yes
-        IdentityFile ${config.sacha.ssh.identityKey}
+        IdentityFile ${config.preferences.ssh.identityKey}
 
       Host gitlab.com
         IdentitiesOnly yes
-        IdentityFile ${config.sacha.ssh.identityKey}
+        IdentityFile ${config.preferences.ssh.identityKey}
     '';
   };
 }

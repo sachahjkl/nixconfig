@@ -6,6 +6,6 @@
 
     environment.systemPackages = [ pkgs.firefox ];
 
-    sacha.preservation.user.directories = [ ".mozilla" ];
+    preferences.preservation.user.directories = [ ".mozilla" ];
   };
 }
