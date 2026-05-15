@@ -256,7 +256,7 @@
           audioCodec = "opus";
           audioSource = "default_output";
           colorRange = "limited";
-          directory = "${config.sacha.homeDirectory}/Videos";
+          directory = "~/Videos";
           frameRate = 60;
           quality = "very_high";
           showCursor = true;

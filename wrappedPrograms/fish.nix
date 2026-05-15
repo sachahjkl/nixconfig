@@ -1,5 +1,5 @@
-{ config
-, lib
+{ lib
+, pkgs
 , ...
 }:
 
@@ -14,7 +14,6 @@
         set fish_greeting
         fish_vi_key_bindings
 
-        alias rebuild-switch 'sudo nixos-rebuild switch --flake ${config.sacha.nixConfigPath}#(hostname)'
         ${lib.getExe pkgs.starship} init fish | source
         ${lib.getExe pkgs.carapace} _carapace fish | source
         ${lib.getExe pkgs.zoxide} init fish | source

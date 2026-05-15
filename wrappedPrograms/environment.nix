@@ -26,7 +26,7 @@
           unzip
           wget
           self'.packages.lf
-          self'.packages.git
+          pkgs.git
         ];
         env.EDITOR = lib.getExe pkgs.neovim;
       };

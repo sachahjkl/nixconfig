@@ -60,6 +60,16 @@
     };
   };
 
+  flake.nixosModules.kitty = { lib, ... }: {
+    options.sacha.kitty = {
+      useThemeColors = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Whether to apply the shared theme colors to Kitty.";
+      };
+    };
+  };
+
   perSystem = { pkgs, self', ... }: {
     packages.terminal = self.lib.mkTerminal {
       inherit pkgs;

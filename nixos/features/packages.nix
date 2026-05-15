@@ -1,14 +1,33 @@
 { inputs, self, ... }:
 
 {
-  flake.nixosModules.packages = { pkgs, ... }:
+  flake.nixosModules.packages = { config, pkgs, ... }:
     let
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+      gitPkg = self.lib.mkGit {
+        inherit pkgs;
+        authorName = config.sacha.git.authorName;
+        authorEmail = config.sacha.git.authorEmail;
+      };
     in
     {
-      environment.systemPackages = with pkgs; [
+      options.sacha.git = {
+        authorName = pkgs.lib.mkOption {
+          type = pkgs.lib.types.str;
+          default = "sachahjkl";
+          description = "Default Git author name for wrapped Git.";
+        };
+
+        authorEmail = pkgs.lib.mkOption {
+          type = pkgs.lib.types.str;
+          default = "sacha@sacha.house";
+          description = "Default Git author email for wrapped Git.";
+        };
+      };
+
+      config.environment.systemPackages = with pkgs; [
         selfPkgs.environment
-        selfPkgs.git
+        gitPkg
         selfPkgs.nh
         selfPkgs.nix-fast-build
         age
@@ -18,7 +37,6 @@
         bc
         bcompare
         btop
-        brave
         carapace
         curl
         difftastic
@@ -36,10 +54,8 @@
         htop
         imagemagick
         jq
-        mergiraf
         mediainfo
         mpv
-        neovim
         opencode
         posy-cursors
         pwvucontrol

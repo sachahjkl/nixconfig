@@ -1,7 +1,11 @@
-{ config, inputs, ... }:
+{ inputs, ... }:
 
 {
-  perSystem = { pkgs, ... }:
+  flake.lib.mkGit =
+    { pkgs
+    , authorName
+    , authorEmail
+    }:
     let
       gitConfig = pkgs.writeText "git-config" ''
         [alias]
@@ -60,8 +64,8 @@
         [mergetool]
           keepBackup = false
         [user]
-          name = ${config.sacha.git.authorName}
-          email = ${config.sacha.git.authorEmail}
+          name = ${authorName}
+          email = ${authorEmail}
           signingKey = ~/.ssh/id_ed25519_sk.pub
         [gpg]
           format = ssh
@@ -69,18 +73,16 @@
           allowedSignersFile = ~/.ssh/allowed_signers
       '';
     in
-    {
-      packages.git = inputs.wrappers.lib.wrapPackage {
-        inherit pkgs;
-        package = pkgs.git;
-        runtimeInputs = [ pkgs.difftastic pkgs.fzf pkgs.git-lfs pkgs.gnugrep pkgs.mergiraf ];
-        env = rec {
-          GIT_AUTHOR_NAME = config.sacha.git.authorName;
-          GIT_AUTHOR_EMAIL = config.sacha.git.authorEmail;
-          GIT_COMMITTER_NAME = GIT_AUTHOR_NAME;
-          GIT_COMMITTER_EMAIL = GIT_AUTHOR_EMAIL;
-          GIT_CONFIG_GLOBAL = gitConfig;
-        };
+    inputs.wrappers.lib.wrapPackage {
+      inherit pkgs;
+      package = pkgs.git;
+      runtimeInputs = [ pkgs.difftastic pkgs.fzf pkgs.git-lfs pkgs.gnugrep pkgs.mergiraf ];
+      env = rec {
+        GIT_AUTHOR_NAME = authorName;
+        GIT_AUTHOR_EMAIL = authorEmail;
+        GIT_COMMITTER_NAME = GIT_AUTHOR_NAME;
+        GIT_COMMITTER_EMAIL = GIT_AUTHOR_EMAIL;
+        GIT_CONFIG_GLOBAL = gitConfig;
       };
     };
 }

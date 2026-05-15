@@ -22,9 +22,13 @@
       self.nixosModules.hjem
       self.nixosModules.mt7927
       self.nixosModules.neovim
+      self.nixosModules.kitty
+      self.nixosModules.lf
+      self.nixosModules.mimeapps
+      self.nixosModules.sublime
       self.nixosModules.obsStudio
-      self.nixosModules.common
       self.nixosModules.base
+      self.nixosModules.base-assets
       self.nixosModules.steam
       self.nixosModules.wallpaper
       self.nixosModules.wireplumber
@@ -45,12 +49,15 @@
       self.nixosModules.shell
       self.nixosModules.sacha-hjem
       self.nixosModules.sacha-user
+      self.nixosModules.ssh
       self.nixosModules.house-laptop-hardware
     ];
 
     desktop.environment = "niri";
 
     networking.hostName = "house-laptop";
+
+    sacha.kitty.useThemeColors = false;
 
     boot.kernelParams = [
       "nvme_core.default_ps_max_latency_us=0"
