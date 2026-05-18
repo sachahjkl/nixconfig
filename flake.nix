@@ -4,8 +4,7 @@
   nixConfig = {
     auto-optimise-store = true;
     builders-use-substitutes = true;
-    download-buffer-size = "100M";
-    extra-experimental-features = [ "flakes" "nix-command" "pipe-operators" ];
+    extra-experimental-features = [ "flakes" "nix-command" ];
     extra-substituters = [
       "https://hyprland.cachix.org"
       "https://nix-community.cachix.org"

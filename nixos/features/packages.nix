@@ -27,55 +27,66 @@
         };
       };
 
-      config.environment.systemPackages = with pkgs; [
-        selfPkgs.userShell
-        gitPkg
-        selfPkgs.nh
-        selfPkgs.nix-fast-build
-        age
-        alsa-utils
-        audacity
-        bat
-        bc
-        bcompare
-        btop
-        carapace
-        curl
-        difftastic
-        equibop
-        efibootmgr
-        eza
-        fastfetch
-        fd
-        fff
-        ffmpeg-full
-        fzf
-        git-lfs
-        gitui
-        htop
-        imagemagick
-        jq
-        mediainfo
-        mpv
-        opencode
-        posy-cursors
-        pwvucontrol
-        qemu
-        ripgrep
-        sbctl
-        spice
-        spice-gtk
-        starship
-        sublime4
-        tmux
-        tree
-        unzip
-        virt-viewer
-        vlc
-        wget
-        zellij
-        zoxide
-        nixos-conf-editor
-      ];
+      config = {
+        preferences.preservation.user.directories = [
+          ".config/opencode"
+          ".local/share/opencode"
+        ];
+
+        programs.nh = {
+          enable = true;
+          package = selfPkgs.nh;
+          flake = config.nixConfigPath;
+        };
+
+        environment.systemPackages = with pkgs; [
+          selfPkgs.userShell
+          gitPkg
+          selfPkgs.nix-fast-build
+          age
+          alsa-utils
+          audacity
+          bat
+          bc
+          bcompare
+          btop
+          carapace
+          curl
+          difftastic
+          equibop
+          efibootmgr
+          eza
+          fastfetch
+          fd
+          fff
+          ffmpeg-full
+          fzf
+          git-lfs
+          gitui
+          htop
+          imagemagick
+          jq
+          mediainfo
+          mpv
+          opencode
+          pwvucontrol
+          qemu
+          ripgrep
+          sbctl
+          spice
+          spice-gtk
+          starship
+          sublime4
+          tmux
+          tree
+          unzip
+          virt-viewer
+          vlc
+          wget
+          zellij
+          zoxide
+          nixos-conf-editor
+        ];
+      };
     };
 }

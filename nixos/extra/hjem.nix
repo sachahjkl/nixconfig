@@ -24,7 +24,6 @@
             environment.sessionVariables = {
               EDITOR = "nvim";
               TERMINAL = "kitty";
-              NH_FLAKE = "${config.nixConfigPath}";
             };
 
             files = {

@@ -6,6 +6,15 @@
       inputs.nix-index-database.nixosModules.nix-index
     ];
 
+    nixpkgs.overlays = [
+      (final: prev: {
+        inherit (prev.lixPackageSets.stable)
+          colmena
+          nix-eval-jobs
+          nixpkgs-review;
+      })
+    ];
+
     programs.nix-index-database.comma.enable = true;
 
     programs.direnv = {
@@ -19,6 +28,8 @@
     programs.nix-ld.enable = true;
 
     nix = {
+      package = pkgs.lixPackageSets.stable.lix;
+
       gc = {
         automatic = true;
         dates = "weekly";
@@ -28,7 +39,6 @@
       settings = {
         accept-flake-config = true;
         experimental-features = [ "nix-command" "flakes" ];
-        download-buffer-size = "100M";
         trusted-users = [ "root" "@wheel" ];
         substituters = [
           "https://cache.nixos.org"

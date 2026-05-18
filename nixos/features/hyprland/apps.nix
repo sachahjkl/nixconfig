@@ -4,6 +4,7 @@
   flake.nixosModules.hyprlandApps = { config, ... }: {
     hjem.users.${config.userName}.xdg.config.files = {
       "uwsm/env".text = ''
+        export XCURSOR_THEME=${config.preferences.theme.cursor}
         export XCURSOR_SIZE=${toString config.preferences.theme.cursorSize}
         export HYPRCURSOR_SIZE=${toString config.preferences.theme.cursorSize}
         export QT_QPA_PLATFORM=wayland
@@ -14,15 +15,6 @@
         export QT_SCALE_FACTOR=1
       '';
 
-      "fontconfig/fonts.conf".text = ''
-        <?xml version='1.0'?>
-        <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
-        <fontconfig>
-          <alias><family>sans-serif</family><prefer><family>${config.preferences.theme.fonts.sans}</family></prefer></alias>
-          <alias><family>serif</family><prefer><family>Noto Serif</family></prefer></alias>
-          <alias><family>monospace</family><prefer><family>${config.preferences.theme.fonts.mono}</family></prefer></alias>
-        </fontconfig>
-      '';
     };
   };
 }

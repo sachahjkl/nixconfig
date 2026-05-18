@@ -42,7 +42,6 @@
         wtype
         xdg-user-dirs
         inter
-        posy-cursors
         rofiPkg
         hyprlockPkg
         selfPkgs.terminal

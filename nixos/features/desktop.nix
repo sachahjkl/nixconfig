@@ -7,9 +7,11 @@
       self.nixosModules.face-icon
       self.nixosModules.firefox
       self.nixosModules.flatpak
+      self.nixosModules.fonts
       self.nixosModules.kitty
       self.nixosModules.mimeapps
       self.nixosModules.obsStudio
+      self.nixosModules.theming
       self.nixosModules.wallpaper
       self.nixosModules.wireplumber
     ];
