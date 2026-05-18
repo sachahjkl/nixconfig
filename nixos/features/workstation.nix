@@ -19,6 +19,7 @@
       self.nixosModules.ssh
       self.nixosModules.steam
       self.nixosModules.sublime
+      self.nixosModules.tailscale
       self.nixosModules.zoxide
     ];
   };

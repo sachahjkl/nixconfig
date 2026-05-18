@@ -4,6 +4,7 @@
   flake.nixosModules.theming = { config, lib, pkgs, ... }: {
     environment.systemPackages = with pkgs; [
       arc-theme
+      adwaita-icon-theme
       dconf
       glib
       papirus-icon-theme
