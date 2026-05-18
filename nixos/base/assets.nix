@@ -36,7 +36,8 @@
       iconTheme = lib.mkOption {
         type = lib.types.str;
         # default = "Papirus-Dark";
-        default = "Adwaita";
+        # default = "Adwaita";
+        default = "MoreWaita";
         description = "Shared icon theme name.";
       };
 

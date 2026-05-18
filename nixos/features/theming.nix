@@ -7,6 +7,7 @@
       adwaita-icon-theme
       dconf
       glib
+      morewaita-icon-theme
       papirus-icon-theme
       posy-cursors
     ];
