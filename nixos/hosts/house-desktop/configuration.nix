@@ -12,6 +12,8 @@
 
   flake.nixosModules.house-desktop = { pkgs, config, lib, self, ... }: {
     imports = [
+      self.diskoConfigurations.house-desktop
+
       self.nixosModules.workstation
       self.nixosModules.hyprland
       self.nixosModules.niri
@@ -37,14 +39,6 @@
       open = true;
       nvidiaPersistenced = true;
       powerManagement.enable = true;
-    };
-
-    boot.initrd.systemd.enable = true;
-
-    boot.initrd.luks.devices.cryptroot = {
-      device = "/dev/disk/by-partlabel/cryptroot";
-      allowDiscards = true;
-      crypttabExtraOpts = [ "fido2-device=auto" ];
     };
 
     boot.kernelParams = [ "nvidia_drm.fbdev=1" ];

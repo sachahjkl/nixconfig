@@ -40,6 +40,9 @@
 
       security.sudo.wheelNeedsPassword = false;
       security.sudo.execWheelOnly = true;
+      security.sudo.extraConfig = ''
+        Defaults env_reset,pwfeedback
+      '';
 
       virtualisation.podman = {
         enable = true;

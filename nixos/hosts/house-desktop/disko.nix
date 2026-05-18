@@ -8,6 +8,7 @@
           type = "gpt";
           partitions = {
             esp = {
+              label = "ESP";
               name = "ESP";
               size = "1G";
               type = "EF00";
@@ -19,31 +20,35 @@
               };
             };
 
-            swap = {
-              size = "34G";
-              content = {
-                type = "swap";
-                resumeDevice = true;
-              };
-            };
-
             root = {
+              label = "cryptroot";
+              name = "cryptroot";
               size = "100%";
               content = {
                 type = "luks";
                 name = "cryptroot";
                 settings.allowDiscards = true;
+
+                enrollFido2 = true;
+                enrollRecovery = true;
+
                 content = {
                   type = "btrfs";
                   extraArgs = [ "-f" ];
                   subvolumes = {
                     "/persist" = {
                       mountpoint = "/persist";
-                      mountOptions = [ "subvol=persist" "noatime" ];
+                      mountOptions = [ "subvol=persist" "compress=zstd" "noatime" ];
                     };
+
                     "/nix" = {
                       mountpoint = "/nix";
-                      mountOptions = [ "subvol=nix" "noatime" ];
+                      mountOptions = [ "subvol=nix" "compress=zstd" "noatime" ];
+                    };
+
+                    "/swap" = {
+                      mountpoint = "/.swapvol";
+                      swap.swapfile.size = "34G";
                     };
                   };
                 };

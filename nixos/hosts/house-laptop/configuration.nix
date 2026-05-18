@@ -12,6 +12,9 @@
 
   flake.nixosModules.house-laptop = { config, ... }: {
     imports = [
+      self.diskoConfigurations.house-laptop
+
+
       self.nixosModules.workstation
       self.nixosModules.niri
       self.nixosModules.mt7927

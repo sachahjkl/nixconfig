@@ -3,6 +3,7 @@
 {
   imports = [
     inputs.wrapper-modules.flakeModules.wrappers
+    inputs.disko.flakeModules.default
   ];
 
   options.flake = inputs.flake-parts.lib.mkSubmoduleOptions {
@@ -11,10 +12,6 @@
     };
 
     wrappersModules = inputs.nixpkgs.lib.mkOption {
-      default = { };
-    };
-
-    diskoConfigurations = inputs.nixpkgs.lib.mkOption {
       default = { };
     };
   };
