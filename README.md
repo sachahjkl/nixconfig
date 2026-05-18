@@ -510,3 +510,68 @@ For in-progress work, especially with untracked files:
 ```bash
 nix flake check "path:$PWD" --no-write-lock-file
 ```
+
+
+### Secure Boot / sbctl setup (Limine)
+
+If Secure Boot is enabled while using Limine, installation will fail until Secure Boot keys are generated.
+
+For dual-boot systems with Windows, generate keys while preserving Microsoft UEFI certificates:
+
+```bash
+sudo nix-shell -p sbctl
+
+sudo sbctl create-keys
+```
+
+Then retry installation:
+
+```bash
+sudo nixos-install --root /mnt --flake .#house-desktop
+```
+
+### Verifying Secure Boot state
+
+```bash
+sudo sbctl status
+```
+
+### Enrolling Secure Boot keys in firmware
+
+After first successful boot into NixOS:
+
+```bash
+sudo sbctl enroll-keys --microsoft
+```
+
+Then reboot and enable Secure Boot in UEFI/BIOS firmware settings if it is not already enabled.
+
+### Signing Limine EFI binaries
+
+Limine EFI binaries must be signed for Secure Boot.
+
+Typical path:
+
+```bash
+sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+```
+
+Depending on the Limine installation layout, you may also need:
+
+```bash
+sudo sbctl sign -s /boot/EFI/Linux/liminex64.efi
+```
+
+Verify signed files:
+
+```bash
+sudo sbctl verify
+```
+
+### Notes
+
+- `--microsoft` preserves compatibility with Windows bootloaders and Microsoft-signed EFI binaries.
+- Without `--microsoft`, Windows may stop booting under Secure Boot.
+- Limine does not provide automatic Secure Boot integration like `lanzaboote`.
+- EFI binaries must remain signed after updates.
+- Keep backups of `/etc/secureboot`.
