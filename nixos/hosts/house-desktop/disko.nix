@@ -30,16 +30,21 @@
             root = {
               size = "100%";
               content = {
-                type = "btrfs";
-                extraArgs = [ "-f" ];
-                subvolumes = {
-                  "/persist" = {
-                    mountpoint = "/persist";
-                    mountOptions = [ "subvol=persist" "noatime" ];
-                  };
-                  "/nix" = {
-                    mountpoint = "/nix";
-                    mountOptions = [ "subvol=nix" "noatime" ];
+                type = "luks";
+                name = "cryptroot";
+                settings.allowDiscards = true;
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolumes = {
+                    "/persist" = {
+                      mountpoint = "/persist";
+                      mountOptions = [ "subvol=persist" "noatime" ];
+                    };
+                    "/nix" = {
+                      mountpoint = "/nix";
+                      mountOptions = [ "subvol=nix" "noatime" ];
+                    };
                   };
                 };
               };

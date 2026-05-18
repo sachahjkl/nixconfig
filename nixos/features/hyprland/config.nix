@@ -27,185 +27,202 @@
       };
 
       hjem.users.${userName}.xdg.config.files = {
-        "hypr/hyprland.conf".text = ''
-          $terminal = uwsm app -- kitty
-          $fileManager = uwsm app -- thunar
-          $menu = uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command "uwsm app -- {cmd}"
-          $mainMod = SUPER
+        "hypr/hyprland.lua".text = ''
+          local terminal = "uwsm app -- kitty"
+          local fileManager = "uwsm app -- thunar"
+          local menu = "uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command \"uwsm app -- {cmd}\""
+          local mainMod = "SUPER"
 
-          monitor = ,preferred,auto,1.875
+          hl.monitor({
+              output   = "",
+              mode     = "preferred",
+              position = "auto",
+              scale    = 1.875,
+          })
 
-          exec-once = uwsm app -- nm-applet
-          exec-once = uwsm app -- thunar --daemon
-          exec-once = uwsm app -- udiskie
-          exec-once = uwsm app -- copyq --start-server
-          exec-once = dbus-update-activation-environment --systemd --all
-          exec-once = waybar
-          exec-once = hyprpaper
-          exec-once = hypridle
-          exec-once = [workspace special:magic silent; float; size 1200 1000; move 80 80] $terminal --title Scratchpad
+          hl.on("hyprland.start", function()
+              hl.exec_cmd("uwsm app -- nm-applet")
+              hl.exec_cmd("uwsm app -- thunar --daemon")
+              hl.exec_cmd("uwsm app -- udiskie")
+              hl.exec_cmd("uwsm app -- copyq --start-server")
+              hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+              hl.exec_cmd("waybar")
+              hl.exec_cmd("hyprpaper")
+              hl.exec_cmd("hypridle")
+              hl.exec_cmd("[workspace special:magic silent; float; size 1200 1000; move 80 80] " .. terminal .. " --title Scratchpad")
+          end)
 
-          general {
-            gaps_in = 5
-            gaps_out = 5
-            border_size = 2
-            col.active_border = 0xeeffffff
-            col.inactive_border = 0xaa595959
-            resize_on_border = 1
-            allow_tearing = 0
-            layout = master
-          }
+          hl.config({
+              general = {
+                  gaps_in  = 5,
+                  gaps_out = 5,
+                  border_size = 2,
+                  col = {
+                      active_border   = 0xeeffffff,
+                      inactive_border = 0xaa595959,
+                  },
+                  resize_on_border = true,
+                  allow_tearing    = false,
+                  layout           = "master",
+              },
+              decoration = {
+                  rounding       = 0,
+                  active_opacity   = 1.0,
+                  inactive_opacity = 1.0,
+                  shadow = {
+                      enabled      = true,
+                      range        = 4,
+                      render_power = 3,
+                      color        = 0xee1a1a1a,
+                  },
+                  blur = {
+                      enabled  = true,
+                      size     = 3,
+                      passes   = 3,
+                      vibrancy = 0.4,
+                  },
+              },
+              animations = {
+                  enabled = false,
+              },
+              misc = {
+                  force_default_wallpaper = -1,
+                  disable_hyprland_logo   = true,
+                  enable_swallow          = true,
+              },
+              ecosystem = {
+                  no_update_news = true,
+              },
+              input = {
+                  kb_layout        = "fr",
+                  repeat_delay     = 200,
+                  numlock_by_default = true,
+                  follow_mouse     = 1,
+                  sensitivity      = 0,
+                  accel_profile    = "flat",
+                  touchpad = {
+                      natural_scroll = false,
+                  },
+              },
+              binds = {
+                  scroll_event_delay = 0,
+              },
+              dwindle = {
+                  pseudotile     = true,
+                  preserve_split = true,
+              },
+              master = {
+                  new_status = "master",
+              },
+          })
 
-          decoration {
-            rounding = 0
-            active_opacity = 1.0
-            inactive_opacity = 1.0
+          hl.window_rule({
+              match = { class = "com.github.hluk.copyq" },
+              float = true,
+          })
+          hl.window_rule({
+              match = { class = "(satty|org.satty.Satty)" },
+              float = true,
+          })
 
-            shadow {
-              enabled = 1
-              range = 4
-              render_power = 3
-              color = 0xee1a1a1a
-            }
+          hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
+          hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1}    } })
+          hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1}       } })
+          hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5},   {0.75, 1}    } })
+          hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1}     } })
 
-            blur {
-              enabled = 1
-              size = 3
-              passes = 3
-              vibrancy = 0.4
-            }
-          }
+          hl.animation({ leaf = "global",        enabled = true,  speed = 10,   bezier = "default" })
+          hl.animation({ leaf = "border",        enabled = true,  speed = 5.39, bezier = "easeOutQuint" })
+          hl.animation({ leaf = "windows",       enabled = true,  speed = 4.79, bezier = "easeOutQuint" })
+          hl.animation({ leaf = "windowsIn",     enabled = true,  speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
+          hl.animation({ leaf = "windowsOut",    enabled = true,  speed = 1.49, bezier = "linear",       style = "popin 87%" })
+          hl.animation({ leaf = "fadeIn",        enabled = true,  speed = 1.73, bezier = "almostLinear" })
+          hl.animation({ leaf = "fadeOut",       enabled = true,  speed = 1.46, bezier = "almostLinear" })
+          hl.animation({ leaf = "fade",          enabled = true,  speed = 3.03, bezier = "quick" })
+          hl.animation({ leaf = "layers",        enabled = true,  speed = 3.81, bezier = "easeOutQuint" })
+          hl.animation({ leaf = "layersIn",      enabled = true,  speed = 4,    bezier = "easeOutQuint", style = "fade" })
+          hl.animation({ leaf = "layersOut",     enabled = true,  speed = 1.5,  bezier = "linear",       style = "fade" })
+          hl.animation({ leaf = "fadeLayersIn",  enabled = true,  speed = 1.79, bezier = "almostLinear" })
+          hl.animation({ leaf = "fadeLayersOut", enabled = true,  speed = 1.39, bezier = "almostLinear" })
+          hl.animation({ leaf = "workspaces",    enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
+          hl.animation({ leaf = "workspacesIn",  enabled = true,  speed = 1.21, bezier = "almostLinear", style = "fade" })
+          hl.animation({ leaf = "workspacesOut", enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
 
-          animations {
-            enabled = 0
-          }
+          hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal))
+          hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.close())
+          hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen())
+          hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("pidof hyprlock || ${lib.getExe hyprlockPkg}"))
+          hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("hypr-screenshot window"))
+          hl.bind("PRINT", hl.dsp.exec_cmd("hypr-screenshot output"))
+          hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("hypr-screenshot region"))
+          hl.bind("SUPER + V", hl.dsp.exec_cmd("copyq menu"))
+          hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe rofiPkg} -show power-menu -modi \"power-menu:rofi-power-menu --choices=lockscreen/logout/shutdown/reboot\""))
+          hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
+          hl.bind(mainMod .. " + SHIFT + SPACE", hl.dsp.window.float({ action = "toggle" }))
+          hl.bind("CTRL + SHIFT + ugrave", hl.dsp.exec_cmd("copyq toggle"))
+          hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
+          hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
+          hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
+          hl.bind("ALT + Tab", hl.dsp.focus({ workspace = "e+1" }))
+          hl.bind("ALT + SHIFT + Tab", hl.dsp.focus({ workspace = "e-1" }))
 
-          dwindle {
-            pseudotile = 1
-            preserve_split = 1
-          }
+          hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
+          hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
+          hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "up" }))
+          hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 
-          master {
-            new_status = master
-          }
+          hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
+          hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+          hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
+          hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
 
-          misc {
-            force_default_wallpaper = -1
-            disable_hyprland_logo = 1
-            enable_swallow = 1
-          }
+          hl.bind(mainMod .. " + CONTROL + right", hl.dsp.window.resize({ direction = "right", delta = 40 }), { repeating = true })
+          hl.bind(mainMod .. " + CONTROL + left",  hl.dsp.window.resize({ direction = "left", delta = 40 }), { repeating = true })
+          hl.bind(mainMod .. " + CONTROL + up",    hl.dsp.window.resize({ direction = "up", delta = 40 }), { repeating = true })
+          hl.bind(mainMod .. " + CONTROL + down",  hl.dsp.window.resize({ direction = "down", delta = 40 }), { repeating = true })
 
-          ecosystem {
-            no_update_news = 1
-          }
+          hl.bind(mainMod .. " + ampersand", hl.dsp.focus({ workspace = 1 }))
+          hl.bind(mainMod .. " + eacute",    hl.dsp.focus({ workspace = 2 }))
+          hl.bind(mainMod .. " + quotedbl",  hl.dsp.focus({ workspace = 3 }))
+          hl.bind(mainMod .. " + apostrophe",hl.dsp.focus({ workspace = 4 }))
+          hl.bind(mainMod .. " + parenleft", hl.dsp.focus({ workspace = 5 }))
+          hl.bind(mainMod .. " + minus",     hl.dsp.focus({ workspace = 6 }))
+          hl.bind(mainMod .. " + egrave",    hl.dsp.focus({ workspace = 7 }))
+          hl.bind(mainMod .. " + underscore",hl.dsp.focus({ workspace = 8 }))
+          hl.bind(mainMod .. " + ccedilla",  hl.dsp.focus({ workspace = 9 }))
+          hl.bind(mainMod .. " + agrave",    hl.dsp.focus({ workspace = 10 }))
 
-          input {
-            kb_layout = fr
-            repeat_delay = 200
-            numlock_by_default = 1
-            follow_mouse = 1
-            sensitivity = 0
-            accel_profile = flat
+          hl.bind(mainMod .. " + SHIFT + ampersand", hl.dsp.window.move({ workspace = 1 }))
+          hl.bind(mainMod .. " + SHIFT + eacute",    hl.dsp.window.move({ workspace = 2 }))
+          hl.bind(mainMod .. " + SHIFT + quotedbl",  hl.dsp.window.move({ workspace = 3 }))
+          hl.bind(mainMod .. " + SHIFT + apostrophe",hl.dsp.window.move({ workspace = 4 }))
+          hl.bind(mainMod .. " + SHIFT + parenleft", hl.dsp.window.move({ workspace = 5 }))
+          hl.bind(mainMod .. " + SHIFT + egrave",    hl.dsp.window.move({ workspace = 6 }))
+          hl.bind(mainMod .. " + SHIFT + minus",     hl.dsp.window.move({ workspace = 7 }))
+          hl.bind(mainMod .. " + SHIFT + underscore",hl.dsp.window.move({ workspace = 8 }))
+          hl.bind(mainMod .. " + SHIFT + ccedilla",  hl.dsp.window.move({ workspace = 9 }))
+          hl.bind(mainMod .. " + SHIFT + agrave",    hl.dsp.window.move({ workspace = 10 }))
 
-            touchpad {
-              natural_scroll = 0
-            }
-          }
+          hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
+          hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
-          binds {
-            scroll_event_delay = 0
-          }
+          hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
+          hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 
-          windowrule = match:class (com.github.hluk.copyq), float on
-          windowrule = match:class (satty|org.satty.Satty), float on
+          hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
+          hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
-          bezier = easeOutQuint,0.23,1,0.32,1
-          bezier = easeInOutCubic,0.65,0.05,0.36,1
-          bezier = linear,0,0,1,1
-          bezier = almostLinear,0.5,0.5,0.75,1.0
-          bezier = quick,0.15,0,0.1,1
-          animation = global, 0.25, 10, default
-          animation = border, 0.25, 5.39, easeOutQuint
-          animation = windows, 0.25, 4.79, easeOutQuint
-          animation = windowsIn, 0.25, 4.1, easeOutQuint, popin 87%
-          animation = windowsOut, 0.25, 1.49, linear, popin 87%
-          animation = fadeIn, 0.25, 1.73, almostLinear
-          animation = fadeOut, 0.25, 1.46, almostLinear
-          animation = fade, 0.25, 3.03, quick
-          animation = layers, 0.25, 3.81, easeOutQuint
-          animation = layersIn, 0.25, 4, easeOutQuint, fade
-          animation = layersOut, 0.25, 1.5, linear, fade
-          animation = fadeLayersIn, 0.25, 1.79, almostLinear
-          animation = fadeLayersOut, 0.25, 1.39, almostLinear
-          animation = workspaces, 0.25, 1.94, almostLinear, fade
-          animation = workspacesIn, 0.25, 1.21, almostLinear, fade
-          animation = workspacesOut, 0.25, 1.94, almostLinear, fade
+          hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"),     { locked = true, repeating = true })
+          hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),     { locked = true, repeating = true })
+          hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),    { locked = true, repeating = true })
+          hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),  { locked = true, repeating = true })
+          hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl s 10%+"),                          { locked = true, repeating = true })
+          hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl s 10%-"),                          { locked = true, repeating = true })
 
-          bind = $mainMod, RETURN, exec, $terminal
-          bind = $mainMod SHIFT, Q, killactive
-          bind = $mainMod SHIFT, F, fullscreen
-          bind = $mainMod, L, exec, pidof hyprlock || ${lib.getExe hyprlockPkg}
-          bind = CTRL, PRINT, exec, hypr-screenshot window
-          bind = , PRINT, exec, hypr-screenshot output
-          bind = CTRL SHIFT, PRINT, exec, hypr-screenshot region
-          bind = SUPER, V, exec, copyq menu
-            bind = $mainMod SHIFT, E, exec, ${lib.getExe rofiPkg} -show power-menu -modi "power-menu:rofi-power-menu --choices=lockscreen/logout/shutdown/reboot"
-          bind = $mainMod, E, exec, $fileManager
-          bind = $mainMod SHIFT, SPACE, togglefloating
-          bind = CTRL SHIFT, ugrave, exec, copyq toggle
-          bind = $mainMod, D, exec, $menu
-          bind = $mainMod, P, pseudo
-          bind = $mainMod, J, layoutmsg, togglesplit
-          bind = ALT, Tab, workspace, e+1
-          bind = ALT SHIFT, Tab, workspace, e-1
-          bind = $mainMod, left, movefocus, l
-          bind = $mainMod, right, movefocus, r
-          bind = $mainMod, up, movefocus, u
-          bind = $mainMod, down, movefocus, d
-          bind = $mainMod SHIFT, left, movewindow, l
-          bind = $mainMod SHIFT, right, movewindow, r
-          bind = $mainMod SHIFT, up, movewindow, u
-          bind = $mainMod SHIFT, down, movewindow, d
-          binde = $mainMod CONTROL, right, resizeactive, 40 0
-          binde = $mainMod CONTROL, left, resizeactive, -40 0
-          binde = $mainMod CONTROL, up, resizeactive, 0 -40
-          binde = $mainMod CONTROL, down, resizeactive, 0 40
-          bind = $mainMod, ampersand, workspace, 1
-          bind = $mainMod, eacute, workspace, 2
-          bind = $mainMod, quotedbl, workspace, 3
-          bind = $mainMod, apostrophe, workspace, 4
-          bind = $mainMod, parenleft, workspace, 5
-          bind = $mainMod, minus, workspace, 6
-          bind = $mainMod, egrave, workspace, 7
-          bind = $mainMod, underscore, workspace, 8
-          bind = $mainMod, ccedilla, workspace, 9
-          bind = $mainMod, agrave, workspace, 10
-          bind = $mainMod SHIFT, ampersand, movetoworkspace, 1
-          bind = $mainMod SHIFT, eacute, movetoworkspace, 2
-          bind = $mainMod SHIFT, quotedbl, movetoworkspace, 3
-          bind = $mainMod SHIFT, apostrophe, movetoworkspace, 4
-          bind = $mainMod SHIFT, parenleft, movetoworkspace, 5
-          bind = $mainMod SHIFT, egrave, movetoworkspace, 6
-          bind = $mainMod SHIFT, minus, movetoworkspace, 7
-          bind = $mainMod SHIFT, underscore, movetoworkspace, 8
-          bind = $mainMod SHIFT, ccedilla, movetoworkspace, 9
-          bind = $mainMod SHIFT, agrave, movetoworkspace, 10
-          bind = $mainMod, S, togglespecialworkspace, magic
-          bind = $mainMod SHIFT, S, movetoworkspace, special:magic
-          bind = $mainMod, mouse_down, workspace, e+1
-          bind = $mainMod, mouse_up, workspace, e-1
-          bindm = $mainMod, mouse:272, movewindow
-          bindm = $mainMod, mouse:273, resizewindow
-          bindel = ,XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
-          bindel = ,XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
-          bindel = ,XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-          bindel = ,XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-          bindel = ,XF86MonBrightnessUp, exec, brightnessctl s 10%+
-          bindel = ,XF86MonBrightnessDown, exec, brightnessctl s 10%-
-          bindl = , XF86AudioNext, exec, playerctl next
-          bindl = , XF86AudioPause, exec, playerctl play-pause
-          bindl = , XF86AudioPlay, exec, playerctl play-pause
-          bindl = , XF86AudioPrev, exec, playerctl previous
+          hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
+          hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+          hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+          hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
         '';
 
         "hypr/hyprpaper.conf".text = ''

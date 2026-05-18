@@ -6,6 +6,8 @@
       selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     in
     {
+      imports = [ self.nixosModules.secrets ];
+
       options = {
         userName = lib.mkOption {
           type = lib.types.str;
@@ -32,6 +34,7 @@
           description = config.fullName;
           extraGroups = [ "networkmanager" "wheel" "audio" "video" "podman" "libvirtd" "kvm" ];
           shell = selfPkgs.userShell;
+          hashedPassword = config.secrets.userPasswordHash;
         };
 
         system.activationScripts.accountsServiceUserIcon = lib.stringAfter [ "users" ] ''

@@ -368,6 +368,117 @@ If you are deciding where something belongs:
 6. Is it a user-facing knob? Prefer `preferences.*`.
 7. Is it identity/path/foundation? Prefer top-level options.
 
+## Reinstall With LUKS, Btrfs, And FIDO2
+
+This is the encrypted reinstall procedure for a fresh disk.
+
+### Prerequisites
+
+- Boot a NixOS ISO with UEFI.
+- Verify the target disk path with `ls -la /dev/disk/by-id/`.
+- Disable Secure Boot in firmware during install (re-enable afterwards).
+
+### Partitioning (disko)
+
+The `disko.nix` file for your host must define:
+
+- an ESP partition (1G, FAT32, mounted at `/boot`)
+- optionally a swap partition with `resumeDevice = true`
+- a LUKS-encrypted root partition containing a Btrfs filesystem
+- Btrfs subvolumes `/persist` and `/nix` (mounted with `subvol=persist` / `subvol=nix`)
+- a tmpfs for `/` (size 25%, mode 755)
+
+The `house-desktop` disko already has Btrfs subvolumes and tmpfs root.
+To add LUKS, wrap the `content` of the root partition:
+
+```nix
+root = {
+  size = "100%";
+  content = {
+    type = "luks";
+    name = "cryptroot";
+    settings.allowDiscards = true;
+    content = {
+      type = "btrfs";
+      extraArgs = [ "-f" ];
+      subvolumes = {
+        # ... subvolumes as before ...
+      };
+    };
+  };
+};
+```
+
+### Boot configuration
+
+In your base or host NixOS module:
+
+```nix
+boot.initrd.systemd.enable = true;
+boot.initrd.luks.devices.cryptroot = {
+  device = "/dev/disk/by-partlabel/cryptroot";
+  allowDiscards = true;
+  crypttabExtraOpts = [ "fido2-device=auto" ];
+};
+```
+
+### Install steps
+
+```bash
+# 1. Clone repo
+cd /root
+git clone https://github.com/your-user/your-repo Projects/nixconfig
+
+# 2. Run disko (DESTRUCTIVE – double check the disk path)
+sudo nix run "github:nix-community/disko" -- --mode disko \
+  /root/Projects/nixconfig#house-desktop
+
+# 3. Verify the LUKS container exists
+lsblk -f
+
+# 4. Create a recovery passphrase on the LUKS container
+sudo cryptsetup luksAddKey /dev/disk/by-partlabel/cryptroot
+
+# 5. Enroll YubiKey for FIDO2 unlock
+sudo systemd-cryptenroll \
+  --fido2-device=auto \
+  --fido2-with-user-presence=yes \
+  /dev/disk/by-partlabel/cryptroot
+
+# 6. Install NixOS
+nixos-install --root /mnt --flake \
+  "/root/Projects/nixconfig#house-desktop"
+```
+
+### Post-install verification
+
+1. Reboot.
+2. At the initrd prompt, test FIDO2 unlock (touch your YubiKey).
+3. Test recovery passphrase unlock as fallback.
+4. Once booted, re-enroll if you have a second YubiKey.
+
+### Updating the recovery passphrase later
+
+```bash
+sudo cryptsetup luksChangeKey /dev/disk/by-partlabel/cryptroot
+```
+
+### Enrolling a second YubiKey
+
+```bash
+sudo systemd-cryptenroll \
+  --fido2-device=auto \
+  --fido2-with-user-presence=yes \
+  /dev/disk/by-partlabel/cryptroot
+```
+
+### Notes
+
+- FIDO2 unlock with `systemd` initrd requires `boot.initrd.systemd.enable = true`.
+- The `luks.devices.<name>.crypttabExtraOpts` must include `fido2-device=auto` for passwordless FIDO2 prompt.
+- Store at least one recovery passphrase offline (not only on a YubiKey).
+- `preLVM` is not needed since LUKS wraps Btrfs directly, not LVM.
+
 ## Rebuild
 
 ```bash

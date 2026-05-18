@@ -3,6 +3,18 @@
 This directory is reserved for Age-encrypted secrets committed to the repo for
 Sacha's NixOS/hjem configuration.
 
+## User password hash
+
+`user-password.hash` contains a yescrypt hash of the primary user password.
+It is intentionally committed to the repo and used via `lib.fileContents` in
+`nixos/base/user.nix`. The hash cannot be reversed to recover the password.
+
+Generate or update it with:
+
+```sh
+mkpasswd -m yescrypt
+```
+
 Do not keep raw private key material in this directory. Only the encrypted
 `.age` file should be committed here.
 
