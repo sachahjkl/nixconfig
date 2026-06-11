@@ -1,6 +1,4 @@
-{ self, ... }:
-
-{
+{self, ...}: {
   flake.nixosModules.homelab = {
     imports = [
       self.nixosModules.server

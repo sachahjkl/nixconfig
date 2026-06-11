@@ -1,11 +1,9 @@
-_:
-
-{
-  flake.nixosModules.firefox = { pkgs, ... }: {
+_: {
+  flake.nixosModules.firefox = {pkgs, ...}: {
     programs.firefox.enable = true;
 
-    environment.systemPackages = [ pkgs.firefox ];
+    environment.systemPackages = [pkgs.firefox];
 
-    preferences.preservation.user.directories = [ ".mozilla" ];
+    preferences.preservation.user.directories = [".mozilla"];
   };
 }

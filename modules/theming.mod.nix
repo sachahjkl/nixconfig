@@ -1,7 +1,10 @@
-{ self, ... }:
-
-{
-  flake.nixosModules.theming = { config, lib, pkgs, ... }: {
+{self, ...}: {
+  flake.nixosModules.theming = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     nixpkgs.overlays = [
       (_: prev: {
         windows-10-theme = self.packages.${prev.stdenv.hostPlatform.system}.windows-10-theme;

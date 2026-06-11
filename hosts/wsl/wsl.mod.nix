@@ -1,6 +1,11 @@
-{ inputs, self, lib, ... }:
+{
+  inputs,
+  self,
+  lib,
+  ...
+}:
 lib.systems.nixosSystem "wsl" {
-  module = { lib, ... }: {
+  module = {lib, ...}: {
     imports = [
       inputs.nixos-wsl.nixosModules.default
       self.nixosModules.wsl-hardware
@@ -18,9 +23,11 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.xdgStubs
     ];
 
-    wsl.enable = true;
-    wsl.defaultUser = "nixos";
-    wsl.interop.register = true;
+    wsl = {
+      enable = true;
+      defaultUser = "nixos";
+      interop.register = true;
+    };
 
     userName = "nixos";
     fullName = "NixOS";
@@ -30,8 +37,8 @@ lib.systems.nixosSystem "wsl" {
     secrets.userPasswordHash = "";
 
     security.pki.certificateFiles = [
-	./certs/zscaler-root-ca.pem
-	./certs/ca-ogfprod-root.pem
+      ./certs/zscaler-root-ca.pem
+      ./certs/ca-ogfprod-root.pem
     ];
 
     system.stateVersion = "26.05";

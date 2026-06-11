@@ -1,7 +1,9 @@
-_:
-
-{
-  flake.nixosModules.vscode = { config, pkgs, ... }: {
+_: {
+  flake.nixosModules.vscode = {
+    config,
+    pkgs,
+    ...
+  }: {
     home-manager.users.${config.userName}.programs.vscode = {
       enable = true;
       package = pkgs.vscode;
@@ -20,7 +22,7 @@ _:
           "nix.formatterPath" = "alejandra";
           "nix.serverPath" = "nixd";
           "nix.serverSettings" = {
-            nixd.formatting.command = [ "alejandra" ];
+            nixd.formatting.command = ["alejandra"];
           };
           "terminal.integrated.defaultProfile.linux" = "fish";
 
@@ -47,6 +49,6 @@ _:
       };
     };
 
-    preferences.preservation.user.directories = [ ".config/Code" ];
+    preferences.preservation.user.directories = [".config/Code"];
   };
 }

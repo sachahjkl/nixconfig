@@ -1,6 +1,10 @@
-{ self, lib, ... }:
+{
+  self,
+  lib,
+  ...
+}:
 lib.systems.nixosSystem "homelab" {
-  module = { config, ... }: {
+  module = {config, ...}: {
     imports = [
       self.nixosModules.disko
       self.diskoConfigurations.homelab
@@ -13,7 +17,7 @@ lib.systems.nixosSystem "homelab" {
     fullName = "Sacha";
     homeDirectory = "/data/Home/sacha";
     nixConfigPath = "/data/Home/sacha/Projects/nixconfig";
-    extraUserGroups = [ "docker" ];
+    extraUserGroups = ["docker"];
     users.mutableUsers = lib.mkForce true;
 
     homelab = {

@@ -1,7 +1,5 @@
-_:
-
-{
-  perSystem = { pkgs, ... }: {
+_: {
+  perSystem = {pkgs, ...}: {
     packages.windows-10-theme = pkgs.stdenvNoCC.mkDerivation {
       pname = "windows-10-theme";
       version = "2025-11-24";

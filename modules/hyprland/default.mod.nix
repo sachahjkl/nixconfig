@@ -1,6 +1,4 @@
-{ self, ... }:
-
-{
+{self, ...}: {
   flake.nixosModules.hyprland = {
     imports = [
       self.nixosModules.hyprlandCore

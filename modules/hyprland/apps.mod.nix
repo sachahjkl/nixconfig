@@ -1,7 +1,5 @@
-_:
-
-{
-  flake.nixosModules.hyprlandApps = { config, ... }: {
+_: {
+  flake.nixosModules.hyprlandApps = {config, ...}: {
     hjem.users.${config.userName} = {
       environment.sessionVariables = {
         XCURSOR_THEME = config.preferences.theme.cursor;

@@ -1,42 +1,50 @@
-_:
-
-{
-  flake.nixosModules.serverBase = { pkgs, ... }: {
+_: {
+  flake.nixosModules.serverBase = {pkgs, ...}: {
     config = {
-      boot.loader.systemd-boot.enable = true;
-      boot.loader.efi.canTouchEfiVariables = true;
-      boot.kernelPackages = pkgs.linuxPackages_latest;
-      boot.supportedFilesystems = [ "btrfs" "ext4" "nfs" "vfat" ];
+      boot = {
+        loader.systemd-boot.enable = true;
+        loader.efi.canTouchEfiVariables = true;
+        kernelPackages = pkgs.linuxPackages_latest;
+        supportedFilesystems = ["btrfs" "ext4" "nfs" "vfat"];
+      };
 
       networking.useNetworkd = true;
       systemd.network.enable = true;
-      services.resolved.enable = true;
 
-      services.avahi = {
-        enable = true;
-        nssmdns4 = true;
-        openFirewall = true;
-        publish = {
+      services = {
+        resolved.enable = true;
+
+        avahi = {
           enable = true;
-          userServices = true;
-          workstation = true;
+          nssmdns4 = true;
+          openFirewall = true;
+          publish = {
+            enable = true;
+            userServices = true;
+            workstation = true;
+          };
         };
-      };
 
-      services.btrfs.autoScrub = {
-        enable = true;
-        interval = "monthly";
-      };
+        btrfs.autoScrub = {
+          enable = true;
+          interval = "monthly";
+        };
 
-      services.fstrim.enable = true;
-      services.smartd.enable = true;
+        fstrim.enable = true;
+        smartd.enable = true;
+        journald.extraConfig = ''
+          SystemMaxUse=1G
+        '';
+      };
 
       programs.fish.enable = true;
 
       users.mutableUsers = false;
 
-      security.sudo.wheelNeedsPassword = false;
-      security.sudo.execWheelOnly = true;
+      security = {
+        sudo.wheelNeedsPassword = false;
+        sudo.execWheelOnly = true;
+      };
 
       time.timeZone = "Europe/Paris";
 
@@ -69,10 +77,6 @@ _:
         vim
         wget
       ];
-
-      services.journald.extraConfig = ''
-        SystemMaxUse=1G
-      '';
 
       hardware.enableRedistributableFirmware = true;
 

@@ -1,7 +1,10 @@
-_:
-
-{
-  flake.nixosModules.brave = { config, lib, pkgs, ... }: {
+_: {
+  flake.nixosModules.brave = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     options.features.brave.enable = lib.mkEnableOption "Brave browser";
 
     config = lib.mkIf config.features.brave.enable {
@@ -13,7 +16,7 @@ _:
           commandLineArgs = "--password-store=gnome-libsecret";
         })
       ];
-      preferences.preservation.user.directories = [ ".config/BraveSoftware" ];
+      preferences.preservation.user.directories = [".config/BraveSoftware"];
     };
   };
 }

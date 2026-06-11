@@ -1,7 +1,5 @@
-_:
-
-{
-  flake.nixosModules.serverNix = { pkgs, ... }: {
+_: {
+  flake.nixosModules.serverNix = {pkgs, ...}: {
     config = {
       environment.systemPackages = with pkgs; [
         alejandra

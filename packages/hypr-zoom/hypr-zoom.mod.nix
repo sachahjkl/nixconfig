@@ -1,7 +1,5 @@
-_:
-
-{
-  perSystem = { pkgs, ... }: {
+_: {
+  perSystem = {pkgs, ...}: {
     packages.hypr-zoom = pkgs.stdenv.mkDerivation {
       pname = "hypr-zoom";
       version = "0.0.3";

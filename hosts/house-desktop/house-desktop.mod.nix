@@ -1,6 +1,10 @@
-{ self, lib, ... }:
+{
+  self,
+  lib,
+  ...
+}:
 lib.systems.nixosSystem "house-desktop" {
-  module = { config, ... }: {
+  module = {config, ...}: {
     imports = [
       self.diskoConfigurations.house-desktop
       self.nixosModules.workstation
@@ -16,28 +20,30 @@ lib.systems.nixosSystem "house-desktop" {
 
     preferences.kitty.useThemeColors = false;
 
-    age.identityPaths = [ "${config.homeDirectory}/.ssh/agenix" ];
+    age.identityPaths = ["${config.homeDirectory}/.ssh/agenix"];
     secrets.userPasswordHashAgeFile = ./user-password-hash.age;
 
-    services.xserver.videoDrivers = [ "nvidia" ];
+    services.xserver.videoDrivers = ["nvidia"];
 
-    hardware.graphics.enable = true;
+    boot.kernelParams = ["nvidia_drm.fbdev=1"];
 
-    hardware.nvidia = {
-      modesetting.enable = true;
-      nvidiaSettings = true;
-      open = true;
-      nvidiaPersistenced = true;
-      powerManagement.enable = true;
-    };
+    hardware = {
+      graphics.enable = true;
 
-    boot.kernelParams = [ "nvidia_drm.fbdev=1" ];
+      nvidia = {
+        modesetting.enable = true;
+        nvidiaSettings = true;
+        open = true;
+        nvidiaPersistenced = true;
+        powerManagement.enable = true;
+      };
 
-    hardware.mediatek-mt7927 = {
-      enable = true;
-      enableWifi = true;
-      enableBluetooth = true;
-      disableAspm = true;
+      mediatek-mt7927 = {
+        enable = true;
+        enableWifi = true;
+        enableBluetooth = true;
+        disableAspm = true;
+      };
     };
 
     system.autoUpgrade = {

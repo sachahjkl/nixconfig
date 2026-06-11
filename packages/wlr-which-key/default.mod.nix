@@ -1,9 +1,9 @@
-{ inputs
-, self
-, lib
-, ...
-}:
-let
+{
+  inputs,
+  self,
+  lib,
+  ...
+}: let
   mkWhichKey = pkgs: menu:
     (self.wrappersModules.which-key.apply {
       inherit pkgs;
@@ -28,26 +28,24 @@ let
         margin_top = 0;
       };
     }).wrapper;
-in
-{
+in {
   flake.mkWhichKeyExe = pkgs: menu: lib.getExe (mkWhichKey pkgs menu);
 
   flake.wrappersModules.which-key = inputs.wrappers.lib.wrapModule (
-    { config
-    , lib
-    , ...
-    }:
-    let
-      yamlFormat = config.pkgs.formats.yaml { };
-    in
     {
+      config,
+      lib,
+      ...
+    }: let
+      yamlFormat = config.pkgs.formats.yaml {};
+    in {
       options.settings = lib.mkOption {
         inherit (yamlFormat) type;
       };
 
       config = {
         package = config.pkgs.wlr-which-key;
-        args = [ (toString (yamlFormat.generate "config.yaml" config.settings)) ];
+        args = [(toString (yamlFormat.generate "config.yaml" config.settings))];
       };
     }
   );

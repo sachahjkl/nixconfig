@@ -1,7 +1,5 @@
-_:
-
-{
-  flake.nixosModules.mimeapps = { config, ... }: {
+_: {
+  flake.nixosModules.mimeapps = {config, ...}: {
     hjem.users.${config.userName}.xdg.mime-apps.default-applications = {
       "application/xhtml+xml" = "brave-browser.desktop";
       "inode/directory" = "thunar.desktop";

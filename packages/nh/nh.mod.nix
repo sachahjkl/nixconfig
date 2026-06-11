@@ -1,7 +1,5 @@
-_:
-
-{
-  perSystem = { pkgs, ... }: {
+_: {
+  perSystem = {pkgs, ...}: {
     packages.nh = pkgs.nh;
   };
 }

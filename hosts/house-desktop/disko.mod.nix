@@ -16,7 +16,7 @@
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
+                mountOptions = ["umask=0077"];
               };
             };
 
@@ -34,16 +34,16 @@
 
                 content = {
                   type = "btrfs";
-                  extraArgs = [ "-f" ];
+                  extraArgs = ["-f"];
                   subvolumes = {
                     "/persist" = {
                       mountpoint = "/persist";
-                      mountOptions = [ "subvol=persist" "compress=zstd" "noatime" ];
+                      mountOptions = ["subvol=persist" "compress=zstd" "noatime"];
                     };
 
                     "/nix" = {
                       mountpoint = "/nix";
-                      mountOptions = [ "subvol=nix" "compress=zstd" "noatime" ];
+                      mountOptions = ["subvol=nix" "compress=zstd" "noatime"];
                     };
 
                     "/swap" = {
@@ -60,7 +60,7 @@
 
       nodev."/" = {
         fsType = "tmpfs";
-        mountOptions = [ "size=25%" "mode=755" ];
+        mountOptions = ["size=25%" "mode=755"];
       };
     };
   };

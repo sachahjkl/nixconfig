@@ -1,6 +1,4 @@
-{ self, ... }:
-
-{
+{self, ...}: {
   flake.keys = {
     # Dedicated agenix SSH key. The private key is stored in Bitwarden.
     # Do not use the YubiKey resident sk-* SSH key here; age needs a normal decryptable SSH key.
@@ -12,5 +10,5 @@
     wsl = self.keys.admin;
   };
 
-  flake.keys-admin = [ self.keys.admin ];
+  flake.keys-admin = [self.keys.admin];
 }

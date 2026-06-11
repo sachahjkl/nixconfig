@@ -1,14 +1,11 @@
-_:
- 
- {
-   flake.nixosModules.homelabShares = { config, ... }:
-    let
-      dataRoot = config.homelab.dataRoot;
-      lanInterface = config.homelab.lanInterface;
-    in
-    {
-      config = {
-        services.samba = {
+_: {
+  flake.nixosModules.homelabShares = {config, ...}: let
+    dataRoot = config.homelab.dataRoot;
+    lanInterface = config.homelab.lanInterface;
+  in {
+    config = {
+      services = {
+        samba = {
           enable = true;
           openFirewall = true;
           settings = {
@@ -55,49 +52,50 @@ _:
           };
         };
 
-        services.samba-wsdd = {
+        samba-wsdd = {
           enable = true;
           openFirewall = true;
         };
 
-        services.nfs.server = {
+        nfs.server = {
           enable = true;
           exports = ''
             ${dataRoot}/Downloads 192.168.50.0/24(rw,subtree_check,insecure)
             ${dataRoot} 192.168.50.0/24(ro,fsid=0,root_squash,subtree_check,insecure)
           '';
         };
-
-        networking.firewall.allowedTCPPorts = [
-          22
-          80
-          81
-          111
-          139
-          443
-          445
-          2049
-          3245
-          3246
-          3670
-          4857
-          5055
-          7878
-          8096
-          8920
-          8989
-          9080
-          9696
-        ];
-
-        networking.firewall.allowedUDPPorts = [
-          111
-          137
-          138
-          1900
-          4857
-          7359
-        ];
       };
+
+      networking.firewall.allowedTCPPorts = [
+        22
+        80
+        81
+        111
+        139
+        443
+        445
+        2049
+        3245
+        3246
+        3670
+        4857
+        5055
+        7878
+        8096
+        8920
+        8989
+        9080
+        9696
+      ];
+
+      networking.firewall.allowedUDPPorts = [
+        111
+        137
+        138
+        1900
+        4857
+        7359
+      ];
     };
+  };
 }

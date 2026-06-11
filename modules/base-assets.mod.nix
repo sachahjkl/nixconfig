@@ -1,7 +1,5 @@
-_:
-
-{
-  flake.nixosModules.baseAssets = { lib, ... }: {
+_: {
+  flake.nixosModules.baseAssets = {lib, ...}: {
     options.assets = {
       wallpaper = lib.mkOption {
         type = lib.types.path;

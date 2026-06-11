@@ -1,7 +1,9 @@
-_:
-
-{
-  flake.nixosModules.desktop-packages = { config, pkgs, ... }: {
+_: {
+  flake.nixosModules.desktop-packages = {
+    config,
+    pkgs,
+    ...
+  }: {
     preferences.preservation.user.directories = [
       ".audacity-data"
       ".config/equibop"
@@ -40,7 +42,7 @@ _:
           vsync = true;
           maximized = false;
           font = {
-            normal = [ config.preferences.theme.fonts.mono ];
+            normal = [config.preferences.theme.fonts.mono];
             size = 14.0;
           };
         };

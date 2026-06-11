@@ -47,8 +47,7 @@ let
     if builtins.substring 0 1 str == "#"
     then builtins.substring 1 (builtins.stringLength str - 1) str
     else str;
-in
-{
+in {
   config.flake.lib = {
     inherit theme terminalTheme;
     themeNoHash = builtins.mapAttrs (_: stripHash) theme;

@@ -1,28 +1,28 @@
-_:
-
-{
-  flake.nixosModules.xdgStubs = { config, ... }: {
+_: {
+  flake.nixosModules.xdgStubs = {config, ...}: {
     hjem.users.${config.userName} = {
-      xdg.config.files = {
-        "aws".type = "directory";
-        "claude-code".type = "directory";
-        "codex".type = "directory";
-        "ripgrep".type = "directory";
-        "ssh".type = "directory";
-      };
+      xdg = {
+        config.files = {
+          "aws".type = "directory";
+          "claude-code".type = "directory";
+          "codex".type = "directory";
+          "ripgrep".type = "directory";
+          "ssh".type = "directory";
+        };
 
-      xdg.data.files = {
-        "android".type = "directory";
-        "cargo".type = "directory";
-        "go".type = "directory";
-        "gradle".type = "directory";
-      };
+        data.files = {
+          "android".type = "directory";
+          "cargo".type = "directory";
+          "go".type = "directory";
+          "gradle".type = "directory";
+        };
 
-      xdg.state.files = {
-        "less".type = "directory";
-        "node".type = "directory";
-        "python".type = "directory";
-        "sqlite".type = "directory";
+        state.files = {
+          "less".type = "directory";
+          "node".type = "directory";
+          "python".type = "directory";
+          "sqlite".type = "directory";
+        };
       };
 
       environment.sessionVariables = {

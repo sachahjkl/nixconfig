@@ -1,17 +1,21 @@
-{ inputs, ... }:
-
-{
-  flake.nixosModules.nix = { config, pkgs, ... }: {
+{inputs, ...}: {
+  flake.nixosModules.nix = {
+    config,
+    pkgs,
+    ...
+  }: {
     imports = [
       inputs.nix-index-database.nixosModules.nix-index
     ];
 
     nixpkgs.overlays = [
       (_: prev: {
-        inherit (prev.lixPackageSets.stable)
+        inherit
+          (prev.lixPackageSets.stable)
           colmena
           nix-eval-jobs
-          nixpkgs-review;
+          nixpkgs-review
+          ;
       })
     ];
 
@@ -47,6 +51,6 @@
       };
     };
 
-    preferences.preservation.user.directories = [ ".local/share/direnv" ];
+    preferences.preservation.user.directories = [".local/share/direnv"];
   };
 }

@@ -1,6 +1,4 @@
-_:
-
-{
+_: {
   flake.nixosModules.mosh = {
     programs.mosh = {
       enable = true;

@@ -1,7 +1,9 @@
-{ inputs, self, ... }:
-
 {
-  perSystem = { pkgs, ... }: {
+  inputs,
+  self,
+  ...
+}: {
+  perSystem = {pkgs, ...}: {
     packages.noctalia-shell = inputs.wrapper-modules.wrappers.noctalia-shell.wrap {
       inherit pkgs;
       package = pkgs.noctalia-shell;
@@ -34,7 +36,7 @@
           position = "center";
           viewMode = "list";
           iconMode = "tabler";
-          pinnedExecs = [ ];
+          pinnedExecs = [];
           showCategories = true;
           sortByMostUsed = true;
           useApp2Unit = false;
@@ -42,7 +44,7 @@
         audio = {
           cavaFrameRate = 30;
           externalMixer = "pwvucontrol || pavucontrol";
-          mprisBlacklist = [ ];
+          mprisBlacklist = [];
           preferredPlayer = "";
           visualizerType = "linear";
           volumeOverdrive = false;
@@ -56,13 +58,13 @@
           floating = false;
           marginHorizontal = 0.25;
           marginVertical = 0.25;
-          monitors = [ ];
+          monitors = [];
           outerCorners = true;
           showCapsule = false;
           showOutline = false;
           transparent = false;
           widgets = {
-            center = [ ];
+            center = [];
             left = [
               {
                 colorizeDistroLogo = true;
@@ -90,7 +92,7 @@
                 id = "NotificationHistory";
                 showUnreadBadge = true;
               }
-              { id = "PowerProfile"; }
+              {id = "PowerProfile";}
               {
                 displayMode = "alwaysHide";
                 id = "Volume";
@@ -121,12 +123,12 @@
                 usePrimaryColor = true;
               }
               {
-                blacklist = [ ];
+                blacklist = [];
                 colorizeIcons = false;
                 drawerEnabled = true;
                 hidePassive = false;
                 id = "Tray";
-                pinned = [ ];
+                pinned = [];
               }
             ];
           };
@@ -183,8 +185,8 @@
           ];
           position = "close_to_bar_button";
           shortcuts = {
-            left = [{ id = "WiFi"; } { id = "Bluetooth"; } { id = "ScreenRecorder"; }];
-            right = [{ id = "Notifications"; } { id = "PowerProfile"; }];
+            left = [{id = "WiFi";} {id = "Bluetooth";} {id = "ScreenRecorder";}];
+            right = [{id = "Notifications";} {id = "PowerProfile";}];
           };
         };
         general = {
@@ -229,7 +231,7 @@
           enabled = true;
           location = "top_right";
           lowUrgencyDuration = 8;
-          monitors = [ ];
+          monitors = [];
           normalUrgencyDuration = 8;
           overlayLayer = true;
           respectExpireTimeout = false;
@@ -247,9 +249,9 @@
           autoHideMs = 3000;
           backgroundOpacity = 1;
           enabled = true;
-          enabledTypes = [ 0 1 2 4 ];
+          enabledTypes = [0 1 2 4];
           location = "bottom";
-          monitors = [ ];
+          monitors = [];
           overlayLayer = true;
         };
         screenRecorder = {

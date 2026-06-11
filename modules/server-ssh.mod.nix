@@ -1,6 +1,4 @@
-_:
-
-{
+_: {
   flake.nixosModules.serverSsh = {
     services.openssh = {
       enable = true;
@@ -11,7 +9,7 @@ _:
         PermitRootLogin = "prohibit-password";
         PubkeyAuthentication = true;
         X11Forwarding = false;
-        AcceptEnv = [ "SHELLS" "COLORTERM" ];
+        AcceptEnv = ["SHELLS" "COLORTERM"];
       };
     };
 

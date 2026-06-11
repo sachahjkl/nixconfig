@@ -1,7 +1,5 @@
-{ self, ... }:
-
-{
-  flake.nixosModules.desktop = { pkgs, ... }: {
+{self, ...}: {
+  flake.nixosModules.desktop = {pkgs, ...}: {
     imports = [
       self.nixosModules.brave
       self.nixosModules.face-icon
@@ -18,21 +16,51 @@
 
     features.brave.enable = true;
 
-    services.accounts-daemon.enable = true;
-
-    services.xserver.xkb = {
-      layout = "fr";
-      variant = "";
+    security = {
+      polkit = {
+        enable = true;
+        extraConfig = ''
+          polkit.addRule(function(action, subject) {
+            if (subject.isInGroup("wheel"))
+              return polkit.Result.YES;
+          });
+        '';
+      };
+      rtkit.enable = true;
     };
 
-    security.polkit.enable = true;
-    security.polkit.extraConfig = ''
-      polkit.addRule(function(action, subject) {
-        if (subject.isInGroup("wheel"))
-          return polkit.Result.YES;
-      });
-    '';
-    environment.systemPackages = with pkgs; [ gparted seahorse ];
+    services = {
+      accounts-daemon.enable = true;
+      xserver.xkb = {
+        layout = "fr";
+        variant = "";
+      };
+      printing = {
+        enable = true;
+        listenAddresses = ["localhost:631"];
+        defaultShared = false;
+      };
+      blueman.enable = true;
+      gvfs.enable = true;
+      tumbler.enable = true;
+      udisks2.enable = true;
+      avahi = {
+        enable = true;
+        nssmdns4 = true;
+        openFirewall = true;
+      };
+      pulseaudio.enable = false;
+      pipewire = {
+        enable = true;
+        alsa = {
+          enable = true;
+          support32Bit = true;
+        };
+        pulse.enable = true;
+      };
+    };
+
+    environment.systemPackages = with pkgs; [gparted seahorse];
 
     qt = {
       enable = true;
@@ -51,38 +79,16 @@
 
     xdg.portal = {
       enable = true;
-      extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
       config.common = {
-        default = [ "gtk" ];
-        "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+        default = ["gtk"];
+        "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
       };
     };
 
-    services.printing.enable = true;
-    services.printing.listenAddresses = [ "localhost:631" ];
-    services.printing.defaultShared = false;
     hardware.bluetooth = {
       enable = true;
       powerOnBoot = true;
-    };
-    services.blueman.enable = true;
-    services.gvfs.enable = true;
-    services.tumbler.enable = true;
-    services.udisks2.enable = true;
-
-    services.avahi = {
-      enable = true;
-      nssmdns4 = true;
-      openFirewall = true;
-    };
-
-    services.pulseaudio.enable = false;
-    security.rtkit.enable = true;
-    services.pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
     };
   };
 }

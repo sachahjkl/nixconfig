@@ -1,28 +1,33 @@
-{ inputs, lib, self, ... }:
 {
-  nixosSystem =
-    hostName:
-    { module
-    , system ? "x86_64-linux"
-    , extraModules ? [ ]
-    , extraSpecialArgs ? { }
-    ,
-    }:
-    {
-      flake.nixosConfigurations.${hostName} = lib.nixosSystem {
-        inherit system;
+  inputs,
+  lib,
+  self,
+  ...
+}: {
+  nixosSystem = hostName: {
+    module,
+    system ? "x86_64-linux",
+    extraModules ? [],
+    extraSpecialArgs ? {},
+  }: {
+    flake.nixosConfigurations.${hostName} = lib.nixosSystem {
+      inherit system;
 
-        specialArgs = {
+      specialArgs =
+        {
           inherit inputs self;
           inherit lib;
-        } // extraSpecialArgs;
+        }
+        // extraSpecialArgs;
 
-        modules = extraModules ++ [
+      modules =
+        extraModules
+        ++ [
           module
           {
             networking.hostName = hostName;
           }
         ];
-      };
     };
+  };
 }

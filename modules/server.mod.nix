@@ -1,6 +1,4 @@
-{ self, ... }:
-
-{
+{self, ...}: {
   flake.nixosModules.server = {
     imports = [
       self.nixosModules.baseUser

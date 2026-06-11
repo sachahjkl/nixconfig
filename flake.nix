@@ -4,7 +4,7 @@
   nixConfig = {
     auto-optimise-store = true;
     builders-use-substitutes = true;
-    extra-experimental-features = [ "flakes" "nix-command" ];
+    extra-experimental-features = ["flakes" "nix-command"];
     extra-substituters = [
       "https://hyprland.cachix.org"
       "https://nix-community.cachix.org"
@@ -16,7 +16,7 @@
     flake-registry = "";
     http-connections = 50;
     show-trace = true;
-    trusted-users = [ "root" "@wheel" ];
+    trusted-users = ["root" "@wheel"];
     use-xdg-base-directories = true;
     warn-dirty = false;
   };
@@ -91,35 +91,34 @@
     mt7927.url = "github:cmspam/mt7927-nixos";
   };
 
-  outputs =
-    inputs:
+  outputs = inputs:
     inputs.flake-parts.lib.mkFlake
-      {
-        inherit inputs;
+    {
+      inherit inputs;
 
-        specialArgs.lib = inputs.nixpkgs.lib.extend (
-          final: prev:
-            inputs.nixpkgs.lib.recursiveUpdate prev (
-              import ./lib {
-                lib = final;
-                inherit inputs;
-                inherit (inputs) self;
-              }
-            )
-        );
-      }
-      ({ lib, ... }:
-      let
-        inherit (lib.filesystem) listFilesRecursive;
-        inherit (lib.lists) filter;
-        inherit (lib.strings) hasSuffix;
-      in
-      {
-        systems = [ "x86_64-linux" ];
+      specialArgs.lib = inputs.nixpkgs.lib.extend (
+        final: prev:
+          inputs.nixpkgs.lib.recursiveUpdate prev (
+            import ./lib {
+              lib = final;
+              inherit inputs;
+              inherit (inputs) self;
+            }
+          )
+      );
+    }
+    ({lib, ...}: let
+      inherit (lib.filesystem) listFilesRecursive;
+      inherit (lib.lists) filter;
+      inherit (lib.strings) hasSuffix;
+    in {
+      systems = ["x86_64-linux"];
 
-        imports = [
+      imports =
+        [
           inputs.wrapper-modules.flakeModules.wrappers
           inputs.disko.flakeModules.default
-        ] ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);
-      });
+        ]
+        ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);
+    });
 }

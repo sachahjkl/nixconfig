@@ -1,9 +1,7 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   inherit (lib.meta) getExe;
   inherit (lib.lists) singleton;
-in
-{
+in {
   asShell = shell: filename: text: ''
     ${getExe shell} ${
       shell.stdenv.mkDerivation {
@@ -13,9 +11,13 @@ in
         passAsFile = singleton "text";
         phases = singleton "installPhase";
 
-        installPhase = /* bash */ ''
-          cp "$textPath" "$out"
-        '';
+        installPhase =
+          /*
+          bash
+          */
+          ''
+            cp "$textPath" "$out"
+          '';
       }
     }
   '';

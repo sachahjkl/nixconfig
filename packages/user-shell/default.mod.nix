@@ -1,7 +1,13 @@
-{ inputs, lib, ... }:
-
 {
-  perSystem = { pkgs, self', ... }: {
+  inputs,
+  lib,
+  ...
+}: {
+  perSystem = {
+    pkgs,
+    self',
+    ...
+  }: {
     packages = {
       userShell = inputs.wrappers.lib.wrapPackage {
         inherit pkgs;

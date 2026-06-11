@@ -1,11 +1,14 @@
-{ inputs
-, lib
-, ...
-}:
-
 {
-  flake.nixosModules.fish = { config, pkgs, ... }: {
-    preferences.preservation.user.directories = [ ".local/share/fish" ];
+  inputs,
+  lib,
+  ...
+}: {
+  flake.nixosModules.fish = {
+    config,
+    pkgs,
+    ...
+  }: {
+    preferences.preservation.user.directories = [".local/share/fish"];
 
     programs.fish = {
       enable = true;
@@ -15,8 +18,11 @@
       fish = {
         enable = true;
         package = null;
-        aliases.vim = "nvim";
-        aliases.ls = "eza";
+        aliases = {
+          vim = "nvim";
+          ls = "eza";
+        };
+
         config = ''
           set fish_greeting
           fish_vi_key_bindings
@@ -35,7 +41,7 @@
 
       zoxide = {
         enable = true;
-        flags = [ "--cmd cd" ];
+        flags = ["--cmd cd"];
         integrations.fish.enable = true;
       };
     };
@@ -43,7 +49,11 @@
     programs.starship.enable = true;
   };
 
-  perSystem = { pkgs, self', ... }: {
+  perSystem = {
+    pkgs,
+    self',
+    ...
+  }: {
     packages = {
       fish = inputs.wrappers.lib.wrapPackage {
         inherit pkgs;

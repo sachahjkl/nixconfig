@@ -1,6 +1,4 @@
-_:
-
-{
+_: {
   flake.nixosModules.sublime = _: {
     #environment.systemPackages = [ pkgs.sublime4 ];
 
