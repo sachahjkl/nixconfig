@@ -1,0 +1,7 @@
+keys:
+  - &admin_age age1replace-me-with-your-real-public-key
+creation_rules:
+  - path_regex: nixos/hosts/homelab/secrets/.*\.ya?ml$
+    key_groups:
+      - age:
+          - *admin_age

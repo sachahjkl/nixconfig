@@ -22,7 +22,7 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     disko = {
@@ -38,42 +38,89 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hjem-rum = {
+      url = "github:snugnug/hjem-rum";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.hjem.follows = "hjem";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager/trunk";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+
     wrappers.url = "github:Lassulus/wrappers";
     wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
-
-    nh = {
-      url = "github:nix-community/nh";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nix-fast-build = {
-      url = "github:Mic92/nix-fast-build";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     nix-index-database = {
       url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nixos-conf-editor.url = "github:snowfallorg/nixos-conf-editor";
+    nixos-wsl = {
+      url = "github:nix-community/NixOS-WSL/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    opencode-src = {
+      url = "github:anomalyco/opencode/v1.17.3";
+      flake = false;
+    };
+
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     mt7927.url = "github:cmspam/mt7927-nixos";
     hyprnix.url = "github:hyprwm/hyprnix";
   };
 
-  outputs = inputs:
-    let
-      inherit (inputs.nixpkgs) lib;
-      inherit (lib.fileset) fileFilter toList;
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake
+      {
+        inherit inputs;
 
-      isFlakePart = file:
-        file.hasExt "nix"
-        && file.name != "flake.nix"
-        && !lib.hasPrefix "_" file.name;
+        specialArgs.lib = inputs.nixpkgs.lib.extend (
+          final: prev:
+          inputs.nixpkgs.lib.recursiveUpdate prev (
+            import ./lib {
+              lib = final;
+              inherit inputs;
+              inherit (inputs) self;
+            }
+          )
+        );
+      }
+      ({ lib, ... }:
+        let
+          inherit (lib.filesystem) listFilesRecursive;
+          inherit (lib.lists) filter;
+          inherit (lib.strings) hasSuffix;
+        in
+        {
+          systems = [ "x86_64-linux" ];
 
-      importTree = path: toList (fileFilter isFlakePart path);
-    in
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = importTree ./.;
-    };
+          imports = [
+            inputs.wrapper-modules.flakeModules.wrappers
+            inputs.disko.flakeModules.default
+          ] ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);
+        });
 }

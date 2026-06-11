@@ -1,0 +1,72 @@
+{ self, ... }:
+
+{
+  flake.nixosModules.baseUser = { config, pkgs, lib, ... }:
+    let
+      selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+    in
+    {
+      imports = [ self.nixosModules.secrets ];
+
+      options = {
+        nixConfigPath = lib.mkOption {
+          type = lib.types.str;
+          default = "/home/sacha/Projects/nixconfig";
+          description = "Local path to this Nix flake checkout.";
+        };
+
+        userName = lib.mkOption {
+          type = lib.types.str;
+          default = "sacha";
+          description = "Primary local username.";
+        };
+
+        fullName = lib.mkOption {
+          type = lib.types.str;
+          default = "Sacha";
+          description = "Primary local full name.";
+        };
+
+        homeDirectory = lib.mkOption {
+          type = lib.types.str;
+          default = "/home/sacha";
+          description = "Primary local home directory.";
+        };
+
+        extraUserGroups = lib.mkOption {
+          type = lib.types.listOf lib.types.str;
+          default = [ ];
+          description = "Additional groups for the primary local user.";
+        };
+      };
+
+      config = {
+        users.users.${config.userName} = {
+          isNormalUser = true;
+          description = config.fullName;
+          extraGroups = [ "wheel" ] ++ config.extraUserGroups;
+          shell = selfPkgs.userShell;
+        }
+        // lib.optionalAttrs (config.secrets.userPasswordHashFile != null) {
+          hashedPasswordFile = config.secrets.userPasswordHashFile;
+        }
+        // lib.optionalAttrs (config.secrets.userPasswordHashFile == null && config.secrets.userPasswordHash != null) {
+          hashedPassword = config.secrets.userPasswordHash;
+        };
+
+        system.activationScripts.accountsServiceUserIcon =
+          let
+            faceIcon = lib.attrByPath [ "assets" "faceIcon" ] null config;
+          in
+          lib.mkIf (faceIcon != null) (lib.stringAfter [ "users" ] ''
+            mkdir -p /var/lib/AccountsService/icons /var/lib/AccountsService/users
+            ln -sfn ${faceIcon} /var/lib/AccountsService/icons/${config.userName}
+            cat > /var/lib/AccountsService/users/${config.userName} <<'EOF'
+            [User]
+            Icon=/var/lib/AccountsService/icons/${config.userName}
+            SystemAccount=false
+            EOF
+          '');
+      };
+  };
+}

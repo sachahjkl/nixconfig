@@ -7,3 +7,6 @@ result-*
 .nix-profile
 .nix-defexpr/
 .nix-channels
+
+# Secrets
+user-password.hash
