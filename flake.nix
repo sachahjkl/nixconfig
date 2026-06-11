@@ -78,11 +78,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    opencode-src = {
-      url = "github:anomalyco/opencode/v1.17.3";
-      flake = false;
-    };
-
     hermes-agent = {
       url = "github:NousResearch/hermes-agent";
       inputs.nixpkgs.follows = "nixpkgs";
