@@ -190,7 +190,7 @@
           };
         };
         general = {
-          avatarImage = self + /nixos/features/face-icon/face.icon;
+          avatarImage = self + /modules/face-icon/face.icon;
           allowPanelsOnScreenWithoutBar = true;
           animationDisabled = false;
           animationSpeed = 1;

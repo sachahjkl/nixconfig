@@ -128,7 +128,7 @@
       xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
       spawn-at-startup = [
         noctaliaExe
-        (lib.getExe (pkgs.writeShellScriptBin "wallpaper" "${lib.getExe pkgs.swaybg} -i ${self + /nixos/features/wallpaper/wallpaper.jpg} -m fill"))
+        (lib.getExe (pkgs.writeShellScriptBin "wallpaper" "${lib.getExe pkgs.swaybg} -i ${self + /modules/wallpaper/wallpaper.jpg} -m fill"))
       ];
     };
   };
