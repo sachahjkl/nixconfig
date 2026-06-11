@@ -14,7 +14,7 @@
 
         specialArgs = {
           inherit inputs self;
-          lib = lib;
+          inherit lib;
         } // extraSpecialArgs;
 
         modules = extraModules ++ [

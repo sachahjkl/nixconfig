@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.homelabLayout = { config, lib, pkgs, ... }:

@@ -4,7 +4,7 @@
   flake.nixosModules.hyprlandDunst = { config, lib, pkgs, ... }:
     let
       ini = pkgs.formats.ini { };
-      userName = config.userName;
+      inherit (config) userName;
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
         theme = config.preferences.theme.rofiTheme;

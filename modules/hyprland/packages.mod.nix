@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.hyprlandPackages = { config, pkgs, self, ... }:

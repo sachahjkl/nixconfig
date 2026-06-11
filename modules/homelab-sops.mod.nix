@@ -35,7 +35,7 @@
         ];
 
         sops = {
-          defaultSopsFile = cfg.defaultSopsFile;
+          inherit (cfg) defaultSopsFile;
           defaultSopsFormat = "yaml";
           age.keyFile = cfg.ageKeyFile;
 

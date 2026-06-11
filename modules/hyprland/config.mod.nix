@@ -5,7 +5,7 @@
     let
       hyprCfg = config.preferences.hyprland;
       powerChoices = "lockscreen/logout/suspend/hibernate/shutdown/reboot";
-      userName = config.userName;
+      inherit (config) userName;
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
         theme = config.preferences.theme.rofiTheme;

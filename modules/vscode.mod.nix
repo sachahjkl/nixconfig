@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.vscode = { config, pkgs, ... }: {

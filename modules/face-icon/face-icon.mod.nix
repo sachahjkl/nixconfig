@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.face-icon = { lib, ... }: {

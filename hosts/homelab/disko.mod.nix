@@ -1,4 +1,4 @@
-{ ... }:
+_:
 {
   flake.diskoConfigurations.homelab = {
     disko.devices = {

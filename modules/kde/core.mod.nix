@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.kdeCore = { config, lib, pkgs, ... }:

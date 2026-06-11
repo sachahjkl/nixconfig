@@ -42,7 +42,7 @@ in
     in
     {
       options.settings = lib.mkOption {
-        type = yamlFormat.type;
+        inherit (yamlFormat) type;
       };
 
       config = {

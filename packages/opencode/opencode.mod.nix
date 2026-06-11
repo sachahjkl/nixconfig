@@ -78,10 +78,10 @@
         packageJson = builtins.fromJSON (builtins.readFile (inputs.opencode-src + /packages/opencode/package.json));
       in
       pkgs.opencode.overrideAttrs (_: previousAttrs: {
-        version = packageJson.version;
+        inherit (packageJson) version;
         src = inputs.opencode-src;
         node_modules = previousAttrs.node_modules.overrideAttrs {
-          version = packageJson.version;
+          inherit (packageJson) version;
           src = inputs.opencode-src;
           outputHash = "sha256-m0uTWu/JrzeUJXkaIlYf8TgrwMmMKwRsELHe5NAKPDY=";
         };

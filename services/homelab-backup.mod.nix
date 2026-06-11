@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.homelabBackup = { config, lib, pkgs, ... }:

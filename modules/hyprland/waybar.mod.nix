@@ -13,7 +13,7 @@
         config;
       powerChoices = "logout/suspend/hibernate/shutdown/reboot";
       u = cp: builtins.fromJSON ("\"\\u" + cp + "\"");
-      userName = config.userName;
+      inherit (config) userName;
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
         theme = config.preferences.theme.rofiTheme;

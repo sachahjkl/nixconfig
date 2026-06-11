@@ -1,4 +1,4 @@
-{ ... }:
+_:
 {
   flake.nixosModules.house-laptop-hardware = { config, lib, modulesPath, ... }: {
     imports = [

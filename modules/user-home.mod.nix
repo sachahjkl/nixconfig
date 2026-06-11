@@ -29,7 +29,7 @@
           extraModules = [ inputs.hjem-rum.hjemModules.default ];
           users.${user} = {
             enable = true;
-            user = user;
+            inherit user;
             directory = home;
 
             environment.sessionVariables =

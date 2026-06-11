@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.hyprlandLock = { config, lib, pkgs, ... }:
@@ -27,7 +27,7 @@
         }
         config;
       lockCmd = "pidof hyprlock || ${lib.getExe pkgs.hyprlock}";
-      userName = config.userName;
+      inherit (config) userName;
     in
     {
       hjem.users.${userName}.rum.programs = {

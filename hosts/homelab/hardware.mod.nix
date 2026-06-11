@@ -1,4 +1,4 @@
-{ ... }:
+_:
 {
   flake.nixosModules.homelab-hardware = { config, lib, modulesPath, ... }: {
     imports = [

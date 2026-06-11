@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   flake.nixosModules.homelabProxy = { config, lib, pkgs, ... }:
@@ -45,13 +45,13 @@
         {
           name = domain;
           value = {
-            enableACME = hostCfg.enableACME;
-            forceSSL = hostCfg.forceSSL;
+            inherit (hostCfg) enableACME;
+            inherit (hostCfg) forceSSL;
             serverAliases = hostCfg.aliases;
-            basicAuthFile = hostCfg.basicAuthFile;
+            inherit (hostCfg) basicAuthFile;
             extraConfig = optionalString hostCfg.http2 "http2 on;";
             locations."/" = {
-              proxyPass = proxyPass;
+              inherit proxyPass;
               proxyWebsockets = hostCfg.websockets;
             };
           };
@@ -74,7 +74,7 @@
         };
 
         hosts = mkOption {
-          type = types.attrsOf (types.submodule ({ ... }: {
+          type = types.attrsOf (types.submodule (_: {
             options = {
               aliases = mkOption {
                 type = types.listOf types.str;

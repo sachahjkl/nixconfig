@@ -4,7 +4,7 @@
   flake.nixosModules.ghostty = { config, lib, pkgs, ... }:
     let
       cfg = config.features.ghostty;
-      userName = config.userName;
+      inherit (config) userName;
       ghosttyExe = lib.getExe pkgs.ghostty;
       userShellExe = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.userShell;
       terminalTheme = self.lib.terminalTheme;
@@ -40,8 +40,8 @@
               "shell-integration" = "detect";
               "cursor-click-to-move" = true;
               "mouse-hide-while-typing" = true;
-              foreground = terminalTheme.foreground;
-              background = terminalTheme.background;
+              inherit (terminalTheme) foreground;
+              inherit (terminalTheme) background;
               "cursor-color" = terminalTheme.cursorColor;
               "selection-background" = terminalTheme.selectionBackground;
               "background-opacity" = 0.9;
