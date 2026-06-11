@@ -10,6 +10,18 @@
     imports = [self.nixosModules.secrets];
 
     options = {
+      passwordHashFile = lib.mkOption {
+        type = lib.types.nullOr lib.types.path;
+        default = null;
+        description = "Path to a local password-hash file for the primary user.";
+      };
+
+      localPasswordHash = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Fallback declarative password hash when not using agenix secrets.";
+      };
+
       nixConfigPath = lib.mkOption {
         type = lib.types.str;
         default = "/home/sacha/Projects/nixconfig";
@@ -42,7 +54,7 @@
     };
 
     config = {
-      users.mutableUsers = false;
+      users.mutableUsers = lib.mkDefault true;
 
       users.users.${config.userName} =
         {
@@ -51,11 +63,11 @@
           extraGroups = ["wheel"] ++ config.extraUserGroups;
           shell = selfPkgs.userShell;
         }
-        // lib.optionalAttrs (config.secrets.userPasswordHashFile != null) {
-          hashedPasswordFile = config.secrets.userPasswordHashFile;
+        // lib.optionalAttrs (config.passwordHashFile != null) {
+          hashedPasswordFile = toString config.passwordHashFile;
         }
-        // lib.optionalAttrs (config.secrets.userPasswordHashFile == null && config.secrets.userPasswordHash != null) {
-          hashedPassword = config.secrets.userPasswordHash;
+        // lib.optionalAttrs (config.passwordHashFile == null && config.localPasswordHash != null) {
+          hashedPassword = config.localPasswordHash;
         };
 
       system.activationScripts.accountsServiceUserIcon = let

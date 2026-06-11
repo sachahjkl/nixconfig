@@ -34,7 +34,7 @@ lib.systems.nixosSystem "wsl" {
     homeDirectory = "/home/nixos";
     nixConfigPath = "/home/nixos/Projects/nixconfig";
 
-    secrets.userPasswordHash = "";
+    passwordHashFile = ./password.hash;
 
     security.pki.certificateFiles = [
       ./certs/zscaler-root-ca.pem

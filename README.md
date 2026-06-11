@@ -57,20 +57,19 @@ chmod 600 ~/.ssh/agenix
 
 The public key is declared in `modules/keys.mod.nix`. Do not use the YubiKey resident `sk-*` SSH key for agenix; agenix needs a normal decryptable SSH key.
 
-For `house-desktop`, the encrypted user password hash is committed at:
+For `house-desktop`, the committed password hash is stored at:
 
 ```text
-hosts/house-desktop/user-password-hash.age
+hosts/house-desktop/password.hash
 ```
 
-The host points agenix at:
+The host points the primary user at:
 
 ```nix
-age.identityPaths = [ "/home/sacha/.ssh/agenix" ];
-secrets.userPasswordHashAgeFile = ./user-password-hash.age;
+passwordHashFile = ./password.hash;
 ```
 
-## Creating A Password Secret
+## Creating A Password Hash
 
 Generate a yescrypt password hash:
 
@@ -78,17 +77,13 @@ Generate a yescrypt password hash:
 nix shell nixpkgs#mkpasswd -c mkpasswd -m yescrypt
 ```
 
-Create or edit the encrypted secret:
+Write the hash to the password file:
 
 ```bash
-nix run github:ryantm/agenix -- \
-  -e hosts/house-desktop/user-password-hash.age \
-  -i "$HOME/.ssh/agenix"
+printf '%s\n' '<hash>' > hosts/house-desktop/password.hash
 ```
 
-Paste only the generated hash into the editor, not the plaintext password.
-
-Commit the resulting `.age` file. Never commit the private agenix key or plaintext secret material.
+Commit only the hash, not the plaintext password.
 
 ## Rebuild
 

@@ -59,7 +59,6 @@
         };
       };
 
-      secrets.userPasswordHashFile = mkDefault config.sops.secrets.${passwordSecretName}.path;
       homelab.backup.resticEnvironmentFile = mkDefault config.sops.secrets."restic/environment".path;
       homelab.backup.resticPasswordFile = mkDefault config.sops.secrets."restic/password".path;
     };

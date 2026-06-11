@@ -20,8 +20,7 @@ lib.systems.nixosSystem "house-desktop" {
 
     preferences.kitty.useThemeColors = false;
 
-    age.identityPaths = ["${config.homeDirectory}/.ssh/agenix"];
-    secrets.userPasswordHashAgeFile = ./user-password-hash.age;
+    passwordHashFile = ./password.hash;
 
     services.xserver.videoDrivers = ["nvidia"];
 

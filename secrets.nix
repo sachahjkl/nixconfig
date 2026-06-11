@@ -65,14 +65,6 @@ let
     )
     (attrNames (readDir ./hosts));
 
-  hostPasswordSecrets =
-    map
-    (host: {
-      name = "hosts/${host}/user-password-hash.age";
-      value.publicKeys = uniq (optional (keys ? ${host}) keys.${host} ++ keys-admin);
-    })
-    (attrNames (readDir ./hosts));
-
   moduleSecrets =
     map
     (path: {
@@ -81,4 +73,4 @@ let
     })
     (filter isAge (listFilesRecursive "modules" ./modules));
 in
-  listToAttrs (hostPasswordSecrets ++ hostSecrets ++ moduleSecrets)
+  listToAttrs (hostSecrets ++ moduleSecrets)
