@@ -29,6 +29,11 @@ lib.systems.nixosSystem "wsl" {
 
     secrets.userPasswordHash = "";
 
+    security.pki.certificateFiles = [
+	./certs/zscaler-root-ca.pem
+	./certs/ca-ogfprod-root.pem
+    ];
+
     system.stateVersion = "26.05";
 
     preferences.preservation.enable = lib.mkForce false;
