@@ -16,6 +16,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.hjem
       self.nixosModules.neovim
       self.nixosModules.nix
+      self.nixosModules.nixCommon
       self.nixosModules.opencode
       self.nixosModules.packages
       self.nixosModules.preservation
