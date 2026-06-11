@@ -42,6 +42,8 @@
     };
 
     config = {
+      users.mutableUsers = false;
+
       users.users.${config.userName} =
         {
           isNormalUser = true;
