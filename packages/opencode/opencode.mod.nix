@@ -81,19 +81,72 @@
     };
   };
 
-  perSystem = {pkgs, ...}: {
-    packages.opencode-unwrapped = let
-      packageJson = builtins.fromJSON (builtins.readFile (inputs.opencode-src + /packages/opencode/package.json));
-    in
-      pkgs.opencode.overrideAttrs (_: previousAttrs: {
-        inherit (packageJson) version;
-        src = inputs.opencode-src;
-        node_modules = previousAttrs.node_modules.overrideAttrs {
-          inherit (packageJson) version;
-          src = inputs.opencode-src;
-          outputHash = "sha256-m0uTWu/JrzeUJXkaIlYf8TgrwMmMKwRsELHe5NAKPDY=";
+  perSystem = {pkgs, ...}: let
+    version = "1.17.3";
+    release =
+      {
+        x86_64-linux = {
+          asset = "opencode-linux-x64.tar.gz";
+          hash = "sha256-1L0jiiwf9WrKHNM5fSGgoxf1mSI0UXp/jir7vXIBCn0=";
         };
-      });
+        aarch64-linux = {
+          asset = "opencode-linux-arm64.tar.gz";
+          hash = "sha256-hhuMZs7VHW2aZup3POR+3mY6RL0X2De5whrPo0aIAeU=";
+        };
+      }
+      .${
+        pkgs.stdenv.hostPlatform.system
+      }
+      or (throw "Unsupported opencode platform: ${pkgs.stdenv.hostPlatform.system}");
+  in {
+    packages.opencode-unwrapped = pkgs.stdenvNoCC.mkDerivation {
+      pname = "opencode";
+      inherit version;
+
+      src = pkgs.fetchurl {
+        url = "https://github.com/anomalyco/opencode/releases/download/v${version}/${release.asset}";
+        inherit (release) hash;
+      };
+
+      nativeBuildInputs = [
+        pkgs.makeBinaryWrapper
+        pkgs.patchelf
+      ];
+
+      unpackPhase = ''
+        runHook preUnpack
+        tar -xzf "$src"
+        runHook postUnpack
+      '';
+
+      installPhase = ''
+        runHook preInstall
+
+        install -Dm755 opencode $out/bin/opencode
+        patchelf \
+          --set-interpreter "${pkgs.stdenv.cc.bintools.dynamicLinker}" \
+          --set-rpath "${lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib]}" \
+          $out/bin/opencode
+
+        wrapProgram $out/bin/opencode \
+          --prefix PATH : ${lib.makeBinPath [pkgs.ripgrep]}
+
+        runHook postInstall
+      '';
+
+      doInstallCheck = true;
+      nativeInstallCheckInputs = [pkgs.versionCheckHook];
+      versionCheckProgramArg = "--version";
+
+      meta = {
+        description = "AI coding agent built for the terminal";
+        homepage = "https://github.com/anomalyco/opencode";
+        license = lib.licenses.mit;
+        mainProgram = "opencode";
+        platforms = ["x86_64-linux" "aarch64-linux"];
+        sourceProvenance = with lib.sourceTypes; [binaryNativeCode];
+      };
+    };
 
     packages.opencode =
       (self.wrappersModules.opencode.apply {
