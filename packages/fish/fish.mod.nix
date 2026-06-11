@@ -12,17 +12,16 @@
 
     programs.fish = {
       enable = true;
+      shellAliases = {
+        ls = "eza";
+        vim = "nvim";
+      };
     };
 
     hjem.users.${config.userName}.rum.programs = {
       fish = {
         enable = true;
         package = null;
-        aliases = {
-          vim = "nvim";
-          ls = "eza";
-        };
-
         config = ''
           set fish_greeting
           fish_vi_key_bindings

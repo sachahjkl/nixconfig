@@ -39,9 +39,9 @@ _: {
             IdentitiesOnly yes
             IdentityFile ${config.preferences.ssh.identityKey}
         '';
-
-        rum.programs.fish.aliases.mosh = "mosh --no-init";
       };
+
+      programs.fish.shellAliases.mosh = "mosh --no-init";
     };
   };
 }
