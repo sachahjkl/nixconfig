@@ -113,27 +113,81 @@
       };
 
       environment.systemPackages = with pkgs; [
+        # Shell
         selfPkgs.userShell
+
         # Keep the wrapped git package: aliases and merge tooling depend on
         # extra runtime binaries beyond plain git.
         gitPkg
+
+        # Security
         age
+
+        # Core utilities
         bc
+        coreutils
+        file
+        findutils
+        gnutar
+        gzip
+        gnugrep
+        gnused
+        less
+        moreutils
+        rename
+        tree
+        unzip
+        which
+        xz
+        zstd
+        zip
+
+        # Shell and editor helpers
         btop
         carapace
-        curl
         difftastic
         eza
         fd
-        git-lfs
-        gitui
         jq
         ripgrep
-        tree
-        unzip
         ufetch
-        wget
         zellij
+
+        # Networking and remote access
+        curl
+        dnsutils
+        inetutils
+        iproute2
+        iputils
+        mtr
+        netcat-openbsd
+        openssh
+        rsync
+        traceroute
+        wget
+        whois
+
+        # System administration and inspection
+        cronie
+        git-lfs
+        gitui
+        glibc
+        lsb-release
+        lsof
+        pciutils
+        plocate
+        procps
+        psmisc
+        pstree
+        pv
+        usbutils
+
+        # Documentation and diagnostics
+        man-db
+        man-pages
+        nmap
+
+        # Language tooling
         python3
         uv
       ];
