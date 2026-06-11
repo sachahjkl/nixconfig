@@ -53,6 +53,8 @@
       config = {
         package = lib.mkDefault config.pkgs.opencode;
         env.OPENCODE_CONFIG = toString configFile;
+        # https://opencode.ai/docs/tools/#websearch
+        env.OPENCODE_ENABLE_EXA = "1";
       };
     }
   );

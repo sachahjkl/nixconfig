@@ -89,7 +89,6 @@
     };
 
     mt7927.url = "github:cmspam/mt7927-nixos";
-    hyprnix.url = "github:hyprwm/hyprnix";
   };
 
   outputs =

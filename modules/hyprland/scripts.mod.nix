@@ -12,7 +12,7 @@
 
         hypr-screenshot = pkgs.writeShellApplication {
           name = "hypr-screenshot";
-          runtimeInputs = with pkgs; [ coreutils hyprshot satty uwsm wl-clipboard ];
+          runtimeInputs = with pkgs; [ coreutils hyprshot satty util-linux wl-clipboard ];
           text = ''
             set -eu
 
@@ -35,7 +35,7 @@
 
             hyprshot -m "$mode" -o "$screenshot_dir" -f "$timestamp.png"
 
-            exec uwsm app -- satty \
+            setsid -f satty \
               --filename "$output_file" \
               --output-filename "$output_file" \
               --copy-command wl-copy \
@@ -46,6 +46,7 @@
               --fullscreen current-screen
           '';
         };
+
       in
       [
         rofi-power-menu

@@ -8,7 +8,7 @@
         laptopMode = {
           enable = false;
           lockTimeoutSeconds = 300;
-          displayOffTimeoutSeconds = 330;
+          displayOffTimeoutSeconds = 120;
           suspendTimeoutSeconds = 1800;
         };
       } config;
@@ -19,7 +19,7 @@
       laptopCfg = lib.attrByPath [ "preferences" "hyprland" "laptopMode" ] {
         enable = false;
         lockTimeoutSeconds = 300;
-        displayOffTimeoutSeconds = 330;
+        displayOffTimeoutSeconds = 120;
         suspendTimeoutSeconds = 1800;
       } config;
       lockCmd = "pidof hyprlock || ${lib.getExe pkgs.hyprlock}";
@@ -139,6 +139,11 @@
                   {
                     timeout = 300;
                     on-timeout = lockCmd;
+                  }
+                  {
+                    timeout = 120;
+                    on-timeout = "hyprctl dispatch dpms off";
+                    on-resume = "hyprctl dispatch dpms on";
                   }
                 ];
           };

@@ -1,9 +1,5 @@
-{ inputs, self, lib, ... }:
+{ self, lib, ... }:
 lib.systems.nixosSystem "house-laptop" {
-  extraSpecialArgs = {
-    pkgs-hyprnix = inputs.hyprnix.packages.x86_64-linux;
-  };
-
   module = { config, lib, ... }: {
     imports = [
       self.diskoConfigurations.house-laptop
@@ -17,7 +13,6 @@ lib.systems.nixosSystem "house-laptop" {
     features.ghostty.enable = true;
 
     preferences.kitty.useThemeColors = false;
-    preferences.theme.iconTheme = "breeze-dark";
     preferences.hyprland = {
       numLock.defaultState = false;
       laptopMode.enable = true;

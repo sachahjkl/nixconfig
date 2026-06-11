@@ -1,19 +1,29 @@
 { ... }:
 
 {
-  flake.nixosModules.hyprlandCore = { lib, pkgs-hyprnix, ... }:
+  flake.nixosModules.hyprlandCore =
+    { lib, pkgs, ... }:
     let
       hyprSessionTarget = "wayland-session@hyprland.desktop.target";
     in
     {
       services.displayManager.ly.enable = true;
-      services.displayManager.ly.settings.session_log = null;
+      services.displayManager.ly.settings = {
+        session_log = null;
+        animate = true;
+        animation = "colormix";
+        clock = "%c";
+        bigclock = true;
+      };
+
+      services.displayManager.ly.settings.save = true;
+      services.displayManager.defaultSession = "hyprland-uwsm";
 
       programs.hyprland = {
         enable = true;
         withUWSM = true;
-        package = pkgs-hyprnix.hyprland;
-        portalPackage = pkgs-hyprnix.xdg-desktop-portal-hyprland;
+        package = pkgs.hyprland;
+        portalPackage = pkgs.xdg-desktop-portal-hyprland;
         systemd.setPath.enable = true;
       };
 
@@ -24,7 +34,7 @@
         after = [ hyprSessionTarget ];
         serviceConfig = {
           Type = "simple";
-          ExecStart = "${pkgs-hyprnix.hyprpolkitagent}/libexec/hyprpolkitagent";
+          ExecStart = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
           Restart = "on-failure";
           RestartSec = 1;
         };

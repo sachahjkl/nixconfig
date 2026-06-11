@@ -20,7 +20,7 @@
         enable = true;
         settings = {
           load_direnv = "shell_hook";
-          vim_mode = true;
+          vim_mode = false;
           ui_font_family = config.preferences.theme.fonts.sans;
           buffer_font_family = config.preferences.theme.fonts.mono;
           buffer_font_size = 14;

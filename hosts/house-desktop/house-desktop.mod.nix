@@ -1,9 +1,5 @@
-{ inputs, self, lib, ... }:
+{ self, lib, ... }:
 lib.systems.nixosSystem "house-desktop" {
-  extraSpecialArgs = {
-    pkgs-hyprnix = inputs.hyprnix.packages.x86_64-linux;
-  };
-
   module = { config, ... }: {
     imports = [
       self.diskoConfigurations.house-desktop
@@ -20,7 +16,7 @@ lib.systems.nixosSystem "house-desktop" {
 
     preferences.kitty.useThemeColors = false;
 
-    age.identityPaths = [ "/home/sacha/.ssh/agenix" ];
+    age.identityPaths = [ "${config.homeDirectory}/.ssh/agenix" ];
     secrets.userPasswordHashAgeFile = ./user-password-hash.age;
 
     services.xserver.videoDrivers = [ "nvidia" ];

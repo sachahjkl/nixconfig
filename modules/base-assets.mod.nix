@@ -30,15 +30,13 @@
 
       gtkTheme = lib.mkOption {
         type = lib.types.str;
-        default = "Windows-10";
+        default = "Windows-10-Dark";
         description = "Shared GTK theme name.";
       };
 
       iconTheme = lib.mkOption {
         type = lib.types.str;
-        # default = "Papirus-Dark";
-        # default = "Adwaita";
-        default = "Windows 10";
+        default = "Papirus-Dark";
         description = "Shared icon theme name.";
       };
 
@@ -50,7 +48,7 @@
 
       kvantumTheme = lib.mkOption {
         type = lib.types.str;
-        default = "Windows-10";
+        default = "Windows-10-Dark";
         description = "Shared Kvantum theme name.";
       };
 

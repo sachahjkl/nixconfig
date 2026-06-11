@@ -25,7 +25,7 @@
 
           displayOffTimeoutSeconds = lib.mkOption {
             type = lib.types.int;
-            default = 330;
+            default = 120;
             description = "Seconds before Hyprland turns displays off when laptop mode is enabled.";
           };
 
@@ -297,6 +297,17 @@
 
               hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
               hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
+
+              local MAX_ZOOM = 3
+              local MIN_ZOOM = 1
+              local function zoom(offset)
+                  local current = hl.get_config("cursor.zoom_factor")
+                  current = current + offset
+                  current = math.max(MIN_ZOOM, math.min(MAX_ZOOM, current))
+                  hl.config({ cursor = { zoom_factor = current } })
+              end
+              hl.bind(mainMod .. " + SHIFT + mouse_up",   function() zoom(0.5) end)
+              hl.bind(mainMod .. " + SHIFT + mouse_down", function() zoom(-0.5) end)
 
               hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
               hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
