@@ -99,27 +99,27 @@
 
         specialArgs.lib = inputs.nixpkgs.lib.extend (
           final: prev:
-          inputs.nixpkgs.lib.recursiveUpdate prev (
-            import ./lib {
-              lib = final;
-              inherit inputs;
-              inherit (inputs) self;
-            }
-          )
+            inputs.nixpkgs.lib.recursiveUpdate prev (
+              import ./lib {
+                lib = final;
+                inherit inputs;
+                inherit (inputs) self;
+              }
+            )
         );
       }
       ({ lib, ... }:
-        let
-          inherit (lib.filesystem) listFilesRecursive;
-          inherit (lib.lists) filter;
-          inherit (lib.strings) hasSuffix;
-        in
-        {
-          systems = [ "x86_64-linux" ];
+      let
+        inherit (lib.filesystem) listFilesRecursive;
+        inherit (lib.lists) filter;
+        inherit (lib.strings) hasSuffix;
+      in
+      {
+        systems = [ "x86_64-linux" ];
 
-          imports = [
-            inputs.wrapper-modules.flakeModules.wrappers
-            inputs.disko.flakeModules.default
-          ] ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);
-        });
+        imports = [
+          inputs.wrapper-modules.flakeModules.wrappers
+          inputs.disko.flakeModules.default
+        ] ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);
+      });
 }

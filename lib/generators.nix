@@ -9,22 +9,26 @@ in
   # true -> --flag, string/int -> --flag 'value'
   toCliFlagList =
     attrs:
-    concatLines (mapAttrsToList (
-      name: value: if value == true then "--${name}" else "--${name} '${toString value}'"
-    ) attrs);
+    concatLines (mapAttrsToList
+      (
+        name: value: if value == true then "--${name}" else "--${name} '${toString value}'"
+      )
+      attrs);
 
   # CLI flag config format used by ripgrep.
   # true -> --flag, string/int -> --flag<newline>value
   toCliArgumentList =
     attrs:
-    concatLines (flatten (mapAttrsToList (
-      name: value:
-      if value == true then
-        singleton "--${name}"
-      else
-        [
-          "--${name}"
-          (toString value)
-        ]
-    ) attrs));
+    concatLines (flatten (mapAttrsToList
+      (
+        name: value:
+        if value == true then
+          singleton "--${name}"
+        else
+          [
+            "--${name}"
+            (toString value)
+          ]
+      )
+      attrs));
 }

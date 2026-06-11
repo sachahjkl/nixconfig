@@ -3,12 +3,14 @@
 {
   flake.nixosModules.hyprlandWaybar = { config, lib, pkgs, ... }:
     let
-      hyprCfg = lib.attrByPath [ "preferences" "hyprland" ] {
-        waybar.temperature = {
-          hwmonPath = "/sys/devices/platform/coretemp.0/hwmon";
-          inputFilename = "temp2_input";
-        };
-      } config;
+      hyprCfg = lib.attrByPath [ "preferences" "hyprland" ]
+        {
+          waybar.temperature = {
+            hwmonPath = "/sys/devices/platform/coretemp.0/hwmon";
+            inputFilename = "temp2_input";
+          };
+        }
+        config;
       powerChoices = "logout/suspend/hibernate/shutdown/reboot";
       u = cp: builtins.fromJSON ("\"\\u" + cp + "\"");
       userName = config.userName;

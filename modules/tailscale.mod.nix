@@ -41,16 +41,14 @@
         })
 
         {
-          environment.systemPackages = [ pkgs.trayscale ];
-
-          systemd.user.services.trayscale = {
+          systemd.user.services.tailscale-systray = {
             description = "Tailscale tray icon";
             wantedBy = [ "graphical-session.target" ];
             partOf = [ "graphical-session.target" ];
             after = [ "graphical-session.target" ];
             serviceConfig = {
               Type = "simple";
-              ExecStart = getExe pkgs.trayscale;
+              ExecStart = "${getExe pkgs.tailscale} systray";
               Restart = "on-failure";
               RestartSec = 5;
             };

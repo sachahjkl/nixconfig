@@ -19,7 +19,6 @@
         grim
         hyprpaper
         hypridle
-        hyprshot
         hyprpicker
         libsForQt5.qt5ct
         networkmanagerapplet

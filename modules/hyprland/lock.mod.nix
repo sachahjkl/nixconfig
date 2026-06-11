@@ -3,25 +3,29 @@
 {
   flake.nixosModules.hyprlandLock = { config, lib, pkgs, ... }:
     let
-      hyprCfg = lib.attrByPath [ "preferences" "hyprland" ] {
-        display.scale = 1.875;
-        laptopMode = {
-          enable = false;
-          lockTimeoutSeconds = 300;
-          displayOffTimeoutSeconds = 120;
-          suspendTimeoutSeconds = 1800;
-        };
-      } config;
+      hyprCfg = lib.attrByPath [ "preferences" "hyprland" ]
+        {
+          display.scale = 1.875;
+          laptopMode = {
+            enable = false;
+            lockTimeoutSeconds = 300;
+            displayOffTimeoutSeconds = 120;
+            suspendTimeoutSeconds = 1800;
+          };
+        }
+        config;
       scaleValue = hyprCfg.display.scale;
       desktopReferenceScale = 1.875;
       lockUiScale = scaleValue / desktopReferenceScale;
       scalePx = value: builtins.floor ((value * lockUiScale) + 0.5);
-      laptopCfg = lib.attrByPath [ "preferences" "hyprland" "laptopMode" ] {
-        enable = false;
-        lockTimeoutSeconds = 300;
-        displayOffTimeoutSeconds = 120;
-        suspendTimeoutSeconds = 1800;
-      } config;
+      laptopCfg = lib.attrByPath [ "preferences" "hyprland" "laptopMode" ]
+        {
+          enable = false;
+          lockTimeoutSeconds = 300;
+          displayOffTimeoutSeconds = 120;
+          suspendTimeoutSeconds = 1800;
+        }
+        config;
       lockCmd = "pidof hyprlock || ${lib.getExe pkgs.hyprlock}";
       userName = config.userName;
     in

@@ -1,7 +1,7 @@
-{ config, ... }:
-
-{
-  flake.nixosModules.homelabShares = { config, ... }:
+{ ... }:
+ 
+ {
+   flake.nixosModules.homelabShares = { config, ... }:
     let
       dataRoot = config.homelab.dataRoot;
       lanInterface = config.homelab.lanInterface;

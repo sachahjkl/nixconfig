@@ -77,7 +77,7 @@
       let
         packageJson = builtins.fromJSON (builtins.readFile (inputs.opencode-src + /packages/opencode/package.json));
       in
-      pkgs.opencode.overrideAttrs (finalAttrs: previousAttrs: {
+      pkgs.opencode.overrideAttrs (_: previousAttrs: {
         version = packageJson.version;
         src = inputs.opencode-src;
         node_modules = previousAttrs.node_modules.overrideAttrs {
@@ -90,8 +90,7 @@
     packages.opencode = (self.wrappersModules.opencode.apply {
       inherit pkgs;
       package = self.packages.${pkgs.stdenv.hostPlatform.system}.opencode-unwrapped;
-      settings = {
-      };
+      settings = { };
     }).wrapper;
   };
 }

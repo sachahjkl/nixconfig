@@ -14,6 +14,9 @@
         animation = "colormix";
         clock = "%c";
         bigclock = true;
+        colormix_col1 = "0x00000000";
+        colormix_col2 = "0x00FF0100";
+        colormix_col3 = "0x00FFAA00";
       };
 
       services.displayManager.ly.settings.save = true;

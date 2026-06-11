@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  flake.nixosModules.xdgStubs = { config, lib, ... }: {
+  flake.nixosModules.xdgStubs = { config, ... }: {
     hjem.users.${config.userName} = {
       xdg.config.files = {
         "aws".type = "directory";
@@ -35,11 +35,11 @@
         GOPATH = "${config.homeDirectory}/.local/share/go";
         GRADLE_USER_HOME = "${config.homeDirectory}/.local/share/gradle";
         RIPGREP_CONFIG_PATH = "${config.homeDirectory}/.config/ripgrep/config";
-          LESSHISTFILE = "${config.homeDirectory}/.local/state/less/history";
-          HISTFILE = "${config.homeDirectory}/.local/state/shell/history";
-          NODE_REPL_HISTORY = "${config.homeDirectory}/.local/state/node/history";
-          PYTHON_HISTORY = "${config.homeDirectory}/.local/state/python/history";
-          SQLITE_HISTORY = "${config.homeDirectory}/.local/state/sqlite/history";
+        LESSHISTFILE = "${config.homeDirectory}/.local/state/less/history";
+        HISTFILE = "${config.homeDirectory}/.local/state/shell/history";
+        NODE_REPL_HISTORY = "${config.homeDirectory}/.local/state/node/history";
+        PYTHON_HISTORY = "${config.homeDirectory}/.local/state/python/history";
+        SQLITE_HISTORY = "${config.homeDirectory}/.local/state/sqlite/history";
       };
 
       files.".ssh/config".text = ''
@@ -47,15 +47,15 @@
       '';
     };
 
-      preferences.preservation.user.directories = [
+    preferences.preservation.user.directories = [
       ".config/aws"
       ".config/claude-code"
       ".config/codex"
       ".local/share/android"
       ".local/share/cargo"
-        ".local/share/go"
-        ".local/share/gradle"
-        ".local/state/shell"
-      ];
+      ".local/share/go"
+      ".local/share/gradle"
+      ".local/state/shell"
+    ];
   };
 }

@@ -7,7 +7,7 @@
     ];
 
     nixpkgs.overlays = [
-      (final: prev: {
+      (_: prev: {
         inherit (prev.lixPackageSets.stable)
           colmena
           nix-eval-jobs

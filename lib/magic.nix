@@ -22,7 +22,8 @@ in
           "6"
           "a"
           "e"
-        ] (mod (fromHexString (substring 1 1 hash)) 4));
+        ]
+          (mod (fromHexString (substring 1 1 hash)) 4));
 
       tail = map (i: substring (i * 2) 2 hash) (range 1 5);
     in

@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ ... }:
 
 {
   flake.nixosModules.brave = { config, lib, pkgs, ... }: {

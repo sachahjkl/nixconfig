@@ -1,4 +1,4 @@
-{ config, inputs, self, ... }:
+{ inputs, self, ... }:
 
 {
   perSystem = { pkgs, ... }: {

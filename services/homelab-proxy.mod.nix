@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ ... }:
 
 {
   flake.nixosModules.homelabProxy = { config, lib, pkgs, ... }:
@@ -22,14 +22,16 @@
 
       hostEntries = mapAttrsToList (domain: hostCfg: hostCfg // { inherit domain; }) cfg.hosts;
       dockerHosts = builtins.filter (hostCfg: hostCfg.dockerContainer != null) hostEntries;
-      dockerSpec = builtins.listToAttrs (map (hostCfg: {
-        name = hostCfg.domain;
-        value = {
-          container = hostCfg.dockerContainer;
-          port = hostCfg.dockerPort;
-          upstreamName = "docker_${sanitize hostCfg.domain}";
-        };
-      }) dockerHosts);
+      dockerSpec = builtins.listToAttrs (map
+        (hostCfg: {
+          name = hostCfg.domain;
+          value = {
+            container = hostCfg.dockerContainer;
+            port = hostCfg.dockerPort;
+            upstreamName = "docker_${sanitize hostCfg.domain}";
+          };
+        })
+        dockerHosts);
       dockerSpecFile = pkgs.writeText "homelab-proxy-docker-hosts.json" (builtins.toJSON dockerSpec);
 
       renderHost = domain: hostCfg:
@@ -136,12 +138,14 @@
 
       config = mkIf cfg.enable (mkMerge [
         {
-          assertions = map (hostCfg: {
-            assertion =
-              (hostCfg.dockerContainer != null && hostCfg.dockerPort != null && hostCfg.upstreamHost == null && hostCfg.upstreamPort == null)
-              || (hostCfg.dockerContainer == null && hostCfg.dockerPort == null && hostCfg.upstreamHost != null && hostCfg.upstreamPort != null);
-            message = "Each homelab.proxy.hosts entry must define either upstreamHost+upstreamPort or dockerContainer+dockerPort.";
-          }) hostEntries;
+          assertions = map
+            (hostCfg: {
+              assertion =
+                (hostCfg.dockerContainer != null && hostCfg.dockerPort != null && hostCfg.upstreamHost == null && hostCfg.upstreamPort == null)
+                || (hostCfg.dockerContainer == null && hostCfg.dockerPort == null && hostCfg.upstreamHost != null && hostCfg.upstreamPort != null);
+              message = "Each homelab.proxy.hosts entry must define either upstreamHost+upstreamPort or dockerContainer+dockerPort.";
+            })
+            hostEntries;
 
           security.acme = {
             acceptTerms = true;

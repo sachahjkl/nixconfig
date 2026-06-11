@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  flake.nixosModules.sublime = { pkgs, ... }: {
+  flake.nixosModules.sublime = { ... }: {
     #environment.systemPackages = [ pkgs.sublime4 ];
 
     #nixpkgs.config.permittedInsecurePackages = [

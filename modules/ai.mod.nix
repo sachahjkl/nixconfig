@@ -76,7 +76,7 @@
           clamshell_microphone = null;
           clipboard_handling = "dont_modify";
           custom_filler_words = null;
-          custom_words = [];
+          custom_words = [ ];
           debug_mode = false;
           experimental_enabled = true;
           external_script_path = null;
@@ -210,23 +210,23 @@
         paths = [ handyAppImage handyDesktop handyIcon handyPaste ];
         nativeBuildInputs = [ pkgs.makeWrapper ];
         postBuild = ''
-          mv "$out/bin/handy" "$out/bin/.handy-real"
-          cat > "$out/bin/handy" <<'WRAPPER_EOF'
-#!/bin/sh
-set -eu
+                    mv "$out/bin/handy" "$out/bin/.handy-real"
+                    cat > "$out/bin/handy" <<'WRAPPER_EOF'
+          #!/bin/sh
+          set -eu
 
-app_data_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/com.pais.handy"
-settings_store="''${app_data_dir}/settings_store.json"
+          app_data_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/com.pais.handy"
+          settings_store="''${app_data_dir}/settings_store.json"
 
-mkdir -p "$app_data_dir"
-if [ ! -e "$settings_store" ]; then
-  cp ${handySettings} "$settings_store"
-  chmod +w "$settings_store"
-fi
+          mkdir -p "$app_data_dir"
+          if [ ! -e "$settings_store" ]; then
+            cp ${handySettings} "$settings_store"
+            chmod +w "$settings_store"
+          fi
 
-exec "$(dirname "$0")/.handy-real" "$@"
-WRAPPER_EOF
-          chmod +x "$out/bin/handy"
+          exec "$(dirname "$0")/.handy-real" "$@"
+          WRAPPER_EOF
+                    chmod +x "$out/bin/handy"
         '';
       };
     in

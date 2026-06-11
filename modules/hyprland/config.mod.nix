@@ -6,7 +6,6 @@
       hyprCfg = config.preferences.hyprland;
       powerChoices = "lockscreen/logout/suspend/hibernate/shutdown/reboot";
       userName = config.userName;
-      selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
       rofiPkg = self.lib.mkRofi {
         inherit pkgs;
         theme = config.preferences.theme.rofiTheme;
@@ -115,6 +114,8 @@
               local fileManager = "uwsm app -- thunar"
               local menu = "uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command \"uwsm app -- {cmd}\""
               local mainMod = "SUPER"
+
+              local satty_args = "--copy-command wl-copy -o \"$HOME/Pictures/Screenshots/%Y%m%d_%H%M%S.png\" --actions-on-enter save-to-clipboard,save-to-file,exit --actions-on-right-click save-to-clipboard,save-to-file,exit --floating-hack --no-window-decoration --fullscreen current-screen"
 
               hl.monitor({
                   output   = ${builtins.toJSON hyprCfg.display.output},
@@ -241,9 +242,9 @@
               hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.close())
               hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen())
               hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("pidof hyprlock || ${lib.getExe pkgs.hyprlock}"))
-              hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("hypr-screenshot window"))
-              hl.bind("PRINT", hl.dsp.exec_cmd("hypr-screenshot output"))
-              hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("hypr-screenshot region"))
+              hl.bind("PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -o)\" - | satty -f - " .. satty_args))
+              hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
+              hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
               hl.bind("SUPER + V", hl.dsp.exec_cmd("copyq menu"))
               hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe rofiPkg} -show power-menu -modi \"power-menu:rofi-power-menu --choices=${powerChoices}\""))
               hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
@@ -298,7 +299,7 @@
               hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
               hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 
-              local MAX_ZOOM = 3
+              local MAX_ZOOM = 4
               local MIN_ZOOM = 1
               local function zoom(offset)
                   local current = hl.get_config("cursor.zoom_factor")
@@ -306,8 +307,8 @@
                   current = math.max(MIN_ZOOM, math.min(MAX_ZOOM, current))
                   hl.config({ cursor = { zoom_factor = current } })
               end
-              hl.bind(mainMod .. " + SHIFT + mouse_up",   function() zoom(0.5) end)
-              hl.bind(mainMod .. " + SHIFT + mouse_down", function() zoom(-0.5) end)
+              hl.bind(mainMod .. " + SHIFT + mouse_up",   function() zoom(-0.5) end)
+              hl.bind(mainMod .. " + SHIFT + mouse_down", function() zoom(0.5) end)
 
               hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
               hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })

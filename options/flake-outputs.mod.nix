@@ -1,8 +1,7 @@
-{
-  inputs,
-  lib,
-  moduleLocation,
-  ...
+{ inputs
+, lib
+, moduleLocation
+, ...
 }:
 let
   inherit (lib.attrsets) mapAttrs optionalAttrs;

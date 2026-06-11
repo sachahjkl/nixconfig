@@ -5,13 +5,14 @@
     let
       inherit (lib) mkDefault mkEnableOption mkIf mkOption types;
       cfg = config.homelab.services.sachaHouse;
-      package = pkgs.runCommand "sacha-house-${cfg.releaseVersion}" {
-        src = pkgs.fetchurl {
-          url = cfg.releaseBinaryUrl;
-          hash = cfg.releaseBinaryHash;
-          name = "sacha.house-linux-amd64";
-        };
-      } ''
+      package = pkgs.runCommand "sacha-house-${cfg.releaseVersion}"
+        {
+          src = pkgs.fetchurl {
+            url = cfg.releaseBinaryUrl;
+            hash = cfg.releaseBinaryHash;
+            name = "sacha.house-linux-amd64";
+          };
+        } ''
         mkdir -p "$out/bin"
         cp "$src" "$out/bin/sacha.house"
         chmod +x "$out/bin/sacha.house"

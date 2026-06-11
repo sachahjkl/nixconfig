@@ -1,6 +1,6 @@
 { self, lib, ... }:
 lib.systems.nixosSystem "house-laptop" {
-  module = { config, lib, ... }: {
+  module = { config, ... }: {
     imports = [
       self.diskoConfigurations.house-laptop
       self.nixosModules.workstation

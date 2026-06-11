@@ -2,11 +2,11 @@
 {
   nixosSystem =
     hostName:
-    {
-      module,
-      system ? "x86_64-linux",
-      extraModules ? [ ],
-      extraSpecialArgs ? { },
+    { module
+    , system ? "x86_64-linux"
+    , extraModules ? [ ]
+    , extraSpecialArgs ? { }
+    ,
     }:
     {
       flake.nixosConfigurations.${hostName} = lib.nixosSystem {
