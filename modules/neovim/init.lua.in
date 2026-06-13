@@ -1,0 +1,429 @@
+vim.loader.enable()
+
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
+vim.filetype.add({
+  extension = {
+    razor = 'razor',
+    cshtml = 'razor',
+  },
+})
+
+vim.o.background = 'dark'
+vim.o.clipboard = 'unnamedplus'
+vim.o.cursorline = true
+vim.o.expandtab = true
+vim.o.ignorecase = true
+vim.o.mouse = 'a'
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.shiftwidth = 2
+vim.o.signcolumn = 'yes'
+vim.o.smartcase = true
+vim.o.smartindent = true
+vim.o.splitbelow = true
+vim.o.splitright = true
+vim.o.tabstop = 2
+vim.o.termguicolors = true
+vim.o.undofile = true
+vim.o.updatetime = 200
+vim.o.wrap = false
+
+if vim.g.neovide then
+  vim.g.neovide_cursor_animation_length = 0.08
+  vim.g.neovide_cursor_trail_size = 0.4
+  vim.g.neovide_hide_mouse_when_typing = true
+  vim.g.neovide_refresh_rate = 144
+  vim.g.neovide_scale_factor = 1.0
+
+  vim.keymap.set('n', '<C-=>', function()
+    vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * 1.1
+  end, { desc = 'Neovide zoom in' })
+
+  vim.keymap.set('n', '<C-->', function()
+    vim.g.neovide_scale_factor = vim.g.neovide_scale_factor / 1.1
+  end, { desc = 'Neovide zoom out' })
+end
+
+local lazypath = '@lazy_nvim@'
+vim.opt.rtp:prepend(lazypath)
+
+require('lazy').setup({
+  spec = {
+    {
+      dir = '@gruvbox_nvim@',
+      name = 'gruvbox.nvim',
+      lazy = false,
+      priority = 1000,
+      config = function()
+        require('gruvbox').setup({
+          contrast = 'hard',
+          italic = {
+            comments = true,
+            strings = false,
+          },
+        })
+
+        vim.cmd.colorscheme('gruvbox')
+      end,
+    },
+    {
+      dir = '@nvim_web_devicons@',
+      name = 'nvim-web-devicons',
+      lazy = false,
+    },
+    {
+      dir = '@which_key_nvim@',
+      name = 'which-key.nvim',
+      lazy = false,
+      config = function()
+        require('which-key').setup({})
+        require('which-key').add({
+          { '<leader>c', group = 'code' },
+          { '<leader>f', group = 'find' },
+          { '<leader>g', group = 'git' },
+          { '<leader>o', group = 'open' },
+          { '<leader>t', group = 'toggle' },
+        })
+      end,
+    },
+    {
+      dir = '@oil_nvim@',
+      name = 'oil.nvim',
+      lazy = false,
+      dependencies = {
+        { dir = '@nvim_web_devicons@', name = 'nvim-web-devicons' },
+      },
+      config = function()
+        require('oil').setup({
+          columns = { 'icon' },
+          default_file_explorer = true,
+          delete_to_trash = true,
+          skip_confirm_for_simple_edits = true,
+          view_options = {
+            show_hidden = true,
+          },
+          float = {
+            border = 'rounded',
+            padding = 3,
+          },
+        })
+
+        vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory' })
+        vim.keymap.set('n', '<leader>oo', '<cmd>Oil --float<CR>', { desc = 'Oil float' })
+      end,
+    },
+    {
+      dir = '@fff_nvim@',
+      name = 'fff.nvim',
+      lazy = false,
+      config = function()
+        require('fff').setup({
+          base_path = vim.fn.getcwd(),
+          prompt = '>> ',
+          title = 'Files',
+          preview = {
+            line_numbers = true,
+          },
+          layout = {
+            width = 0.90,
+            height = 0.85,
+            preview_position = 'right',
+            preview_size = 0.55,
+          },
+          keymaps = {
+            close = '<Esc>',
+            select = '<CR>',
+            select_split = '<C-s>',
+            select_vsplit = '<C-v>',
+            select_tab = '<C-t>',
+            move_up = { '<Up>', '<C-p>' },
+            move_down = { '<Down>', '<C-n>' },
+            toggle_select = '<Tab>',
+            send_to_quickfix = '<C-q>',
+            focus_list = '<leader>l',
+            focus_preview = '<leader>p',
+          },
+        })
+
+        vim.keymap.set('n', '<leader>ff', function()
+          require('fff').find_in_git_root()
+        end, { desc = 'Find files' })
+
+        vim.keymap.set('n', '<leader>fg', function()
+          require('fff').live_grep()
+        end, { desc = 'Live grep' })
+
+        vim.keymap.set('n', '<leader>fw', function()
+          require('fff').live_grep({ query = vim.fn.expand('<cword>') })
+        end, { desc = 'Search current word' })
+      end,
+    },
+    {
+      dir = '@blink_cmp@',
+      name = 'blink.cmp',
+      event = 'InsertEnter',
+      dependencies = {
+        { dir = '@friendly_snippets@', name = 'friendly-snippets' },
+      },
+      config = function()
+        require('blink.cmp').setup({
+          appearance = {
+            nerd_font_variant = 'mono',
+          },
+          completion = {
+            accept = {
+              auto_brackets = {
+                enabled = true,
+              },
+            },
+            documentation = {
+              auto_show = true,
+              auto_show_delay_ms = 200,
+            },
+            ghost_text = {
+              enabled = true,
+            },
+            list = {
+              selection = {
+                preselect = false,
+              },
+            },
+            menu = {
+              border = 'rounded',
+            },
+          },
+          fuzzy = {
+            implementation = 'prefer_rust_with_warning',
+          },
+          keymap = {
+            preset = 'super-tab',
+            ['<C-k>'] = { 'show_signature', 'hide_signature', 'fallback' },
+          },
+          signature = {
+            enabled = true,
+            window = {
+              border = 'rounded',
+            },
+          },
+          snippets = {
+            preset = 'default',
+          },
+          sources = {
+            default = { 'lsp', 'path', 'snippets', 'buffer' },
+          },
+        })
+      end,
+    },
+    {
+      dir = '@roslyn_nvim@',
+      name = 'roslyn.nvim',
+      lazy = false,
+      config = function()
+        vim.lsp.config('roslyn', {
+          settings = {
+            ['csharp|background_analysis'] = {
+              dotnet_analyzer_diagnostics_scope = 'fullSolution',
+              dotnet_compiler_diagnostics_scope = 'fullSolution',
+            },
+            ['csharp|code_lens'] = {
+              dotnet_enable_references_code_lens = true,
+              dotnet_enable_tests_code_lens = true,
+            },
+            ['csharp|completion'] = {
+              dotnet_provide_regex_completions = true,
+              dotnet_show_completion_items_from_unimported_namespaces = true,
+              dotnet_show_name_completion_suggestions = true,
+            },
+            ['csharp|formatting'] = {
+              dotnet_organize_imports_on_format = true,
+            },
+            ['csharp|inlay_hints'] = {
+              csharp_enable_inlay_hints_for_implicit_object_creation = true,
+              csharp_enable_inlay_hints_for_implicit_variable_types = true,
+              csharp_enable_inlay_hints_for_lambda_parameter_types = true,
+              csharp_enable_inlay_hints_for_types = true,
+              dotnet_enable_inlay_hints_for_indexer_parameters = true,
+              dotnet_enable_inlay_hints_for_literal_parameters = true,
+              dotnet_enable_inlay_hints_for_object_creation_parameters = true,
+              dotnet_enable_inlay_hints_for_other_parameters = true,
+              dotnet_enable_inlay_hints_for_parameters = true,
+              dotnet_suppress_inlay_hints_for_parameters_that_differ_only_by_suffix = true,
+              dotnet_suppress_inlay_hints_for_parameters_that_match_argument_name = true,
+              dotnet_suppress_inlay_hints_for_parameters_that_match_method_intent = true,
+            },
+          },
+        })
+
+        require('roslyn').setup({
+          broad_search = true,
+          filewatching = 'auto',
+        })
+
+        vim.keymap.set('n', '<leader>ct', '<cmd>Roslyn target<CR>', { desc = 'Roslyn target' })
+      end,
+    },
+    {
+      dir = '@nvim_lspconfig@',
+      name = 'nvim-lspconfig',
+      lazy = false,
+      dependencies = {
+        { dir = '@mason_nvim@', name = 'mason.nvim' },
+        { dir = '@mason_lspconfig_nvim@', name = 'mason-lspconfig.nvim' },
+        { dir = '@mason_tool_installer_nvim@', name = 'mason-tool-installer.nvim' },
+        { dir = '@blink_cmp@', name = 'blink.cmp' },
+      },
+      config = function()
+        local util = require('lspconfig.util')
+        local blink = require('blink.cmp')
+
+        vim.lsp.config('*', {
+          capabilities = blink.get_lsp_capabilities(),
+        })
+
+        vim.api.nvim_create_autocmd('LspAttach', {
+          callback = function(event)
+            local client = vim.lsp.get_client_by_id(event.data.client_id)
+            local opts = { buffer = event.buf }
+
+            vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+            vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+            vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+            vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+            vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+            vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, opts)
+            vim.keymap.set('n', '<leader>cf', function()
+              vim.lsp.buf.format({ async = true })
+            end, opts)
+            vim.keymap.set('n', '<leader>cs', vim.lsp.buf.signature_help, opts)
+            vim.keymap.set('n', '<leader>cl', vim.lsp.codelens.run, opts)
+
+            vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+
+            if client and client:supports_method('textDocument/inlayHint') then
+              vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+            end
+          end,
+        })
+
+        vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
+          callback = function(args)
+            local clients = vim.lsp.get_clients({ bufnr = args.buf })
+            for _, client in ipairs(clients) do
+              if client:supports_method('textDocument/codeLens') then
+                pcall(vim.lsp.codelens.refresh, { bufnr = args.buf })
+                break
+              end
+            end
+          end,
+        })
+
+        vim.diagnostic.config({
+          severity_sort = true,
+          float = { border = 'rounded' },
+          underline = true,
+          virtual_text = {
+            spacing = 2,
+            source = 'if_many',
+          },
+        })
+
+        require('mason').setup({
+          registries = {
+            'github:mason-org/mason-registry',
+            'github:Crashdummyy/mason-registry',
+          },
+          ui = {
+            border = 'rounded',
+          },
+        })
+
+        require('mason-tool-installer').setup({
+          ensure_installed = {
+            'prettier',
+            'roslyn',
+            'stylua',
+          },
+          auto_update = false,
+          run_on_start = true,
+        })
+
+        require('mason-lspconfig').setup({
+          ensure_installed = {
+            'angularls',
+            'lua_ls',
+            'ts_ls',
+          },
+          automatic_enable = false,
+        })
+
+        vim.lsp.config('angularls', {
+          root_dir = util.root_pattern('angular.json', 'nx.json', 'project.json', 'package.json', '.git'),
+        })
+
+        vim.lsp.config('lua_ls', {
+          settings = {
+            Lua = {
+              completion = {
+                callSnippet = 'Replace',
+              },
+              diagnostics = {
+                globals = { 'vim' },
+              },
+              hint = {
+                enable = true,
+              },
+            },
+          },
+        })
+
+        vim.lsp.config('ts_ls', {
+          root_dir = util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git'),
+          settings = {
+            javascript = {
+              inlayHints = {
+                includeInlayEnumMemberValueHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayParameterNameHints = 'all',
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayVariableTypeHints = true,
+              },
+            },
+            typescript = {
+              inlayHints = {
+                includeInlayEnumMemberValueHints = true,
+                includeInlayFunctionLikeReturnTypeHints = true,
+                includeInlayFunctionParameterTypeHints = true,
+                includeInlayParameterNameHints = 'all',
+                includeInlayPropertyDeclarationTypeHints = true,
+                includeInlayVariableTypeHints = true,
+              },
+            },
+          },
+        })
+
+        vim.lsp.enable('angularls')
+        vim.lsp.enable('lua_ls')
+        vim.lsp.enable('ts_ls')
+
+        vim.keymap.set('n', '<leader>cm', '<cmd>Mason<CR>', { desc = 'Mason' })
+      end,
+    },
+  },
+  install = { missing = false },
+  checker = { enabled = false },
+  change_detection = { enabled = false },
+  performance = {
+    reset_packpath = false,
+    rtp = {
+      reset = false,
+    },
+  },
+})
+
+vim.keymap.set('n', '<leader>qq', '<cmd>qa<CR>', { desc = 'Quit all' })
+vim.keymap.set('n', '<leader>ww', '<cmd>w<CR>', { desc = 'Write' })
+vim.keymap.set('n', '<leader>bd', '<cmd>bdelete<CR>', { desc = 'Delete buffer' })
+vim.keymap.set('n', '<leader>tn', '<cmd>set relativenumber!<CR>', { desc = 'Toggle relative number' })
