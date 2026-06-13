@@ -71,6 +71,7 @@
         traceroute
         wget
         whois
+        meshcentral # homelab AMT remote access
 
         # System administration and inspection
         cronie
