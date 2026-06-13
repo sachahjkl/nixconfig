@@ -20,6 +20,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.opencode
       self.nixosModules.packages
       self.nixosModules.preservation
+      self.nixosModules.ssh
       self.nixosModules.user-home
       self.nixosModules.xdgStubs
     ];

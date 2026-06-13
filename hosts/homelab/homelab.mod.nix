@@ -8,6 +8,7 @@ lib.systems.nixosSystem "homelab" {
     imports = [
       self.nixosModules.disko
       self.diskoConfigurations.homelab
+      self.nixosModules.deployUser
       self.nixosModules.homelab
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabProxyHosts

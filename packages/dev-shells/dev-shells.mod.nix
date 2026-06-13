@@ -1,18 +1,16 @@
-{self, ...}: {
+_: {
   perSystem = {
     pkgs,
     self',
     ...
-  }: let
-    gitPkg = self.lib.mkGit {inherit pkgs;};
-  in {
+  }: {
     devShells = {
       opencode = pkgs.mkShell {
-        packages = [self'.packages.opencode gitPkg];
+        packages = [self'.packages.opencode pkgs.git];
       };
 
       web = pkgs.mkShell {
-        packages = with pkgs; [bun deno gitPkg just nodejs];
+        packages = with pkgs; [bun deno git just nodejs];
       };
     };
   };

@@ -6,6 +6,7 @@
       self.nixosModules.nixCommon
       self.nixosModules.nukeDefaultPackages
       self.nixosModules.serverBase
+      self.nixosModules.ssh
       self.nixosModules.serverNix
       self.nixosModules.serverSsh
       self.nixosModules.serverTailscale

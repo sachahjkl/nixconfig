@@ -75,9 +75,16 @@ Use `path:` during development so untracked files are included:
 nix flake check "path:$PWD" --no-write-lock-file
 ```
 
+For Nix changes, also run the local linters when available:
+
+```bash
+deadnix .
+statix check .
+```
+
 ## Best Practices
 
 - Prefer small structural changes.
 - Before creating a new Nix file, decide whether it is a flake-parts module or a private plain NixOS fragment.
 - Keep host files thin and compose named modules explicitly.
-- After changes, run `nix fmt` and `nix flake check "path:$PWD" --no-write-lock-file`.
+- After changes, run `nix fmt`, `deadnix .`, `statix check .`, and `nix flake check "path:$PWD" --no-write-lock-file`.

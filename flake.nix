@@ -25,6 +25,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     disko = {
       # Need to use the latest commit (18-05-2026 22:50) of the master branch to be able to use 'enrollFido2'
       url = "github:nix-community/disko/d405a179887d52b24c0ddd31e09a150bd1f66779";
