@@ -27,11 +27,11 @@
     system,
     ...
   }: {
-    packages.deploy-rs = inputs.deploy-rs.packages.${system}.default;
+    packages.deploy-rs = pkgs.deploy-rs;
 
     apps.deploy = {
       type = "app";
-      program = "${inputs.deploy-rs.packages.${system}.default}/bin/deploy";
+      program = "${pkgs.deploy-rs}/bin/deploy";
     };
 
     checks =
