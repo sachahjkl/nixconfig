@@ -5,6 +5,8 @@ _: {
     modulesPath,
     ...
   }: {
+    hardware.facter.reportPath = ./report.json;
+
     imports = [
       (modulesPath + "/installer/scan/not-detected.nix")
     ];
