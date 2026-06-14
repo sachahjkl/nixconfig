@@ -68,6 +68,7 @@ _: {
               "/var/lib/bluetooth"
               "/var/lib/libvirt"
               "/var/lib/nixos"
+              "/var/lib/sops-nix"
               {
                 directory = "/var/lib/sbctl";
                 mode = "0700";

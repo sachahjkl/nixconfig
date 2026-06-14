@@ -5,6 +5,7 @@
       self.nixosModules.mosh
       self.nixosModules.nixCommon
       self.nixosModules.nukeDefaultPackages
+      self.nixosModules.sharedSops
       self.nixosModules.serverBase
       self.nixosModules.ssh
       self.nixosModules.serverNix

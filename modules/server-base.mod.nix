@@ -72,6 +72,7 @@ _: {
         lsof
         ncdu
         restic
+        sops
         smartmontools
         tmux
         vim

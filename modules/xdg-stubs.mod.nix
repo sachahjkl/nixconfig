@@ -7,6 +7,7 @@ _: {
           "claude-code".type = "directory";
           "codex".type = "directory";
           "ripgrep".type = "directory";
+          "sops/age".type = "directory";
           "ssh".type = "directory";
         };
 
@@ -51,6 +52,7 @@ _: {
       ".config/aws"
       ".config/claude-code"
       ".config/codex"
+      ".config/sops"
       ".local/share/android"
       ".local/share/cargo"
       ".local/share/go"

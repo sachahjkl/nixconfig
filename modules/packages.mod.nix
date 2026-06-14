@@ -6,7 +6,10 @@
   }: let
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
   in {
-    imports = [self.nixosModules.git];
+    imports = [
+      self.nixosModules.git
+      self.nixosModules.meshcentral
+    ];
 
     config = {
       programs = {
@@ -26,6 +29,7 @@
 
         # Security
         age
+        sops
 
         # Core utilities
         bc
@@ -71,7 +75,6 @@
         traceroute
         wget
         whois
-        meshcentral # homelab AMT remote access
 
         # System administration and inspection
         cronie

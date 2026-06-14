@@ -8,7 +8,7 @@
       isNormalUser = true;
       description = "Deploy user";
       extraGroups = ["wheel"];
-      openssh.authorizedKeys.keys = [self.keys.admin];
+      openssh.authorizedKeys.keys = self.keys-admin;
     };
   };
 

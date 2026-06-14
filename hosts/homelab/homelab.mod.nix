@@ -19,15 +19,14 @@ lib.systems.nixosSystem "homelab" {
     homeDirectory = "/data/Home/sacha";
     nixConfigPath = "/data/Home/sacha/Projects/nixconfig";
     extraUserGroups = ["docker"];
-    users.mutableUsers = lib.mkForce true;
+    users.mutableUsers = lib.mkForce false;
 
     homelab = {
       lanInterface = "eno1";
       dataRoot = "/data";
 
       sops = {
-        enable = false;
-        defaultSopsFile = null;
+        enable = true;
       };
 
       services = {

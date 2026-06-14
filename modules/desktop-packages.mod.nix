@@ -6,6 +6,7 @@ _: {
   }: {
     preferences.preservation.user.directories = [
       ".audacity-data"
+      ".cache/zed"
       ".config/equibop"
       ".config/vlc"
       ".config/zed"
@@ -18,21 +19,22 @@ _: {
     ];
 
     hjem.users.${config.userName}.rum.programs = {
-      zed = {
-        enable = true;
-        settings = {
-          load_direnv = "shell_hook";
-          vim_mode = false;
-          ui_font_family = config.preferences.theme.fonts.sans;
-          buffer_font_family = config.preferences.theme.fonts.mono;
-          buffer_font_size = 14;
-          theme = {
-            mode = "system";
-            light = "One Light";
-            dark = "One Dark";
-          };
-        };
-      };
+      # Disabled on purpose so Zed keeps a writable user-managed config.
+      # zed = {
+      #   enable = true;
+      #   settings = {
+      #     load_direnv = "shell_hook";
+      #     vim_mode = false;
+      #     ui_font_family = config.preferences.theme.fonts.sans;
+      #     buffer_font_family = config.preferences.theme.fonts.mono;
+      #     buffer_font_size = 14;
+      #     theme = {
+      #       mode = "system";
+      #       light = "One Light";
+      #       dark = "One Dark";
+      #     };
+      #   };
+      # };
 
       neovide = {
         enable = true;

@@ -6,16 +6,13 @@
   }: let
     inherit (lib) mkEnableOption mkIf mkOption mkDefault types;
     cfg = config.homelab.sops;
-    passwordSecretName = "users/${config.userName}/password-hash";
   in {
-    imports = [self.nixosModules.sops];
-
     options.homelab.sops = {
       enable = mkEnableOption "sops-nix integration for the homelab host";
 
       defaultSopsFile = mkOption {
         type = types.nullOr types.path;
-        default = null;
+        default = self + /secrets/homelab.yaml;
         description = "Encrypted SOPS file used by the homelab host.";
       };
 
@@ -27,35 +24,24 @@
     };
 
     config = mkIf cfg.enable {
-      assertions = [
-        {
-          assertion = cfg.defaultSopsFile != null;
-          message = "homelab.sops.defaultSopsFile must point to an encrypted SOPS file when homelab.sops.enable = true.";
-        }
-      ];
+      preferences.sops = {
+        enable = true;
+        inherit (cfg) defaultSopsFile ageKeyFile;
+        passwordHashSecretName = "shared/password-hash";
+        passwordHashFromSharedFile = true;
+      };
 
-      sops = {
-        inherit (cfg) defaultSopsFile;
-        defaultSopsFormat = "yaml";
-        age.keyFile = cfg.ageKeyFile;
+      sops.secrets = {
+        "restic/environment" = {
+          owner = "root";
+          group = "root";
+          mode = "0400";
+        };
 
-        secrets = {
-          ${passwordSecretName} = {
-            neededForUsers = true;
-            path = "/run/secrets-for-users/${config.userName}-password-hash";
-          };
-
-          "restic/environment" = {
-            owner = "root";
-            group = "root";
-            mode = "0400";
-          };
-
-          "restic/password" = {
-            owner = "root";
-            group = "root";
-            mode = "0400";
-          };
+        "restic/password" = {
+          owner = "root";
+          group = "root";
+          mode = "0400";
         };
       };
 

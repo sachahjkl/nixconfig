@@ -1,9 +1,13 @@
-_: {
+{self, ...}: {
   flake.nixosModules.serverTailscale = {
     config,
     lib,
     ...
   }: {
+    imports = [self.nixosModules.tailscale];
+
+    preferences.tailscale.sopsSecretName = lib.mkDefault "tailscale/server-authkey";
+
     services.tailscale = {
       enable = true;
       openFirewall = true;

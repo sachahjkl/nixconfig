@@ -21,8 +21,6 @@ lib.systems.nixosSystem "house-desktop" {
     preferences.hyprland.numLock.defaultState = true;
     preferences.kitty.useThemeColors = false;
 
-    passwordHashFile = ./password.hash;
-
     services.xserver.videoDrivers = ["nvidia"];
 
     boot.kernelParams = ["nvidia_drm.fbdev=1"];

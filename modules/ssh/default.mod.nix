@@ -5,13 +5,15 @@
     options,
     ...
   }: let
-    authorizedKeys = [self.keys.admin];
+    authorizedKeys = self.keys-admin;
     hasUserName = lib.hasAttrByPath ["userName"] options;
     hasHomeDirectory = lib.hasAttrByPath ["homeDirectory"] options;
     hasFishAliases = lib.hasAttrByPath ["programs" "fish" "shellAliases"] options;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasPreservationDirs = lib.hasAttrByPath ["preferences" "preservation" "user" "directories"] options;
   in {
+    imports = [self.nixosModules.yubikeySshKeys];
+
     options.preferences.ssh.identityKey = lib.mkOption {
       type = lib.types.str;
       default = "~/.ssh/id_ed25519_sk";

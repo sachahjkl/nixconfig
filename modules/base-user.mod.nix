@@ -54,7 +54,7 @@
     };
 
     config = {
-      users.mutableUsers = lib.mkDefault true;
+      users.mutableUsers = lib.mkDefault false;
 
       users.users.${config.userName} =
         {

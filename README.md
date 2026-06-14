@@ -57,33 +57,100 @@ chmod 600 ~/.ssh/agenix
 
 The public key is declared in `modules/keys.mod.nix`. Do not use the YubiKey resident `sk-*` SSH key for agenix; agenix needs a normal decryptable SSH key.
 
-For `house-desktop`, the committed password hash is stored at:
+If the host uses `sops-nix` secrets, keep the same age private key in two places:
+
+1. User copy for editing encrypted files with `sops` interactively.
+2. Root-owned host copy for activation-time decryption through `sops-nix`.
+
+Put the user copy here:
+
+```bash
+mkdir -p ~/.config/sops/age
+install -m 600 /path/to/shared-age-key.txt ~/.config/sops/age/keys.txt
+```
+
+`sops` looks in `~/.config/sops/age/keys.txt` by default. This repo pre-creates `~/.config/sops/age` for the primary user and preserves `.config/sops`, so the key survives normal rebuilds and restarts on preserved hosts.
+
+Put the root-owned host copy here:
+
+```bash
+sudo mkdir -p /var/lib/sops-nix
+sudo install -m 0400 -o root -g root /path/to/shared-age-key.txt /var/lib/sops-nix/key.txt
+```
+
+`sops-nix` uses `/var/lib/sops-nix/key.txt` during activation to decrypt runtime secret files such as password hashes, Tailscale auth keys, and service credentials. `/var/lib/sops-nix` is included in the shared preservation set, so the key survives normal reboots and rebuilds on preserved hosts.
+
+This repo also provides a helper app that installs both copies for you:
+
+```bash
+nix run .#bootstrapAge
+```
+
+By default it expects the secret USB label `<hostname>.s`, mounts it at `/media/key` if needed, looks for one of `key.txt`, `shared-age-key.txt`, `sops-age-key.txt`, or `.secrets.key`, then installs the key to both:
 
 ```text
-hosts/house-desktop/password.hash
+~/.config/sops/age/keys.txt
+/var/lib/sops-nix/key.txt
 ```
 
-The host points the primary user at:
-
-```nix
-passwordHashFile = ./password.hash;
-```
-
-## Creating A Password Hash
-
-Generate a yescrypt password hash:
+It also supports explicit sources:
 
 ```bash
-nix shell nixpkgs#mkpasswd -c mkpasswd -m yescrypt
+nix run .#bootstrapAge -- --from-file /path/to/shared-age-key.txt
+nix run .#bootstrapAge -- --from-value 'AGE-SECRET-KEY-...'
 ```
 
-Write the hash to the password file:
+Other useful flags:
 
 ```bash
-printf '%s\n' '<hash>' > hosts/house-desktop/password.hash
+nix run .#bootstrapAge -- --label homelab.s
+nix run .#bootstrapAge -- --to-mounted-system
+nix run .#bootstrapAge -- --to-mounted-system=/mnt/some-other-root
+nix run .#bootstrapAge -- --help
 ```
 
-Commit only the hash, not the plaintext password.
+`--to-mounted-system` is useful from the NixOS live ISO after `disko` has mounted the target root. It also installs the activation-time copy into `<target>/var/lib/sops-nix/key.txt`, so you can run `nixos-install` without manually copying the key into `/mnt` first.
+
+Shared and host-specific encrypted secret payloads now live in:
+
+```text
+secrets/shared.yaml
+secrets/homelab.yaml
+```
+
+Edit them with:
+
+```bash
+nix shell nixpkgs#sops -c sops secrets/shared.yaml
+nix shell nixpkgs#sops -c sops secrets/homelab.yaml
+```
+
+Normal workflow:
+
+1. Open the relevant encrypted file with `sops`.
+2. Edit the plaintext values in your editor.
+3. Save and exit. `sops` re-encrypts the file in place.
+4. Rebuild the host so `sops-nix` refreshes the runtime secret files.
+
+Current split:
+
+- `secrets/shared.yaml`: shared cross-host secrets such as `shared.password-hash` and `tailscale.user-authkey`.
+- `secrets/homelab.yaml`: homelab-only secrets such as `tailscale.server-authkey`, `restic.password`, and `restic.environment`.
+
+To inspect the decrypted contents without editing:
+
+```bash
+nix shell nixpkgs#sops -c sops decrypt secrets/shared.yaml
+nix shell nixpkgs#sops -c sops decrypt secrets/homelab.yaml
+```
+
+After changing secrets, apply them with your usual rebuild flow, for example:
+
+```bash
+nh os switch --hostname house-desktop
+nh os switch --hostname house-laptop
+sudo nixos-rebuild switch --flake /home/sacha/Projects/nixconfig#homelab
+```
 
 ## Rebuild
 

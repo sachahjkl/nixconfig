@@ -1,7 +1,11 @@
 keys:
-  - &admin_age age1replace-me-with-your-real-public-key
+  - &shared_age age1t6n6jyy0uwh6px3tl65pjrd5m0f79dv5xja2dcpq2gpvq0jcsyjs6j40fe
 creation_rules:
-  - path_regex: hosts/homelab/secrets/.*\.ya?ml$
+  - path_regex: secrets/.*\.ya?ml$
     key_groups:
       - age:
-          - *admin_age
+          - *shared_age
+  - path_regex: hosts/.*/secrets/.*\.ya?ml$
+    key_groups:
+      - age:
+          - *shared_age

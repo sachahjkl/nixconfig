@@ -20,6 +20,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.opencode
       self.nixosModules.packages
       self.nixosModules.preservation
+      self.nixosModules.sharedSops
       self.nixosModules.ssh
       self.nixosModules.user-home
       self.nixosModules.xdgStubs
@@ -36,7 +37,10 @@ lib.systems.nixosSystem "wsl" {
     homeDirectory = "/home/nixos";
     nixConfigPath = "/home/nixos/Projects/nixconfig";
 
-    passwordHashFile = ./password.hash;
+    preferences.sops = {
+      enable = true;
+      passwordHashSecretName = "shared/password-hash";
+    };
 
     security.pki.certificateFiles = [
       ./certs/zscaler-root-ca.pem

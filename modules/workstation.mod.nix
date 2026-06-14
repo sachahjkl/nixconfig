@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.nixosModules.workstation = {
     imports = [
       self.nixosModules.baseUser
@@ -21,6 +25,7 @@
       self.nixosModules.packages
       self.nixosModules.desktop-packages
       self.nixosModules.preservation
+      self.nixosModules.sharedSops
       self.nixosModules.user-home
       self.nixosModules.xdgStubs
       self.nixosModules.ssh
@@ -33,5 +38,7 @@
 
     features.ai.enable = true;
     features.steam.enable = true;
+    preferences.sops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
+    preferences.tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
   };
 }
