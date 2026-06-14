@@ -1,11 +1,17 @@
 keys:
   - &shared_age age1t6n6jyy0uwh6px3tl65pjrd5m0f79dv5xja2dcpq2gpvq0jcsyjs6j40fe
+  - &house_laptop_ssh ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDfzuIUbASDvwxEDJWz0QQldBEcn76kh3g4gX0S5KB1Y
+  - &homelab_ssh ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILJqBVtF/m0Xgi2TAXv5mEP+SsYbZTiSZ6P9jF0CR5im
 creation_rules:
   - path_regex: secrets/.*\.ya?ml$
     key_groups:
       - age:
           - *shared_age
+          - *house_laptop_ssh
+          - *homelab_ssh
   - path_regex: hosts/.*/secrets/.*\.ya?ml$
     key_groups:
       - age:
           - *shared_age
+          - *house_laptop_ssh
+          - *homelab_ssh

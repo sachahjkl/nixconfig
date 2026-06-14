@@ -11,6 +11,7 @@
     hasFishAliases = lib.hasAttrByPath ["programs" "fish" "shellAliases"] options;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasPreservationDirs = lib.hasAttrByPath ["preferences" "preservation" "user" "directories"] options;
+    hasPreservationFiles = lib.hasAttrByPath ["preferences" "preservation" "system" "files"] options;
   in {
     imports = [self.nixosModules.yubikeySshKeys];
 
@@ -38,6 +39,13 @@
 
       (lib.optionalAttrs hasUserName {
         users.users.${config.userName}.openssh.authorizedKeys.keys = authorizedKeys;
+      })
+
+      (lib.optionalAttrs hasPreservationFiles {
+        preferences.preservation.system.files = [
+          "/etc/ssh/ssh_host_ed25519_key"
+          "/etc/ssh/ssh_host_ed25519_key.pub"
+        ];
       })
 
       (lib.optionalAttrs hasPreservationDirs {
