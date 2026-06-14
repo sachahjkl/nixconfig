@@ -259,7 +259,10 @@ _: {
             PY
 
             if systemctl is-active --quiet nginx.service; then
-              systemctl reload nginx.service
+              # Use --no-block to avoid a deadlock: this service is ordered
+              # Before=nginx.service, so a blocking reload would wait for nginx
+              # to finish starting while nginx waits for this service to finish.
+              systemctl reload --no-block nginx.service
             fi
           '';
         };
