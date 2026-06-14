@@ -48,6 +48,8 @@
             EDITOR = "nvim";
           };
 
+          rum.environment.hideWarning = true;
+
           files = lib.mkMerge [
             (lib.optionalAttrs (faceIcon != null) {
               ".face.icon".source = faceIcon;

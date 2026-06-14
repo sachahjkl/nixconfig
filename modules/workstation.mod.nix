@@ -1,9 +1,5 @@
-{
-  self,
-  lib,
-  ...
-}: {
-  flake.nixosModules.workstation = {
+{self, ...}: {
+  flake.nixosModules.workstation = {lib, ...}: {
     imports = [
       self.nixosModules.baseUser
       self.nixosModules.baseAssets
@@ -45,6 +41,7 @@
       sops.ageKeyFile = lib.mkDefault "/persist/var/lib/sops-nix/key.txt";
       sops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
       tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
+      opencode.homelabServerUrl = lib.mkDefault "http://homelab:4096";
     };
   };
 }

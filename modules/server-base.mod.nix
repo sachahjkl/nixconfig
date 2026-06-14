@@ -70,19 +70,11 @@ _: {
       console.keyMap = "fr";
 
       environment.systemPackages = with pkgs; [
-        curl
-        git
-        htop
-        jq
         lm_sensors
-        lsof
         ncdu
         restic
-        sops
         smartmontools
-        tmux
         vim
-        wget
       ];
 
       hardware.enableRedistributableFirmware = true;

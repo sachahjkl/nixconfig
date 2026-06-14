@@ -6,7 +6,7 @@ _: {
   }: {
     devShells = {
       opencode = pkgs.mkShell {
-        packages = [self'.packages.opencode pkgs.git];
+        packages = [self'.packages.opencode self'.packages.mcp-nixos pkgs.git];
       };
 
       web = pkgs.mkShell {

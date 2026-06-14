@@ -35,6 +35,12 @@ lib.systems.nixosSystem "homelab" {
       };
     };
 
+    preferences.opencode.server = {
+      enable = true;
+      hostname = "0.0.0.0";
+      port = 4096;
+    };
+
     system.autoUpgrade = {
       enable = true;
       flake = "${config.nixConfigPath}#homelab";

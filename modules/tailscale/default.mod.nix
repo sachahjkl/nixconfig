@@ -40,6 +40,9 @@ _: {
           enable = true;
           interfaceName = "ts0";
           useRoutingFeatures = lib.mkDefault "both";
+          extraSetFlags = [
+            "--ssh"
+          ];
           extraUpFlags = mkAfter [
             "--login-server=https://controlplane.tailscale.com"
           ];

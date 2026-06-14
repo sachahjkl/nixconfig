@@ -40,6 +40,7 @@ _: {
             /etc \
             /root \
             /data/Secrets \
+            /data/Services \
             /data/Docker/appdata \
             /data/Home \
             --exclude=".cache" \

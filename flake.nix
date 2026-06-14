@@ -89,6 +89,11 @@
     };
 
     mt7927.url = "github:cmspam/mt7927-nixos";
+
+    mcp-nixos = {
+      url = "github:utensils/mcp-nixos";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs:

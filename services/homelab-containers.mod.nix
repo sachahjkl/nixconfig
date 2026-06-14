@@ -44,6 +44,9 @@ _: {
       networking.firewall.trustedInterfaces = ["docker0" "podman0"];
       networking.firewall.checkReversePath = "loose";
 
+      # Docker 29.x with iptables-nft needs `nft` in its PATH to manage rules.
+      systemd.services.docker.path = [pkgs.nftables];
+
       systemd.services.docker-create-services-network = {
         description = "Create the shared docker network used by compose stacks";
         after = ["docker.service"];
