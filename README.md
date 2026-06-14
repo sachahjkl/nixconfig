@@ -174,18 +174,25 @@ Boot a NixOS ISO, clone the repo, then run the host's disko config.
 
 Warning: disko is destructive. Verify the target disk in the host's `hosts/<host>/disko.mod.nix` before running it.
 
+### TL;DR: install `homelab` from the NixOS ISO
+
 ```bash
+mkdir -p /home/nixos/Projects
+git clone git@gitlab.com:sachahjkl/nixconfig.git /home/nixos/Projects/nixconfig
+cd /home/nixos/Projects/nixconfig
 sudo nix --extra-experimental-features 'nix-command flakes' \
   run github:nix-community/disko -- \
   --mode destroy,format,mount \
-  --flake 'path:/home/sacha/Projects/nixconfig#house-desktop'
+  --flake 'path:/home/nixos/Projects/nixconfig#homelab'
+nix run .#bootstrapAge -- --to-mounted-system
+sudo nixos-install --root /mnt --flake 'path:/home/nixos/Projects/nixconfig#homelab'
+reboot
+cd /data/Home/sacha/Projects/nixconfig
+nix run .#bootstrapAge
+sudo nixos-rebuild switch --flake /data/Home/sacha/Projects/nixconfig#homelab
 ```
 
-Install:
-
-```bash
-sudo nixos-install --root /mnt --flake 'path:/home/sacha/Projects/nixconfig#house-desktop'
-```
+The first `bootstrapAge` call from the ISO seeds the activation key into `/mnt/var/lib/sops-nix/key.txt` so `nixos-install` can decrypt secrets. The second call after reboot installs the key for normal user editing as well.
 
 For encrypted/FIDO2 systems, keep at least one recovery passphrase and verify YubiKey unlock before relying on the install.
 
