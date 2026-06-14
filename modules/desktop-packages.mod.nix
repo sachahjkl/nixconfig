@@ -4,19 +4,21 @@ _: {
     pkgs,
     ...
   }: {
-    preferences.preservation.user.directories = [
-      ".audacity-data"
-      ".cache/zed"
-      ".config/equibop"
-      ".config/vlc"
-      ".config/zed"
-      ".local/share/TelegramDesktop"
-      ".local/share/zed"
-    ];
+    preferences.preservation.user = {
+      directories = [
+        ".audacity-data"
+        ".cache/zed"
+        ".config/equibop"
+        ".config/vlc"
+        ".config/zed"
+        ".local/share/TelegramDesktop"
+        ".local/share/zed"
+      ];
 
-    preferences.preservation.user.files = [
-      ".config/equibop-flags.conf"
-    ];
+      files = [
+        ".config/equibop-flags.conf"
+      ];
+    };
 
     hjem.users.${config.userName}.rum.programs = {
       # Disabled on purpose so Zed keeps a writable user-managed config.

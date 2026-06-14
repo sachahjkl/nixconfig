@@ -18,8 +18,10 @@ lib.systems.nixosSystem "house-desktop" {
     gaming.steam.gamescopeSession.enable = true;
     programs.corectrl.enable = true;
 
-    preferences.hyprland.numLock.defaultState = true;
-    preferences.kitty.useThemeColors = false;
+    preferences = {
+      hyprland.numLock.defaultState = true;
+      kitty.useThemeColors = false;
+    };
 
     services.xserver.videoDrivers = ["nvidia"];
 

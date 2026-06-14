@@ -11,21 +11,23 @@
       })
     ];
 
-    environment.systemPackages = with pkgs; [
-      arc-theme
-      adwaita-icon-theme
-      dconf
-      glib
-      morewaita-icon-theme
-      papirus-icon-theme
-      posy-cursors
-      windows10-icons
-      windows-10-theme
-    ];
+    environment = {
+      systemPackages = with pkgs; [
+        arc-theme
+        adwaita-icon-theme
+        dconf
+        glib
+        morewaita-icon-theme
+        papirus-icon-theme
+        posy-cursors
+        windows10-icons
+        windows-10-theme
+      ];
 
-    environment.sessionVariables = {
-      XCURSOR_THEME = config.preferences.theme.cursor;
-      XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+      sessionVariables = {
+        XCURSOR_THEME = config.preferences.theme.cursor;
+        XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+      };
     };
 
     programs.dconf = {

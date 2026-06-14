@@ -21,32 +21,36 @@
       terminal = lib.getExe terminalPkg;
     };
   in {
-    services.displayManager.ly.enable = true;
-    services.displayManager.ly.settings.session_log = null;
+    services.displayManager.ly = {
+      enable = true;
+      settings.session_log = null;
+    };
 
     programs.niri = {
       enable = true;
       package = niriPkg;
     };
 
-    environment.systemPackages = [
-      niriPkg
-      selfPkgs.noctalia-shell
-      selfPkgs.quickshell
-      terminalPkg
-      pkgs.xwayland-satellite
-      pkgs.swaybg
-      pkgs.grim
-      pkgs.slurp
-      pkgs.swappy
-      pkgs.wl-clipboard
-      pkgs.pavucontrol
-    ];
+    environment = {
+      systemPackages = [
+        niriPkg
+        selfPkgs.noctalia-shell
+        selfPkgs.quickshell
+        terminalPkg
+        pkgs.xwayland-satellite
+        pkgs.swaybg
+        pkgs.grim
+        pkgs.slurp
+        pkgs.swappy
+        pkgs.wl-clipboard
+        pkgs.pavucontrol
+      ];
 
-    environment.sessionVariables = {
-      NIXOS_OZONE_WL = "1";
-      QT_QPA_PLATFORM = "wayland";
-      XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+      sessionVariables = {
+        NIXOS_OZONE_WL = "1";
+        QT_QPA_PLATFORM = "wayland";
+        XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+      };
     };
 
     xdg.portal = {

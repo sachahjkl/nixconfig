@@ -16,13 +16,15 @@ lib.systems.nixosSystem "house-laptop" {
 
     features.ghostty.enable = true;
 
-    preferences.kitty.useThemeColors = false;
-    preferences.hyprland = {
-      numLock.defaultState = false;
-      laptopMode.enable = true;
-      display = {
-        output = "eDP-1";
-        scale = 1.25;
+    preferences = {
+      kitty.useThemeColors = false;
+      hyprland = {
+        numLock.defaultState = false;
+        laptopMode.enable = true;
+        display = {
+          output = "eDP-1";
+          scale = 1.25;
+        };
       };
     };
 

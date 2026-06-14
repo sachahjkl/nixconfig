@@ -5,7 +5,10 @@ _: {
     modulesPath,
     ...
   }: {
-    hardware.facter.reportPath = ./report.json;
+    hardware = {
+      facter.reportPath = ./report.json;
+      cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    };
 
     imports = [
       (modulesPath + "/installer/scan/not-detected.nix")
@@ -21,6 +24,5 @@ _: {
     };
 
     nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-    hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   };
 }

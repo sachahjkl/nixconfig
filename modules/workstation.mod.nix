@@ -36,9 +36,14 @@
       self.nixosModules.zoxide
     ];
 
-    features.ai.enable = true;
-    features.steam.enable = true;
-    preferences.sops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
-    preferences.tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
+    features = {
+      ai.enable = true;
+      steam.enable = true;
+    };
+
+    preferences = {
+      sops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
+      tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
+    };
   };
 }

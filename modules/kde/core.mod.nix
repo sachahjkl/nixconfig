@@ -20,12 +20,14 @@ _: {
         'var desktops = desktops(); for (var i = 0; i < desktops.length; ++i) { var desktop = desktops[i]; desktop.wallpaperPlugin = "org.kde.image"; desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"]; desktop.writeConfig("Image", "${wallpaperUri}"); }' >/dev/null
     '';
   in {
-    services.displayManager.sddm = {
-      enable = true;
-      wayland.enable = true;
-    };
+    services = {
+      displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
+      };
 
-    services.desktopManager.plasma6.enable = true;
+      desktopManager.plasma6.enable = true;
+    };
 
     environment.systemPackages = with pkgs.kdePackages; [
       ark
@@ -52,11 +54,13 @@ _: {
       configFile = {
         baloofilerc."Basic Settings"."Indexing-Enabled" = false;
 
-        kickerrc.General.showAppsByName = true;
-        kickerrc.ActionPlugin = {
-          recentApplications = false;
-          recentDocuments = false;
-          systemApplications = false;
+        kickerrc = {
+          General.showAppsByName = true;
+          ActionPlugin = {
+            recentApplications = false;
+            recentDocuments = false;
+            systemApplications = false;
+          };
         };
 
         kdeglobals = {
@@ -121,19 +125,21 @@ _: {
       };
     };
 
-    preferences.preservation.user.directories = [
-      ".local/share/konsole"
-    ];
+    preferences.preservation.user = {
+      directories = [
+        ".local/share/konsole"
+      ];
 
-    preferences.preservation.user.files = [
-      ".config/kactivitymanagerdrc"
-      ".config/kactivitymanagerd-statsrc"
-      ".config/kglobalshortcutsrc"
-      ".config/khotkeysrc"
-      ".config/konsolerc"
-      ".config/kwinoutputconfig.json"
-      ".config/plasma-org.kde.plasma.desktop-appletsrc"
-      ".config/plasmashellrc"
-    ];
+      files = [
+        ".config/kactivitymanagerdrc"
+        ".config/kactivitymanagerd-statsrc"
+        ".config/kglobalshortcutsrc"
+        ".config/khotkeysrc"
+        ".config/konsolerc"
+        ".config/kwinoutputconfig.json"
+        ".config/plasma-org.kde.plasma.desktop-appletsrc"
+        ".config/plasmashellrc"
+      ];
+    };
   };
 }

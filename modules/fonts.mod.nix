@@ -4,27 +4,29 @@ _: {
     pkgs,
     ...
   }: {
-    fonts.fontconfig = {
-      enable = true;
-      antialias = true;
-      defaultFonts = {
-        sansSerif = [config.preferences.theme.fonts.sans];
-        serif = ["Inter"];
-        monospace = [config.preferences.theme.fonts.mono];
-        emoji = ["Noto Color Emoji"];
-      };
-      hinting = {
+    fonts = {
+      fontconfig = {
         enable = true;
-        style = "full";
+        antialias = true;
+        defaultFonts = {
+          sansSerif = [config.preferences.theme.fonts.sans];
+          serif = ["Inter"];
+          monospace = [config.preferences.theme.fonts.mono];
+          emoji = ["Noto Color Emoji"];
+        };
+        hinting = {
+          enable = true;
+          style = "full";
+        };
+        subpixel.rgba = "rgb";
       };
-      subpixel.rgba = "rgb";
-    };
 
-    fonts.packages = with pkgs; [
-      inter
-      nerd-fonts.jetbrains-mono
-      noto-fonts
-      noto-fonts-color-emoji
-    ];
+      packages = with pkgs; [
+        inter
+        nerd-fonts.jetbrains-mono
+        noto-fonts
+        noto-fonts-color-emoji
+      ];
+    };
   };
 }

@@ -54,21 +54,23 @@
     };
 
     config = {
-      users.mutableUsers = lib.mkDefault false;
+      users = {
+        mutableUsers = lib.mkDefault false;
 
-      users.users.${config.userName} =
-        {
-          isNormalUser = true;
-          description = config.fullName;
-          extraGroups = ["wheel"] ++ config.extraUserGroups;
-          shell = selfPkgs.userShell;
-        }
-        // lib.optionalAttrs (config.passwordHashFile != null) {
-          hashedPasswordFile = toString config.passwordHashFile;
-        }
-        // lib.optionalAttrs (config.passwordHashFile == null && config.localPasswordHash != null) {
-          hashedPassword = config.localPasswordHash;
-        };
+        users.${config.userName} =
+          {
+            isNormalUser = true;
+            description = config.fullName;
+            extraGroups = ["wheel"] ++ config.extraUserGroups;
+            shell = selfPkgs.userShell;
+          }
+          // lib.optionalAttrs (config.passwordHashFile != null) {
+            hashedPasswordFile = toString config.passwordHashFile;
+          }
+          // lib.optionalAttrs (config.passwordHashFile == null && config.localPasswordHash != null) {
+            hashedPassword = config.localPasswordHash;
+          };
+      };
 
       system.activationScripts.accountsServiceUserIcon = let
         faceIcon = lib.attrByPath ["assets" "faceIcon"] null config;

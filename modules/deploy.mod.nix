@@ -3,22 +3,24 @@
   self,
   ...
 }: {
-  flake.nixosModules.deployUser = {
-    users.users.deploy = {
-      isNormalUser = true;
-      description = "Deploy user";
-      extraGroups = ["wheel"];
-      openssh.authorizedKeys.keys = self.keys-admin;
+  flake = {
+    nixosModules.deployUser = {
+      users.users.deploy = {
+        isNormalUser = true;
+        description = "Deploy user";
+        extraGroups = ["wheel"];
+        openssh.authorizedKeys.keys = self.keys-admin;
+      };
     };
-  };
 
-  flake.deploy.nodes.homelab = {
-    hostname = "homelab";
-    sshUser = "deploy";
+    deploy.nodes.homelab = {
+      hostname = "homelab";
+      sshUser = "deploy";
 
-    profiles.system = {
-      user = "root";
-      path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.homelab;
+      profiles.system = {
+        user = "root";
+        path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.homelab;
+      };
     };
   };
 

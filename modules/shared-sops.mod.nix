@@ -46,13 +46,15 @@
     };
 
     config = lib.mkIf cfg.enable {
-      boot.initrd.availableKernelModules = {
-        exfat = true;
-        usb_storage = true;
-        uas = true;
-      };
+      boot = {
+        initrd.availableKernelModules = {
+          exfat = true;
+          usb_storage = true;
+          uas = true;
+        };
 
-      boot.supportedFilesystems.exfat = true;
+        supportedFilesystems.exfat = true;
+      };
 
       assertions = [
         {
@@ -65,17 +67,17 @@
         inherit (cfg) defaultSopsFile;
         defaultSopsFormat = "yaml";
         age.keyFile = cfg.ageKeyFile;
-      };
 
-      sops.secrets = lib.mkIf (cfg.passwordHashSecretName != null) {
-        ${cfg.passwordHashSecretName} =
-          {
-            neededForUsers = true;
-            path = "/run/secrets-for-users/${config.userName}-password-hash";
-          }
-          // lib.optionalAttrs cfg.passwordHashFromSharedFile {
-            sopsFile = cfg.sharedSecretsFile;
-          };
+        secrets = lib.mkIf (cfg.passwordHashSecretName != null) {
+          ${cfg.passwordHashSecretName} =
+            {
+              neededForUsers = true;
+              path = "/run/secrets-for-users/${config.userName}-password-hash";
+            }
+            // lib.optionalAttrs cfg.passwordHashFromSharedFile {
+              sopsFile = cfg.sharedSecretsFile;
+            };
+        };
       };
 
       passwordHashFile = lib.mkIf (hasPasswordHashFile && cfg.passwordHashSecretName != null) (lib.mkDefault config.sops.secrets.${cfg.passwordHashSecretName}.path);

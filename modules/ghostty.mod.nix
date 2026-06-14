@@ -22,9 +22,10 @@
     };
 
     config = lib.mkIf cfg.enable {
-      environment.systemPackages = [pkgs.ghostty];
-
-      environment.sessionVariables.TERMINAL = "ghostty";
+      environment = {
+        systemPackages = [pkgs.ghostty];
+        sessionVariables.TERMINAL = "ghostty";
+      };
 
       hjem.users.${userName} = {
         environment.sessionVariables = {

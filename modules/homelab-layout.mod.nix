@@ -57,14 +57,16 @@ _: {
       networking.hostId = "e7c50a22";
 
       systemd = {
-        network.wait-online.enable = true;
-        network.networks."10-lan" = {
-          matchConfig.Name = cfg.lanInterface;
-          networkConfig = {
-            DHCP = "yes";
-            IPv6AcceptRA = true;
+        network = {
+          wait-online.enable = true;
+          networks."10-lan" = {
+            matchConfig.Name = cfg.lanInterface;
+            networkConfig = {
+              DHCP = "yes";
+              IPv6AcceptRA = true;
+            };
+            linkConfig.RequiredForOnline = "routable";
           };
-          linkConfig.RequiredForOnline = "routable";
         };
 
         tmpfiles.rules = [

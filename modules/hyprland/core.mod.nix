@@ -34,21 +34,23 @@ _: {
       systemd.setPath.enable = true;
     };
 
-    systemd.user.services.hyprpolkitagent = {
-      description = "Hyprland Polkit Authentication Agent";
-      wantedBy = [hyprSessionTarget];
-      partOf = [hyprSessionTarget];
-      after = [hyprSessionTarget];
-      serviceConfig = {
-        Type = "simple";
-        ExecStart = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
-        Restart = "on-failure";
-        RestartSec = 1;
+    systemd.user.services = {
+      hyprpolkitagent = {
+        description = "Hyprland Polkit Authentication Agent";
+        wantedBy = [hyprSessionTarget];
+        partOf = [hyprSessionTarget];
+        after = [hyprSessionTarget];
+        serviceConfig = {
+          Type = "simple";
+          ExecStart = "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent";
+          Restart = "on-failure";
+          RestartSec = 1;
+        };
       };
-    };
 
-    systemd.user.services.xdg-desktop-portal-hyprland.serviceConfig = {
-      Restart = lib.mkForce "no";
+      xdg-desktop-portal-hyprland.serviceConfig = {
+        Restart = lib.mkForce "no";
+      };
     };
   };
 }
