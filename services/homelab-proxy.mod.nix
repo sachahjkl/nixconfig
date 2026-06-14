@@ -155,6 +155,9 @@ _: {
 
         security.acme = {
           acceptTerms = true;
+          # ZeroSSL ACME endpoint; lego auto-registers an account with the
+          # email address below, no manual EAB credentials required.
+          server = "https://acme.zerossl.com/v2/DV90";
           defaults.email = cfg.acmeEmail;
         };
 
