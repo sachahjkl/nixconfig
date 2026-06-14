@@ -60,7 +60,9 @@ _: {
         network = {
           wait-online.enable = true;
           networks."10-lan" = {
-            matchConfig.Name = cfg.lanInterface;
+            # Match any Ethernet port instead of a fixed name, so the connected NIC
+            # gets DHCP regardless of how the firmware names it.
+            matchConfig.Type = "ether";
             networkConfig = {
               DHCP = "yes";
               IPv6AcceptRA = true;
