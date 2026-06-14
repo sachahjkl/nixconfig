@@ -37,7 +37,7 @@ lib.systems.nixosSystem "homelab" {
     };
 
     preferences.opencode.server = {
-      enable = true;
+      enable = false;
       hostname = "0.0.0.0";
       port = 4096;
     };
