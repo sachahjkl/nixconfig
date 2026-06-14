@@ -49,6 +49,10 @@ _: {
     };
 
     config = lib.mkIf config.preferences.preservation.enable {
+      # SOPS neededForUsers secrets can be decrypted before preservation bind mounts exist,
+      # so key files referenced directly under /persist must have the backing filesystem mounted early.
+      fileSystems.${toString config.preferences.preservation.persistentStoragePath}.neededForBoot = lib.mkDefault true;
+
       preservation = {
         enable = true;
         preserveAt.${toString config.preferences.preservation.persistentStoragePath} = {

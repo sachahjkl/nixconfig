@@ -26,22 +26,16 @@
         description = "Age key file used by sops-nix on this host.";
       };
 
-      sharedSecretsFile = lib.mkOption {
-        type = lib.types.path;
-        default = self + /secrets/shared.yaml;
-        description = "Encrypted SOPS file containing shared cross-host secrets.";
-      };
-
       passwordHashSecretName = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
         description = "SOPS secret name containing the primary user's password hash.";
       };
 
-      passwordHashFromSharedFile = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Read the password-hash secret from preferences.sops.sharedSecretsFile instead of the default SOPS file.";
+      passwordHashSopsFile = lib.mkOption {
+        type = lib.types.nullOr lib.types.path;
+        default = null;
+        description = "Optional encrypted SOPS file used specifically for the password-hash secret. When null, the secret is read from preferences.sops.defaultSopsFile.";
       };
     };
 
@@ -66,7 +60,13 @@
       sops = {
         inherit (cfg) defaultSopsFile;
         defaultSopsFormat = "yaml";
-        age.keyFile = cfg.ageKeyFile;
+
+        age = {
+          keyFile = cfg.ageKeyFile;
+          sshKeyPaths = [];
+        };
+
+        gnupg.sshKeyPaths = [];
 
         secrets = lib.mkIf (cfg.passwordHashSecretName != null) {
           ${cfg.passwordHashSecretName} =
@@ -74,8 +74,8 @@
               neededForUsers = true;
               path = "/run/secrets-for-users/${config.userName}-password-hash";
             }
-            // lib.optionalAttrs cfg.passwordHashFromSharedFile {
-              sopsFile = cfg.sharedSecretsFile;
+            // lib.optionalAttrs (cfg.passwordHashSopsFile != null) {
+              sopsFile = cfg.passwordHashSopsFile;
             };
         };
       };

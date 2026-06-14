@@ -28,7 +28,7 @@
         enable = true;
         inherit (cfg) defaultSopsFile ageKeyFile;
         passwordHashSecretName = "shared/password-hash";
-        passwordHashFromSharedFile = true;
+        passwordHashSopsFile = self + /secrets/shared.yaml;
       };
 
       sops.secrets = {
