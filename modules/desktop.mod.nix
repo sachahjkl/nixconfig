@@ -10,6 +10,7 @@
       self.nixosModules.mimeapps
       self.nixosModules.obsStudio
       self.nixosModules.theming
+      self.nixosModules.thunar
       self.nixosModules.wallpaper
       self.nixosModules.wireplumber
     ];

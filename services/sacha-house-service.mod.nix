@@ -46,7 +46,7 @@ _: {
 
       releaseBinaryHash = mkOption {
         type = types.str;
-        default = "sha256-846ACK/s3935pRfjNG5Sp0q/cMZWCGDV2s7mynS4L+E=";
+        default = "sha256-846ACs/s3935pRfjNG5Sp0q/cMZWCGDV2s7mynS4L+E=";
       };
 
       workingDirectory = mkOption {

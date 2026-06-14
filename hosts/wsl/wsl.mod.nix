@@ -37,9 +37,14 @@ lib.systems.nixosSystem "wsl" {
     homeDirectory = "/home/nixos";
     nixConfigPath = "/home/nixos/Projects/nixconfig";
 
-    preferences.sops = {
-      enable = true;
-      passwordHashSecretName = "shared/password-hash";
+    preferences = {
+      sops = {
+        enable = true;
+        passwordHashSecretName = "shared/password-hash";
+      };
+
+      preservation.enable = lib.mkForce false;
+      userHome.installTerminal = false;
     };
 
     security.pki.certificateFiles = [
@@ -48,8 +53,5 @@ lib.systems.nixosSystem "wsl" {
     ];
 
     system.stateVersion = "26.05";
-
-    preferences.preservation.enable = lib.mkForce false;
-    preferences.userHome.installTerminal = false;
   };
 }

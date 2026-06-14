@@ -30,7 +30,7 @@ lib.systems.nixosSystem "homelab" {
       };
 
       services = {
-        hermesDashboard.enable = true;
+        hermesDashboard.enable = false;
         sachaHouse.enable = true;
       };
     };

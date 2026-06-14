@@ -39,7 +39,7 @@ _: {
         services.tailscale = {
           enable = true;
           interfaceName = "ts0";
-          useRoutingFeatures = "both";
+          useRoutingFeatures = lib.mkDefault "both";
           extraUpFlags = mkAfter [
             "--login-server=https://controlplane.tailscale.com"
           ];

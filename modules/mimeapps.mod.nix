@@ -1,4 +1,4 @@
-_: {
+{lib, ...}: {
   flake.nixosModules.mimeapps = {config, ...}: let
     mimeappsList = ''
       [Default Applications]
@@ -18,14 +18,29 @@ _: {
       x-scheme-handler/http=brave-browser.desktop
       x-scheme-handler/https=brave-browser.desktop
     '';
+
+    hasPreservation =
+      lib.hasAttrByPath ["preferences" "preservation" "enable"] config
+      && config.preferences.preservation.enable;
+
+    targetDir =
+      if hasPreservation
+      then "${toString config.preferences.preservation.persistentStoragePath}/home/${config.userName}/.config"
+      else "${config.homeDirectory}/.config";
+
+    targetFile = "${targetDir}/mimeapps.list";
   in {
+    preferences.preservation.user.files = lib.mkIf hasPreservation [
+      ".config/mimeapps.list"
+    ];
+
     system.activationScripts.mimeappsList.text = ''
-      install -d -m 0755 -o ${config.userName} -g users ${config.homeDirectory}/.config
-      cat > ${config.homeDirectory}/.config/mimeapps.list <<'EOF'
+      install -d -m 0755 -o ${config.userName} -g users ${targetDir}
+      cat > ${targetFile} <<'EOF'
       ${mimeappsList}
       EOF
-      chown ${config.userName}:users ${config.homeDirectory}/.config/mimeapps.list
-      chmod 0644 ${config.homeDirectory}/.config/mimeapps.list
+      chown ${config.userName}:users ${targetFile}
+      chmod 0644 ${targetFile}
     '';
   };
 }
