@@ -46,7 +46,6 @@
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1";
       QT_QPA_PLATFORM = "wayland";
-      TERMINAL = "kitty";
       XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
     };
 

@@ -1,5 +1,9 @@
 {self, ...}: {
-  flake.nixosModules.desktop = {pkgs, ...}: {
+  flake.nixosModules.desktop = {
+    lib,
+    pkgs,
+    ...
+  }: {
     imports = [
       self.nixosModules.brave
       self.nixosModules.face-icon
@@ -61,29 +65,40 @@
       };
     };
 
-    environment.systemPackages = with pkgs; [gparted seahorse];
+    environment = {
+      systemPackages = with pkgs; [gparted seahorse xdg-utils];
+      sessionVariables.TERMINAL = lib.mkDefault "kitty";
+    };
 
     qt = {
       enable = true;
       platformTheme = "qt5ct";
     };
 
-    programs.xfconf.enable = true;
-    programs.thunar = {
-      enable = true;
-      plugins = with pkgs; [
-        thunar-archive-plugin
-        thunar-media-tags-plugin
-        thunar-volman
-      ];
+    xdg = {
+      terminal-exec.settings = {
+        enable = true;
+        default = ["kitty.desktop"];
+      };
+      portal = {
+        enable = true;
+        extraPortals = [pkgs.xdg-desktop-portal-gtk];
+        config.common = {
+          default = ["gtk"];
+          "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
+        };
+      };
     };
 
-    xdg.portal = {
-      enable = true;
-      extraPortals = [pkgs.xdg-desktop-portal-gtk];
-      config.common = {
-        default = ["gtk"];
-        "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
+    programs = {
+      xfconf.enable = true;
+      thunar = {
+        enable = true;
+        plugins = with pkgs; [
+          thunar-archive-plugin
+          thunar-media-tags-plugin
+          thunar-volman
+        ];
       };
     };
 

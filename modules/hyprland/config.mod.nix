@@ -104,7 +104,6 @@
           QT_QPA_PLATFORM = "wayland";
           QT_QPA_PLATFORMTHEME = "qt5ct";
           QT_STYLE_OVERRIDE = "kvantum";
-          TERMINAL = lib.mkDefault "kitty";
           NIXOS_OZONE_WL = "1";
           QT_SCALE_FACTOR = "1";
         };

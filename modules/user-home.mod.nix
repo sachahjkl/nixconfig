@@ -21,6 +21,13 @@
       shell = lib.getExe selfPkgs.userShell;
       useThemeColors = kittyUseThemeColors;
     };
+
+    # xdg-terminal's generic fallback tries to execute $TERM as a command.
+    # Inside kitty, $TERM is "xterm-kitty" (a terminfo name, not a binary).
+    # Provide a compatibility wrapper so xdg-terminal works outside XFCE/GNOME/KDE.
+    xtermKittyWrapper = pkgs.writeShellScriptBin "xterm-kitty" ''
+      exec kitty "$@"
+    '';
   in {
     options.preferences.userHome.installTerminal = lib.mkOption {
       type = lib.types.bool;
@@ -37,13 +44,9 @@
           inherit user;
           directory = home;
 
-          environment.sessionVariables =
-            {
-              EDITOR = "nvim";
-            }
-            // lib.optionalAttrs installTerminal {
-              TERMINAL = lib.mkDefault "kitty";
-            };
+          environment.sessionVariables = {
+            EDITOR = "nvim";
+          };
 
           files = lib.mkMerge [
             (lib.optionalAttrs (faceIcon != null) {
@@ -69,7 +72,10 @@
         };
       };
 
-      environment.systemPackages = lib.optional installTerminal terminalPkg;
+      environment.systemPackages = lib.optionals installTerminal [
+        terminalPkg
+        xtermKittyWrapper
+      ];
     };
   };
 }
