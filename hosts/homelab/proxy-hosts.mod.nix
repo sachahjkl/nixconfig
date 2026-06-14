@@ -55,7 +55,7 @@ _: {
         };
 
         "aubetoile.dev" = {
-          dockerContainer = "valentin-froment-site";
+          dockerContainer = "aubetoile";
           dockerPort = 80;
         };
 
@@ -139,7 +139,7 @@ _: {
         };
 
         "tmp.aubetoile.dev" = {
-          dockerContainer = "valentin-froment-site";
+          dockerContainer = "aubetoile";
           dockerPort = 80;
           websockets = true;
         };
