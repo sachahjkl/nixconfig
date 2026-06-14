@@ -15,7 +15,6 @@ _: {
       mkIf
       mkMerge
       mkOption
-      optionalString
       types
       ;
 
@@ -50,7 +49,9 @@ _: {
         inherit (hostCfg) forceSSL;
         serverAliases = hostCfg.aliases;
         inherit (hostCfg) basicAuthFile;
-        extraConfig = optionalString hostCfg.http2 "http2 on;";
+        # NixOS already emits `http2 on;` for SSL vhosts; adding it again is a
+        # duplicate and breaks nginx config validation.
+        extraConfig = "";
         locations."/" = {
           inherit proxyPass;
           proxyWebsockets = hostCfg.websockets;
@@ -189,6 +190,12 @@ _: {
       }
 
       (mkIf (dockerHosts != []) {
+        # NixOS nginx runs directly on the host, while the services it proxies
+        # to live inside Docker networks and intentionally do not publish ports
+        # on the host.  This service inspects each referenced Docker container,
+        # extracts its IP address from the shared `services` network, and emits
+        # nginx `upstream` blocks so the host-based nginx can reach containers by
+        # their bridge-network IPs without needing any port bindings.
         systemd.services.homelab-proxy-refresh-docker-upstreams = {
           description = "Refresh nginx upstreams for docker-backed homelab services";
           wants = ["docker.service" "network-online.target"];

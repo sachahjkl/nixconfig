@@ -32,6 +32,7 @@ lib.systems.nixosSystem "homelab" {
       services = {
         hermesDashboard.enable = false;
         sachaHouse.enable = true;
+        filebrowser.enable = true;
       };
     };
 

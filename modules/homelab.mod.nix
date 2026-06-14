@@ -10,6 +10,7 @@
       self.nixosModules.homelabProxy
       self.nixosModules.hermesDashboard
       self.nixosModules.sachaHouseService
+      self.nixosModules.homelabFilebrowser
     ];
   };
 }

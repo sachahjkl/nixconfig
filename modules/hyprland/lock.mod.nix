@@ -81,7 +81,7 @@ _: {
             }
             {
               shadow_passes = 1;
-              text = "cmd[update:1000] echo \"$(date +\"%-I:%M\")\"";
+              text = "cmd[update:1000] echo \"$(date +\"%-H:%M\")\"";
               color = "rgb(255,255,255)";
               font_size = scalePx 95;
               font_family = "sans-serif";

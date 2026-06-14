@@ -182,7 +182,7 @@ _: {
 
         "files.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 3670;
+          upstreamPort = 8082;
           websockets = true;
         };
       };

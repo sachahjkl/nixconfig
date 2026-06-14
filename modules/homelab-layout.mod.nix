@@ -60,9 +60,9 @@ _: {
         network = {
           wait-online.enable = true;
           networks."10-lan" = {
-            # Match any Ethernet port instead of a fixed name, so the connected NIC
-            # gets DHCP regardless of how the firmware names it.
-            matchConfig.Type = "ether";
+            # Match only the configured physical LAN interface so Docker's veths
+            # and bridges are not claimed by systemd-networkd.
+            matchConfig.Name = cfg.lanInterface;
             networkConfig = {
               DHCP = "yes";
               IPv6AcceptRA = true;

@@ -123,7 +123,13 @@
           ".local/share/opencode"
         ];
 
-        environment.systemPackages = [selfPkgs.opencode];
+        environment.systemPackages =
+          [selfPkgs.opencode]
+          ++ lib.optional (cfg.homelabServerUrl != null) (
+            pkgs.writeShellScriptBin "opencode-homelab" ''
+              exec ${lib.getExe selfPkgs.opencode} attach ${cfg.homelabServerUrl} "$@"
+            ''
+          );
 
         systemd.services.opencode-server = mkIf cfg.server.enable {
           description = "OpenCode headless server";
@@ -147,6 +153,8 @@
         };
 
         networking.firewall.allowedTCPPorts = mkIf (cfg.server.enable && cfg.server.openFirewall) [cfg.server.port];
+
+        # Fish helper for users who prefer the existing name.
         hjem.users.${config.userName}.rum.programs.fish.functions.homelab-code = lib.mkIf (hasHjemUsers && cfg.homelabServerUrl != null) ''
           opencode attach ${cfg.homelabServerUrl} $argv
         '';
