@@ -18,7 +18,7 @@
 
       ageKeyFile = mkOption {
         type = types.str;
-        default = "/var/lib/sops-nix/key.txt";
+        default = "/persist/var/lib/sops-nix/key.txt";
         description = "Age key file used by sops-nix on the homelab host.";
       };
     };

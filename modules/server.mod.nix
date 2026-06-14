@@ -2,9 +2,11 @@
   flake.nixosModules.server = {
     imports = [
       self.nixosModules.baseUser
+      self.nixosModules.external-preservation
       self.nixosModules.mosh
       self.nixosModules.nixCommon
       self.nixosModules.nukeDefaultPackages
+      self.nixosModules.preservation
       self.nixosModules.sharedSops
       self.nixosModules.serverBase
       self.nixosModules.ssh

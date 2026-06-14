@@ -35,19 +35,14 @@ _: {
                 type = "btrfs";
                 extraArgs = ["-f"];
                 subvolumes = {
-                  "@root" = {
-                    mountpoint = "/";
-                    mountOptions = ["compress=zstd" "noatime"];
+                  "/persist" = {
+                    mountpoint = "/persist";
+                    mountOptions = ["subvol=persist" "compress=zstd" "noatime"];
                   };
 
-                  "@nix" = {
+                  "/nix" = {
                     mountpoint = "/nix";
-                    mountOptions = ["compress=zstd" "noatime"];
-                  };
-
-                  "@log" = {
-                    mountpoint = "/var/log";
-                    mountOptions = ["compress=zstd" "noatime"];
+                    mountOptions = ["subvol=nix" "compress=zstd" "noatime"];
                   };
                 };
               };
@@ -125,6 +120,11 @@ _: {
             };
           };
         };
+      };
+
+      nodev."/" = {
+        fsType = "tmpfs";
+        mountOptions = ["size=25%" "mode=755"];
       };
     };
   };

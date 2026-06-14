@@ -4,6 +4,11 @@ _: {
     lanInterface = config.homelab.lanInterface;
   in {
     config = {
+      preferences.preservation.system.directories = [
+        "/var/lib/nfs"
+        "/var/lib/samba"
+      ];
+
       services = {
         samba = {
           enable = true;

@@ -138,6 +138,10 @@ _: {
 
     config = mkIf cfg.enable (mkMerge [
       {
+        preferences.preservation.system.directories = [
+          "/var/lib/acme"
+        ];
+
         assertions =
           map
           (hostCfg: {

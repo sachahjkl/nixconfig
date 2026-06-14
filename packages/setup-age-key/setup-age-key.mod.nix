@@ -186,15 +186,29 @@ _: {
 
                 sudo mkdir -p /var/lib/sops-nix
                 sudo install -m 0400 -o root -g root "$key_path" /var/lib/sops-nix/key.txt
+                if [ -d /persist ]; then
+                  sudo mkdir -p /persist/var/lib/sops-nix
+                  sudo install -m 0400 -o root -g root "$key_path" /persist/var/lib/sops-nix/key.txt
+                fi
 
                 if [ -n "$mounted_system_prefix" ]; then
                   sudo mkdir -p "$mounted_system_prefix/var/lib/sops-nix"
                   sudo install -m 0400 -o root -g root "$key_path" "$mounted_system_prefix/var/lib/sops-nix/key.txt"
+                  if [ -d "$mounted_system_prefix/persist" ]; then
+                    sudo mkdir -p "$mounted_system_prefix/persist/var/lib/sops-nix"
+                    sudo install -m 0400 -o root -g root "$key_path" "$mounted_system_prefix/persist/var/lib/sops-nix/key.txt"
+                  fi
                 fi
 
-                printf 'Installed age key for user %s and /var/lib/sops-nix/key.txt\n' "$real_user"
+                printf 'Installed age key for user %s at /var/lib/sops-nix/key.txt\n' "$real_user"
+                if [ -d /persist ]; then
+                  printf 'Installed age key for user %s at /persist/var/lib/sops-nix/key.txt\n' "$real_user"
+                fi
                 if [ -n "$mounted_system_prefix" ]; then
                   printf 'Installed age key into mounted system at %s/var/lib/sops-nix/key.txt\n' "$mounted_system_prefix"
+                  if [ -d "$mounted_system_prefix/persist" ]; then
+                    printf 'Installed age key into mounted system at %s/persist/var/lib/sops-nix/key.txt\n' "$mounted_system_prefix"
+                  fi
                 fi
       '';
     };

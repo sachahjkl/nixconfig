@@ -7,6 +7,10 @@ _: {
     dataRoot = config.homelab.dataRoot;
   in {
     config = {
+      preferences.preservation.system.directories = [
+        "/var/lib/containers"
+      ];
+
       virtualisation.docker = {
         enable = true;
         autoPrune = {

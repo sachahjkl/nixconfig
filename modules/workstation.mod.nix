@@ -42,6 +42,7 @@
     };
 
     preferences = {
+      sops.ageKeyFile = lib.mkDefault "/persist/var/lib/sops-nix/key.txt";
       sops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
       tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
     };
