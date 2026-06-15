@@ -3,6 +3,7 @@
     config,
     lib,
     options,
+    pkgs,
     ...
   }: let
     authorizedKeys = self.keys-admin;
@@ -26,6 +27,12 @@
       {
         services.openssh = {
           enable = true;
+          hostKeys = [
+            {
+              path = "/etc/ssh/ssh_host_ed25519_key";
+              type = "ed25519";
+            }
+          ];
           openFirewall = true;
           settings = {
             KbdInteractiveAuthentication = false;
@@ -47,6 +54,28 @@
           "/etc/ssh/ssh_host_ed25519_key"
           "/etc/ssh/ssh_host_ed25519_key.pub"
         ];
+
+        system.activationScripts.preservedSshHostKey.text = let
+          persistentSshDir = "${toString config.preferences.preservation.persistentStoragePath}/etc/ssh";
+          persistentEd25519Key = "${persistentSshDir}/ssh_host_ed25519_key";
+          persistentEd25519Pub = "${persistentSshDir}/ssh_host_ed25519_key.pub";
+        in ''
+          # Preserved SSH host keys can get stuck in a bad state if preservation
+          # captured an empty file or the private key ended up with loose
+          # permissions. When that happens, sshd-keygen cannot replace the
+          # mounted file and sshd either ignores the key or fails to start.
+          # Repair the persisted source before the bind mounts are used so the
+          # machine keeps a stable host identity across rebuilds and reboots.
+          install -d -m 0755 ${persistentSshDir}
+
+          if [ ! -s ${persistentEd25519Key} ] || [ ! -s ${persistentEd25519Pub} ]; then
+            rm -f ${persistentEd25519Key} ${persistentEd25519Pub}
+            ${pkgs.openssh}/bin/ssh-keygen -q -t ed25519 -N "" -f ${persistentEd25519Key}
+          fi
+
+          chmod 0600 ${persistentEd25519Key}
+          chmod 0644 ${persistentEd25519Pub}
+        '';
       })
 
       (lib.optionalAttrs hasPreservationDirs {

@@ -53,11 +53,6 @@
     mimeappsTargetFile = "${configDir}/mimeapps.list";
     desktopTargetFile = "${appsDir}/kitty-nvim.desktop";
   in {
-    preferences.preservation.user.files = lib.mkIf hasPreservation [
-      ".config/mimeapps.list"
-      ".local/share/applications/kitty-nvim.desktop"
-    ];
-
     system.activationScripts.mimeappsList.text = ''
       install -d -m 0755 -o ${config.userName} -g users ${configDir}
       cat > ${mimeappsTargetFile} <<'EOF'
