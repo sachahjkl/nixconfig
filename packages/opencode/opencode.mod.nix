@@ -48,12 +48,9 @@
         lib,
         ...
       }: let
-        configFile = config.pkgs.writeText "opencode.json" (
-          builtins.toJSON ({
-              "$schema" = "https://opencode.ai/config.json";
-            }
-            // self.lib.defaultOpenCodeSettings config.pkgs // config.settings)
-        );
+        configFile = self.lib.mkOpenCodeConfig {
+          inherit (config) pkgs settings;
+        };
       in {
         options.settings = lib.mkOption {
           type = lib.types.attrsOf lib.types.anything;
