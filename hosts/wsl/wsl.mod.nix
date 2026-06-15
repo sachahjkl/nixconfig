@@ -38,6 +38,8 @@ lib.systems.nixosSystem "wsl" {
     nixConfigPath = "/home/nixos/Projects/nixconfig";
 
     preferences = {
+      git.signingKey = "~/.ssh/far-from-home.pub";
+
       sops = {
         enable = true;
         passwordHashSecretName = "shared/password-hash";

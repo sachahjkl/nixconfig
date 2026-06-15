@@ -21,6 +21,12 @@ _: {
         default = "sacha@sacha.house";
         description = "Default Git author email.";
       };
+
+      signingKey = lib.mkOption {
+        type = lib.types.str;
+        default = "~/.ssh/id_ed25519_sk.pub";
+        description = "SSH public key path used for Git commit signing.";
+      };
     };
 
     config = lib.mkMerge [
@@ -104,7 +110,7 @@ _: {
             user = {
               name = cfg.authorName;
               email = cfg.authorEmail;
-              signingKey = "~/.ssh/id_ed25519_sk.pub";
+              inherit (cfg) signingKey;
             };
           };
         };

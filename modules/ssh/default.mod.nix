@@ -89,13 +89,13 @@
                 IdentityFile ~/.ssh/far-from-home
             '';
 
-            "ssh/far-from-home.pub".text = "${self.keys.fallback}\n";
+            "ssh/far-from-home.pub".text = "${self.keys."far-from-home"}\n";
           };
         };
       })
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName && hasHomeDirectory) {
-        sops.secrets."ssh/fallback/private" = {
+        sops.secrets."ssh/far-from-home/private" = {
           sopsFile = self + /secrets/shared.yaml;
           path = "${config.homeDirectory}/.ssh/far-from-home";
           owner = config.userName;

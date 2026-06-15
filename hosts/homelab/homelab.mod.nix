@@ -42,6 +42,8 @@ lib.systems.nixosSystem "homelab" {
       port = 4096;
     };
 
+    preferences.git.signingKey = "~/.ssh/far-from-home.pub";
+
     system.autoUpgrade = {
       enable = true;
       flake = "${config.nixConfigPath}#homelab";
