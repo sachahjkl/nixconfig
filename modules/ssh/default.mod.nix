@@ -117,9 +117,9 @@
                 IdentitiesOnly yes
                 IdentityFile ~/.ssh/far-from-home
             '';
-
-            "ssh/far-from-home.pub".text = "${self.keys."far-from-home"}\n";
           };
+
+          files.".ssh/far-from-home.pub".text = "${self.keys."far-from-home"}\n";
         };
       })
 
