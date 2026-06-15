@@ -11,6 +11,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.wsl-hardware
       self.nixosModules.baseUser
       self.nixosModules.external-preservation
+      self.nixosModules.ai
       self.nixosModules.fish
       self.nixosModules.home-manager
       self.nixosModules.hjem
@@ -36,6 +37,11 @@ lib.systems.nixosSystem "wsl" {
     fullName = "NixOS";
     homeDirectory = "/home/nixos";
     nixConfigPath = "/home/nixos/Projects/nixconfig";
+
+    features.ai = {
+      enable = true;
+      handy.enable = false;
+    };
 
     preferences = {
       git.signingKey = "~/.ssh/far-from-home.pub";

@@ -12,6 +12,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelab
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabProxyHosts
+      self.nixosModules.ai
     ];
 
     userName = "sacha";
@@ -20,6 +21,11 @@ lib.systems.nixosSystem "homelab" {
     nixConfigPath = "/data/Home/sacha/Projects/nixconfig";
     extraUserGroups = ["docker"];
     users.mutableUsers = lib.mkForce false;
+
+    features.ai = {
+      enable = true;
+      handy.enable = false;
+    };
 
     homelab = {
       lanInterface = "eno1";

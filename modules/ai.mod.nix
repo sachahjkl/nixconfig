@@ -239,6 +239,8 @@
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     cfg = config.features.ai;
   in {
+    imports = [self.nixosModules.omp];
+
     options.features.ai = {
       enable = lib.mkEnableOption "AI features (speech-to-text, dictation tools)";
 
@@ -247,6 +249,13 @@
         default = config.features.ai.enable;
         defaultText = lib.literalExpression "config.features.ai.enable";
         description = "Enable Handy offline speech-to-text. Enabled by default when features.ai.enable is true.";
+      };
+
+      omp.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = config.features.ai.enable;
+        defaultText = lib.literalExpression "config.features.ai.enable";
+        description = "Enable Oh My Pi terminal coding agent. Enabled by default when features.ai.enable is true.";
       };
     };
 
