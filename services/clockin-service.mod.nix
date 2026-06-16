@@ -1,7 +1,4 @@
-{
-  inputs,
-  ...
-}: {
+{inputs, ...}: {
   flake.nixosModules.clockinService = {
     config,
     lib,

@@ -41,8 +41,11 @@ lib.systems.nixosSystem "homelab" {
         hermesDashboard.enable = false;
         sachaHouse.enable = true;
         filebrowser.enable = true;
-        clockin.enable = true;
         lanblaster.enable = true;
+        clockin = {
+          enable = true;
+          databaseDir = "/data/Services/clockin";
+        };
       };
     };
 
