@@ -49,17 +49,17 @@
         users.users.${config.userName}.openssh.authorizedKeys.keys = authorizedKeys;
       })
 
-      (lib.optionalAttrs hasPreservationFiles {
+      (lib.optionalAttrs hasPreservationFiles (let
+        persistentSshDir = "${toString config.preferences.preservation.persistentStoragePath}/etc/ssh";
+        persistentEd25519Key = "${persistentSshDir}/ssh_host_ed25519_key";
+        persistentEd25519Pub = "${persistentSshDir}/ssh_host_ed25519_key.pub";
+      in {
         preferences.preservation.system.files = [
           "/etc/ssh/ssh_host_ed25519_key"
           "/etc/ssh/ssh_host_ed25519_key.pub"
         ];
 
-        system.activationScripts.preservedSshHostKey.text = let
-          persistentSshDir = "${toString config.preferences.preservation.persistentStoragePath}/etc/ssh";
-          persistentEd25519Key = "${persistentSshDir}/ssh_host_ed25519_key";
-          persistentEd25519Pub = "${persistentSshDir}/ssh_host_ed25519_key.pub";
-        in ''
+        system.activationScripts.preservedSshHostKey.text = ''
           # Preserved SSH host keys can get stuck in a bad state if preservation
           # captured an empty file or the private key ended up with loose
           # permissions. When that happens, sshd-keygen cannot replace the
@@ -76,7 +76,14 @@
           chmod 0600 ${persistentEd25519Key}
           chmod 0644 ${persistentEd25519Pub}
         '';
-      })
+
+        # Enforce host key permissions on every boot in case preservation,
+        # a bind mount, or a manual edit left the private key too open.
+        systemd.tmpfiles.rules = [
+          "z ${persistentSshDir}/ssh_host_ed25519_key 0600 root root -"
+          "z ${persistentSshDir}/ssh_host_ed25519_key.pub 0644 root root -"
+        ];
+      }))
 
       (lib.optionalAttrs hasPreservationDirs {
         preferences.preservation.user.directories = [".cache/ssh"];

@@ -22,6 +22,12 @@ _: {
           upstreamPort = 6969;
         };
 
+        "lanblaster.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 8013;
+          websockets = true;
+        };
+
         "musee.sacha.house" = {
           dockerContainer = "musee-app";
           dockerPort = 80;

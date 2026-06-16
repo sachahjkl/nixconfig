@@ -389,6 +389,22 @@
         "type": "github"
       }
     },
+    "lanblaster": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781567417,
+        "narHash": "sha256-XV1x0jCEKaAVOXDGpjDPSGxOiIxiuBkIjTnHosSQJGw=",
+        "owner": "sachahjkl",
+        "repo": "lanblaster.sacha.house",
+        "rev": "5d767db5b97b28602b44a56c7c53bc6745c88a92",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "sachahjkl",
+        "repo": "lanblaster.sacha.house",
+        "type": "gitlab"
+      }
+    },
     "llm-agents": {
       "inputs": {
         "blueprint": "blueprint",
@@ -807,6 +823,7 @@
         "hjem": "hjem",
         "hjem-rum": "hjem-rum",
         "home-manager": "home-manager_2",
+        "lanblaster": "lanblaster",
         "llm-agents": "llm-agents",
         "mcp-nixos": "mcp-nixos",
         "mt7927": "mt7927",

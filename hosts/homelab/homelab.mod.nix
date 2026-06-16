@@ -12,6 +12,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelab
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabProxyHosts
+      self.nixosModules.lanblasterService
       self.nixosModules.ai
     ];
 
@@ -39,6 +40,7 @@ lib.systems.nixosSystem "homelab" {
         hermesDashboard.enable = false;
         sachaHouse.enable = true;
         filebrowser.enable = true;
+        lanblaster.enable = true;
       };
     };
 
