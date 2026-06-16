@@ -22,6 +22,11 @@ _: {
           upstreamPort = 6969;
         };
 
+        "clockin.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 3000;
+        };
+
         "lanblaster.sacha.house" = {
           upstreamHost = "127.0.0.1";
           upstreamPort = 8013;

@@ -104,6 +104,10 @@
       url = "gitlab:sachahjkl/lanblaster.sacha.house";
       flake = false;
     };
+
+    clockin = {
+      url = "gitlab:sachahjkl/clockin.sacha.house";
+    };
   };
 
   outputs = inputs:
