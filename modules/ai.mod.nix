@@ -238,6 +238,7 @@
   }: let
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     cfg = config.features.ai;
+    isWsl = lib.attrByPath ["wsl" "enable"] false config;
   in {
     imports = [self.nixosModules.omp];
 
@@ -261,13 +262,13 @@
 
     config = lib.mkMerge [
       (lib.mkIf cfg.enable {
-        environment.systemPackages = [pkgs.dotool pkgs.ydotool];
+        environment.systemPackages = [pkgs.dotool] ++ lib.optional (!isWsl) pkgs.ydotool;
 
-        programs.ydotool.enable = true;
+        programs.ydotool.enable = !isWsl;
 
-        users.users.${config.userName}.extraGroups = ["input" "ydotool"];
+        users.users.${config.userName}.extraGroups = lib.optionals (!isWsl) ["input" "ydotool"];
 
-        services.udev.extraRules = ''
+        services.udev.extraRules = lib.optionalString (!isWsl) ''
           SUBSYSTEM=="misc", KERNEL=="uinput", GROUP="input", MODE="0660"
         '';
       })
