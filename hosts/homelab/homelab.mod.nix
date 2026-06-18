@@ -2,7 +2,9 @@
   self,
   lib,
   ...
-}:
+}: let
+  homeDirectory = "/data/Home/sacha/";
+in
 lib.systems.nixosSystem "homelab" {
   module = {config, ...}: {
     imports = [
@@ -19,9 +21,10 @@ lib.systems.nixosSystem "homelab" {
 
     userName = "sacha";
     fullName = "Sacha";
-    homeDirectory = "/data/Home/sacha";
     extraUserGroups = ["docker"];
     users.mutableUsers = lib.mkForce false;
+    inherit homeDirectory;
+    nixConfigPath = homeDirectory + "Projects/nixconfig/";
 
     features.ai = {
       enable = true;
