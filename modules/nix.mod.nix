@@ -3,20 +3,14 @@
     config,
     pkgs,
     ...
-  }: {
+  }: let
+    lixPkgs =
+      if config.useLix == "no"
+      then null
+      else pkgs.lixPackageSets.${config.useLix};
+  in {
     imports = [
       inputs.nix-index-database.nixosModules.nix-index
-    ];
-
-    nixpkgs.overlays = [
-      (_: prev: {
-        inherit
-          (prev.lixPackageSets.stable)
-          colmena
-          nix-eval-jobs
-          nixpkgs-review
-          ;
-      })
     ];
 
     programs = {
@@ -29,9 +23,17 @@
       cachix
       deadnix
       manix
-      nil
+      (
+        if lixPkgs == null
+        then nil
+        else lixPkgs.nil
+      )
       nix-inspect
-      nix-init
+      (
+        if lixPkgs == null
+        then nix-init
+        else lixPkgs.nix-init
+      )
       nix-melt
       nix-output-monitor
       nix-prefetch

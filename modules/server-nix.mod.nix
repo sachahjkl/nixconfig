@@ -1,14 +1,35 @@
 _: {
-  flake.nixosModules.serverNix = {pkgs, ...}: {
+  flake.nixosModules.serverNix = {
+    config,
+    pkgs,
+    ...
+  }: let
+    lixPkgs =
+      if config.useLix == "no"
+      then null
+      else pkgs.lixPackageSets.${config.useLix};
+  in {
     config = {
       environment.systemPackages = with pkgs; [
         alejandra
-        colmena
+        (
+          if lixPkgs == null
+          then colmena
+          else lixPkgs.colmena
+        )
         deadnix
         manix
-        nil
+        (
+          if lixPkgs == null
+          then nil
+          else lixPkgs.nil
+        )
         nix-inspect
-        nix-init
+        (
+          if lixPkgs == null
+          then nix-init
+          else lixPkgs.nix-init
+        )
         nix-output-monitor
         nix-tree
         nixd
