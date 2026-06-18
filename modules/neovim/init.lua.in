@@ -378,6 +378,18 @@ require('lazy').setup({
           },
         })
 
+        vim.lsp.config('nixd', {
+          cmd = { 'nixd' },
+          root_dir = util.root_pattern('flake.nix', 'default.nix', 'shell.nix', '.git'),
+          settings = {
+            nixd = {
+              formatting = {
+                command = { 'alejandra' },
+              },
+            },
+          },
+        })
+
         vim.lsp.config('ts_ls', {
           root_dir = util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git'),
           settings = {
@@ -406,6 +418,7 @@ require('lazy').setup({
 
         vim.lsp.enable('angularls')
         vim.lsp.enable('lua_ls')
+        vim.lsp.enable('nixd')
         vim.lsp.enable('ts_ls')
 
         vim.keymap.set('n', '<leader>cm', '<cmd>Mason<CR>', { desc = 'Mason' })
