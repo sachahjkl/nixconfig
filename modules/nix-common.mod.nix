@@ -1,7 +1,7 @@
 {inputs, ...}: {
   flake.nixosModules.nixCommon = {pkgs, ...}: {
     nix = {
-      package = pkgs.lixPackageSets.stable.lix;
+      package = pkgs.lixPackageSets.latest.lix;
 
       gc = {
         automatic = true;
