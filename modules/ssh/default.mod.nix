@@ -106,18 +106,12 @@
                 ControlPersist 60m
                 ForwardX11 no
                 ForwardX11Trusted no
+                IdentitiesOnly yes
+                IdentityFile ${config.preferences.ssh.identityKey}
                 ServerAliveCountMax 3
                 ServerAliveInterval 0
                 SetEnv COLORTERM=truecolor TERM=xterm-256color
                 UserKnownHostsFile ~/.ssh/known_hosts
-
-              Host github.com
-                IdentitiesOnly yes
-                IdentityFile ${config.preferences.ssh.identityKey}
-
-              Host gitlab.com
-                IdentitiesOnly yes
-                IdentityFile ${config.preferences.ssh.identityKey}
 
               Host homelab
                 User deploy
