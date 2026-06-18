@@ -36,7 +36,6 @@ lib.systems.nixosSystem "wsl" {
     userName = "nixos";
     fullName = "NixOS";
     homeDirectory = "/home/nixos";
-    nixConfigPath = "/home/nixos/Projects/nixconfig";
 
     features.ai = {
       enable = true;
@@ -45,6 +44,7 @@ lib.systems.nixosSystem "wsl" {
 
     preferences = {
       git.signingKey = "~/.ssh/far-from-home.pub";
+      ssh.identityKey = "~/.ssh/far-from-home";
 
       sops = {
         enable = true;

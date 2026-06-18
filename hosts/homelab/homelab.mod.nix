@@ -20,7 +20,6 @@ lib.systems.nixosSystem "homelab" {
     userName = "sacha";
     fullName = "Sacha";
     homeDirectory = "/data/Home/sacha";
-    nixConfigPath = "/data/Home/sacha/Projects/nixconfig";
     extraUserGroups = ["docker"];
     users.mutableUsers = lib.mkForce false;
 
@@ -49,13 +48,16 @@ lib.systems.nixosSystem "homelab" {
       };
     };
 
-    preferences.opencode.server = {
-      enable = false;
-      hostname = "0.0.0.0";
-      port = 4096;
-    };
+    preferences = {
+      git.signingKey = "~/.ssh/far-from-home.pub";
+      ssh.identityKey = "~/.ssh/far-from-home";
 
-    preferences.git.signingKey = "~/.ssh/far-from-home.pub";
+      opencode.server = {
+        enable = false;
+        hostname = "0.0.0.0";
+        port = 4096;
+      };
+    };
 
     system.autoUpgrade = {
       enable = true;
