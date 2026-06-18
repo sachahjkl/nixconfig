@@ -5,6 +5,10 @@
     auto-optimise-store = true;
     builders-use-substitutes = true;
     extra-experimental-features = ["flakes" "nix-command"];
+    extra-deprecated-features = [
+      "broken-string-escape"
+      "or-as-identifier"
+    ];
     extra-substituters = [
       "https://hyprland.cachix.org"
       "https://nix-community.cachix.org"

@@ -15,6 +15,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.fish
       self.nixosModules.home-manager
       self.nixosModules.hjem
+      self.nixosModules.mosh
       self.nixosModules.neovim
       self.nixosModules.nix
       self.nixosModules.nixCommon
