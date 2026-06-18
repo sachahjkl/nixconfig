@@ -1,4 +1,4 @@
-{inputs, ...}: {
+{inputs, lib, ...}: {
   flake.nixosModules.nix = {
     config,
     pkgs,
@@ -23,17 +23,9 @@
       cachix
       deadnix
       manix
-      (
-        if lixPkgs == null
-        then nil
-        else lixPkgs.nil
-      )
+      (lib.nix.selectLixPackage lixPkgs nil "nil")
       nix-inspect
-      (
-        if lixPkgs == null
-        then nix-init
-        else lixPkgs.nix-init
-      )
+      (lib.nix.selectLixPackage lixPkgs nix-init "nix-init")
       nix-melt
       nix-output-monitor
       nix-prefetch

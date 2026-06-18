@@ -1,4 +1,4 @@
-_: {
+{lib, ...}: {
   flake.nixosModules.serverNix = {
     config,
     pkgs,
@@ -12,24 +12,12 @@ _: {
     config = {
       environment.systemPackages = with pkgs; [
         alejandra
-        (
-          if lixPkgs == null
-          then colmena
-          else lixPkgs.colmena
-        )
+        (lib.nix.selectLixPackage lixPkgs colmena "colmena")
         deadnix
         manix
-        (
-          if lixPkgs == null
-          then nil
-          else lixPkgs.nil
-        )
+        (lib.nix.selectLixPackage lixPkgs nil "nil")
         nix-inspect
-        (
-          if lixPkgs == null
-          then nix-init
-          else lixPkgs.nix-init
-        )
+        (lib.nix.selectLixPackage lixPkgs nix-init "nix-init")
         nix-output-monitor
         nix-tree
         nixd
