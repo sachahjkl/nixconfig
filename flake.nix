@@ -100,10 +100,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    lanblaster = {
-      url = "gitlab:sachahjkl/lanblaster.sacha.house";
-      flake = false;
-    };
+    lanblaster.url = "gitlab:sachahjkl/lanblaster.sacha.house";
 
     clockin = {
       url = "gitlab:sachahjkl/clockin.sacha.house";
