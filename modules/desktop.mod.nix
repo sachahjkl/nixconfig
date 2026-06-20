@@ -66,7 +66,6 @@
     };
 
     environment = {
-      systemPackages = with pkgs; [gparted seahorse xdg-utils];
       sessionVariables.TERMINAL = lib.mkDefault "kitty";
     };
 

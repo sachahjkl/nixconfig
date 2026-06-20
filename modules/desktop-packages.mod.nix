@@ -3,7 +3,50 @@ _: {
     config,
     pkgs,
     ...
-  }: {
+  }: let
+    desktopEssentials = with pkgs; [
+      baobab
+      file-roller
+      gthumb
+      hunspell
+      hunspellDicts.en-us
+      hunspellDicts.fr-any
+      keepassxc
+      libreoffice-qt
+      losslesscut-bin
+      p7zip
+      qalculate-gtk
+    ];
+  in {
+    environment.systemPackages =
+      desktopEssentials
+      ++ (with pkgs; [
+        alsa-utils
+        audacity
+        bcompare
+        equibop
+        efibootmgr
+        file-roller
+        fff
+        ffmpeg-full
+        gparted
+        imagemagick
+        mediainfo
+        mpv
+        pwvucontrol
+        qemu
+        sbctl
+        seahorse
+        spice
+        spice-gtk
+        telegram-desktop
+        virt-viewer
+        vlc
+        xdg-utils
+        zed-editor
+        neovide
+      ]);
+
     preferences.preservation.user = {
       directories = [
         ".audacity-data"
@@ -52,28 +95,5 @@ _: {
         };
       };
     };
-
-    environment.systemPackages = with pkgs; [
-      alsa-utils
-      audacity
-      bcompare
-      equibop
-      efibootmgr
-      fff
-      ffmpeg-full
-      imagemagick
-      mediainfo
-      mpv
-      pwvucontrol
-      qemu
-      sbctl
-      spice
-      spice-gtk
-      telegram-desktop
-      virt-viewer
-      vlc
-      zed-editor
-      neovide
-    ];
   };
 }
