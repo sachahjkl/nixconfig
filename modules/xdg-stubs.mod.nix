@@ -7,6 +7,7 @@ _: {
           "claude-code".type = "directory";
           "codex".type = "directory";
           "ripgrep".type = "directory";
+          "ripgrep/config".text = "";
           "sops/age".type = "directory";
           "ssh".type = "directory";
         };
