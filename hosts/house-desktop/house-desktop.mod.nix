@@ -18,6 +18,8 @@ lib.systems.nixosSystem "house-desktop" {
     gaming.steam.gamescopeSession.enable = true;
     programs.corectrl.enable = true;
 
+    features.ai.codex.enable = true;
+
     preferences = {
       hyprland.numLock.defaultState = true;
       kitty.useThemeColors = false;

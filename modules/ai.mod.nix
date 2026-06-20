@@ -240,7 +240,10 @@
     cfg = config.features.ai;
     isWsl = lib.attrByPath ["wsl" "enable"] false config;
   in {
-    imports = [self.nixosModules.omp];
+    imports = [
+      self.nixosModules.codex
+      self.nixosModules.omp
+    ];
 
     options.features.ai = {
       enable = lib.mkEnableOption "AI features (speech-to-text, dictation tools)";
@@ -258,11 +261,19 @@
         defaultText = lib.literalExpression "config.features.ai.enable";
         description = "Enable Oh My Pi terminal coding agent. Enabled by default when features.ai.enable is true.";
       };
+
+      codex.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Codex CLI. Disabled by default because it builds from source.";
+      };
     };
 
     config = lib.mkMerge [
       (lib.mkIf cfg.enable {
         environment.systemPackages = [pkgs.dotool] ++ lib.optional (!isWsl) pkgs.ydotool;
+
+        preferences.codex.enable = cfg.codex.enable;
 
         programs.ydotool.enable = !isWsl;
 
