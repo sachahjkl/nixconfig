@@ -19,6 +19,9 @@ lib.systems.nixosSystem "house-laptop" {
     };
 
     preferences = {
+      git.signingKey = "~/.ssh/far-from-home.pub";
+      ssh.identityKey = "~/.ssh/far-from-home";
+
       kitty.useThemeColors = false;
       hyprland = {
         numLock.defaultState = false;
