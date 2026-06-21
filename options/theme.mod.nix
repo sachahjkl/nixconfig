@@ -24,37 +24,13 @@ let
     base0F = "#B4009E";
   };
 
-  terminalTheme = {
-    name = "Naysayer";
-    background = "#062329";
-    black = "#062329";
-    blue = "#66D9EF";
-    brightBlack = "#14676B";
-    brightBlue = "#66D9EF";
-    brightCyan = "#A1EFE4";
-    brightGreen = "#A6E22E";
-    brightPurple = "#AE81FF";
-    brightRed = "#F92672";
-    brightWhite = "#FFFFFF";
-    brightYellow = "#E6DB74";
-    cursorColor = "#FFFFFF";
-    cyan = "#A1EFE4";
-    foreground = "#D1B897";
-    green = "#44B340";
-    purple = "#FD5FF0";
-    red = "#FF0000";
-    selectionBackground = "#FFFFFF";
-    white = "#D1B897";
-    yellow = "#FFAA00";
-  };
-
   stripHash = str:
     if builtins.substring 0 1 str == "#"
     then builtins.substring 1 (builtins.stringLength str - 1) str
     else str;
 in {
   config.flake.lib = {
-    inherit fonts theme terminalTheme;
+    inherit fonts theme;
     themeNoHash = builtins.mapAttrs (_: stripHash) theme;
   };
 }

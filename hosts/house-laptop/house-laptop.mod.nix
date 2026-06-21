@@ -21,12 +21,12 @@ lib.systems.nixosSystem "house-laptop" {
     preferences = {
       git.signingKey = "~/.ssh/far-from-home.pub";
       ssh.identityKey = "~/.ssh/far-from-home";
+      terminal = self.lib.terminals.ghostty;
 
       display = {
         autoLoginUser = config.userName;
         defaultSession = "hyprland-uwsm";
       };
-      kitty.useThemeColors = false;
       hyprland = {
         numLock.defaultState = false;
         laptopMode.enable = true;

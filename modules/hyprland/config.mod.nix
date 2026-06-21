@@ -110,7 +110,7 @@
 
         hjem.users.${userName}.xdg.config.files = {
           "hypr/hyprland.lua".text = ''
-            local terminal = "uwsm app -- kitty"
+            local terminal = "${config.preferences.terminal.command}"
             local fileManager = "uwsm app -- thunar"
             local menu = "uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command \"uwsm app -- {cmd}\""
             local mainMod = "SUPER"

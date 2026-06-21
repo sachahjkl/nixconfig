@@ -6,6 +6,7 @@
     ...
   }: let
     cfg = config.features.ghostty;
+    defaultTerminal = config.preferences.terminal.id == "ghostty";
     inherit (config) userName;
     terminalTheme = self.lib.terminalTheme;
     ghosttyDefaultDesktop = pkgs.makeDesktopItem {
@@ -21,11 +22,6 @@
   in {
     options.features.ghostty = {
       enable = lib.mkEnableOption "Ghostty terminal emulator";
-      defaultTerminal = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Use Ghostty as the default terminal launcher and export TERMINAL=ghostty.";
-      };
       fontSize = lib.mkOption {
         type = lib.types.number;
         default = 14;
@@ -37,16 +33,13 @@
       environment = {
         systemPackages =
           [pkgs.ghostty]
-          ++ lib.optionals cfg.defaultTerminal [ghosttyDefaultDesktop];
-        sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
+          ++ lib.optionals defaultTerminal [ghosttyDefaultDesktop];
       };
 
       services.dbus.packages = [pkgs.ghostty];
       systemd.packages = [pkgs.ghostty];
 
       hjem.users.${userName} = {
-        environment.sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
-
         rum.programs.ghostty = {
           enable = true;
           package = null;
@@ -103,10 +96,6 @@
             "quit-after-last-window-closed" = false;
           };
         };
-      };
-
-      xdg.terminal-exec.settings = lib.mkIf cfg.defaultTerminal {
-        default = ["ghostty-default.desktop"];
       };
     };
   };

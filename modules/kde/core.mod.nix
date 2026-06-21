@@ -65,7 +65,7 @@ _: {
 
         kdeglobals = {
           General = {
-            TerminalApplication = "kitty";
+            TerminalApplication = config.preferences.terminal.kdeApplication;
             XftHintStyle = "hintfull";
             XftSubPixel = "rgb";
             fixed = kdeMonoFont;

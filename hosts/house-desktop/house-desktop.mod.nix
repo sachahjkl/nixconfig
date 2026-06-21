@@ -27,12 +27,12 @@ lib.systems.nixosSystem "house-desktop" {
     };
 
     preferences = {
+      terminal = self.lib.terminals.ghostty;
       display = {
         autoLoginUser = config.userName;
         defaultSession = "hyprland-uwsm";
       };
       hyprland.numLock.defaultState = true;
-      kitty.useThemeColors = false;
     };
 
     services.xserver.videoDrivers = ["nvidia"];

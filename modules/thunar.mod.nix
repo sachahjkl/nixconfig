@@ -2,7 +2,7 @@
   flake.nixosModules.thunar = {config, ...}: let
     helpersRc = ''
       [Configuration]
-      TerminalEmulator=kitty
+      TerminalEmulator=${config.preferences.terminal.emulatorName}
       TerminalEmulatorDismissed=true
     '';
 
@@ -14,8 +14,8 @@
       	<name>Open Terminal Here</name>
       	<submenu></submenu>
       	<unique-id>1781344842619400-1</unique-id>
-      	<command>kitty --directory %f</command>
-      	<description>Open a kitty terminal in the selected directory</description>
+         <command>${config.preferences.terminal.openDirCommand}</command>
+       	<description>Open a terminal in the selected directory</description>
       	<range></range>
       	<patterns>*</patterns>
       	<startup-notify/>

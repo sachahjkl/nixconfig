@@ -9,12 +9,12 @@
       pkgs,
       fontFamily ? self.lib.fonts.mono,
       shell ? "",
-      useThemeColors ? false,
+      terminalTheme ? null,
     }:
       (inputs.wrappers.wrapperModules.kitty.apply {
         inherit pkgs;
         imports = [self.wrappersModules.kitty];
-        inherit fontFamily shell useThemeColors;
+        inherit fontFamily shell terminalTheme;
       }).wrapper;
 
     wrappersModules.kitty = {
@@ -34,10 +34,37 @@
           description = "Kitty font family.";
         };
 
-        useThemeColors = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Whether to apply the shared terminal color palette to Kitty.";
+        terminalTheme = lib.mkOption {
+          type = lib.types.nullOr (lib.types.submodule {
+            options = {
+              name = lib.mkOption {
+                type = lib.types.str;
+                default = "";
+              };
+              background = lib.mkOption {type = lib.types.str;};
+              black = lib.mkOption {type = lib.types.str;};
+              blue = lib.mkOption {type = lib.types.str;};
+              brightBlack = lib.mkOption {type = lib.types.str;};
+              brightBlue = lib.mkOption {type = lib.types.str;};
+              brightCyan = lib.mkOption {type = lib.types.str;};
+              brightGreen = lib.mkOption {type = lib.types.str;};
+              brightPurple = lib.mkOption {type = lib.types.str;};
+              brightRed = lib.mkOption {type = lib.types.str;};
+              brightWhite = lib.mkOption {type = lib.types.str;};
+              brightYellow = lib.mkOption {type = lib.types.str;};
+              cursorColor = lib.mkOption {type = lib.types.str;};
+              cyan = lib.mkOption {type = lib.types.str;};
+              foreground = lib.mkOption {type = lib.types.str;};
+              green = lib.mkOption {type = lib.types.str;};
+              purple = lib.mkOption {type = lib.types.str;};
+              red = lib.mkOption {type = lib.types.str;};
+              selectionBackground = lib.mkOption {type = lib.types.str;};
+              white = lib.mkOption {type = lib.types.str;};
+              yellow = lib.mkOption {type = lib.types.str;};
+            };
+          });
+          default = null;
+          description = "Optional terminal palette to apply to Kitty.";
         };
       };
 
@@ -54,37 +81,37 @@
             background_opacity = "0.85";
             background_blur = "5";
           }
-          // lib.optionalAttrs config.useThemeColors {
-            background = self.lib.terminalTheme.background;
-            foreground = self.lib.terminalTheme.foreground;
-            cursor = self.lib.terminalTheme.cursorColor;
-            selection_background = self.lib.terminalTheme.selectionBackground;
-            color0 = self.lib.terminalTheme.black;
-            color1 = self.lib.terminalTheme.red;
-            color2 = self.lib.terminalTheme.green;
-            color3 = self.lib.terminalTheme.yellow;
-            color4 = self.lib.terminalTheme.blue;
-            color5 = self.lib.terminalTheme.purple;
-            color6 = self.lib.terminalTheme.cyan;
-            color7 = self.lib.terminalTheme.white;
-            color8 = self.lib.terminalTheme.brightBlack;
-            color9 = self.lib.terminalTheme.brightRed;
-            color10 = self.lib.terminalTheme.brightGreen;
-            color11 = self.lib.terminalTheme.brightYellow;
-            color12 = self.lib.terminalTheme.brightBlue;
-            color13 = self.lib.terminalTheme.brightPurple;
-            color14 = self.lib.terminalTheme.brightCyan;
-            color15 = self.lib.terminalTheme.brightWhite;
+          // lib.optionalAttrs (config.terminalTheme != null) {
+            background = config.terminalTheme.background;
+            foreground = config.terminalTheme.foreground;
+            cursor = config.terminalTheme.cursorColor;
+            selection_background = config.terminalTheme.selectionBackground;
+            color0 = config.terminalTheme.black;
+            color1 = config.terminalTheme.red;
+            color2 = config.terminalTheme.green;
+            color3 = config.terminalTheme.yellow;
+            color4 = config.terminalTheme.blue;
+            color5 = config.terminalTheme.purple;
+            color6 = config.terminalTheme.cyan;
+            color7 = config.terminalTheme.white;
+            color8 = config.terminalTheme.brightBlack;
+            color9 = config.terminalTheme.brightRed;
+            color10 = config.terminalTheme.brightGreen;
+            color11 = config.terminalTheme.brightYellow;
+            color12 = config.terminalTheme.brightBlue;
+            color13 = config.terminalTheme.brightPurple;
+            color14 = config.terminalTheme.brightCyan;
+            color15 = config.terminalTheme.brightWhite;
           };
       };
     };
 
     nixosModules.kitty = {lib, ...}: {
       options.preferences.kitty = {
-        useThemeColors = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-          description = "Whether to apply the shared theme colors to Kitty.";
+        theme = lib.mkOption {
+          type = lib.types.nullOr lib.types.attrs;
+          default = null;
+          description = "Optional terminal theme to apply to Kitty.";
         };
       };
     };

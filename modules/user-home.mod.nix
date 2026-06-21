@@ -14,13 +14,11 @@
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     faceIcon = lib.attrByPath ["assets" "faceIcon"] null config;
     installTerminal = lib.attrByPath ["preferences" "userHome" "installTerminal"] true config;
-    kittyUseThemeColors = lib.attrByPath ["preferences" "kitty" "useThemeColors"] false config;
-
     terminalPkg = self.lib.mkTerminal {
       inherit pkgs;
       fontFamily = config.preferences.theme.fonts.mono;
       shell = lib.getExe selfPkgs.userShell;
-      useThemeColors = kittyUseThemeColors;
+      terminalTheme = config.preferences.kitty.theme;
     };
 
     # xdg-terminal's generic fallback tries to execute $TERM as a command.

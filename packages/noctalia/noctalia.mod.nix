@@ -7,6 +7,7 @@
     pkgs,
     fontDefault ? self.lib.fonts.sans,
     fontFixed ? self.lib.fonts.mono,
+    terminalCommand ? "kitty -e",
   }:
     inputs.wrapper-modules.wrappers.noctalia-shell.wrap {
       inherit pkgs;
@@ -36,7 +37,7 @@
           customLaunchPrefixEnabled = false;
           enableClipPreview = true;
           enableClipboardHistory = false;
-          terminalCommand = "kitty -e";
+          inherit terminalCommand;
           position = "center";
           viewMode = "list";
           iconMode = "tabler";

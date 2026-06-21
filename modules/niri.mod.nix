@@ -14,12 +14,13 @@
       inherit pkgs;
       fontFamily = config.preferences.theme.fonts.mono;
       shell = lib.getExe selfPkgs.userShell;
-      useThemeColors = config.preferences.kitty.useThemeColors;
+      terminalTheme = config.preferences.kitty.theme;
     };
     noctaliaPkg = self.lib.mkNoctaliaShell {
       inherit pkgs;
       fontDefault = config.preferences.theme.fonts.sans;
       fontFixed = config.preferences.theme.fonts.mono;
+      terminalCommand = config.preferences.terminal.commandWithShell;
     };
     niriPkg = inputs.wrapper-modules.wrappers.niri.wrap {
       inherit pkgs;

@@ -1,5 +1,6 @@
 {self, ...}: {
   flake.nixosModules.desktop = {
+    config,
     lib,
     pkgs,
     ...
@@ -66,7 +67,7 @@
     };
 
     environment = {
-      sessionVariables.TERMINAL = lib.mkDefault "kitty";
+      sessionVariables.TERMINAL = lib.mkDefault config.preferences.terminal.emulatorName;
     };
 
     qt = {
@@ -77,7 +78,7 @@
     xdg = {
       terminal-exec.settings = {
         enable = true;
-        default = ["kitty.desktop"];
+        default = lib.mkDefault [config.preferences.terminal.desktop];
       };
       portal = {
         enable = true;
