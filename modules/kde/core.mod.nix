@@ -5,10 +5,10 @@ _: {
     pkgs,
     ...
   }: let
-    kdeUiFont = "Inter Medium,10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Regular,0,0";
-    kdeMenuFont = "Inter,10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium,0,0";
-    kdeSmallFont = "Inter,8,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium,0,0";
-    kdeMonoFont = "JetBrainsMono Nerd Font,10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium,0,0";
+    kdeUiFont = "${config.preferences.theme.fonts.sans} Medium,10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Regular,0,0";
+    kdeMenuFont = "${config.preferences.theme.fonts.sans},10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium,0,0";
+    kdeSmallFont = "${config.preferences.theme.fonts.sans},8,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium,0,0";
+    kdeMonoFont = "${config.preferences.theme.fonts.mono},10,-1,5,500,0,0,0,0,0,0,0,0,0,0,1,Medium,0,0";
     wallpaperUri = "file://${toString config.assets.wallpaper}";
     wallpaperScript = pkgs.writeShellScript "plasma-apply-shared-wallpaper" ''
       ${lib.getExe' pkgs.systemd "busctl"} --user call \

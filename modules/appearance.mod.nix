@@ -1,5 +1,5 @@
-_: {
-  flake.nixosModules.baseAssets = {lib, ...}: {
+{self, ...}: {
+  flake.nixosModules.appearance = {lib, ...}: {
     options = {
       assets = {
         wallpaper = lib.mkOption {
@@ -54,13 +54,13 @@ _: {
         fonts = {
           sans = lib.mkOption {
             type = lib.types.str;
-            default = "Inter";
+            default = self.lib.fonts.sans;
             description = "Shared sans-serif UI font name.";
           };
 
           mono = lib.mkOption {
             type = lib.types.str;
-            default = "JetBrainsMono Nerd Font";
+            default = self.lib.fonts.mono;
             description = "Shared monospace UI font name.";
           };
         };

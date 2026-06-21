@@ -1,4 +1,9 @@
 let
+  fonts = {
+    sans = "Inter";
+    mono = "JetBrainsMono Nerd Font";
+  };
+
   theme = {
     # Campbell: the default Windows Terminal palette.
     base00 = "#0C0C0C";
@@ -49,7 +54,7 @@ let
     else str;
 in {
   config.flake.lib = {
-    inherit theme terminalTheme;
+    inherit fonts theme terminalTheme;
     themeNoHash = builtins.mapAttrs (_: stripHash) theme;
   };
 }

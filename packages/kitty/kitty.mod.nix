@@ -7,13 +7,14 @@
   flake = {
     lib.mkTerminal = {
       pkgs,
+      fontFamily ? self.lib.fonts.mono,
       shell ? "",
       useThemeColors ? false,
     }:
       (inputs.wrappers.wrapperModules.kitty.apply {
         inherit pkgs;
         imports = [self.wrappersModules.kitty];
-        inherit shell useThemeColors;
+        inherit fontFamily shell useThemeColors;
       }).wrapper;
 
     wrappersModules.kitty = {
@@ -21,15 +22,23 @@
       lib,
       ...
     }: {
-      options.shell = lib.mkOption {
-        type = lib.types.str;
-        default = "";
-      };
+      options = {
+        shell = lib.mkOption {
+          type = lib.types.str;
+          default = "";
+        };
 
-      options.useThemeColors = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Whether to apply the shared terminal color palette to Kitty.";
+        fontFamily = lib.mkOption {
+          type = lib.types.str;
+          default = self.lib.fonts.mono;
+          description = "Kitty font family.";
+        };
+
+        useThemeColors = lib.mkOption {
+          type = lib.types.bool;
+          default = false;
+          description = "Whether to apply the shared terminal color palette to Kitty.";
+        };
       };
 
       config = {
@@ -37,7 +46,7 @@
         settings =
           {
             enable_audio_bell = "no";
-            font_family = "JetBrainsMono Nerd Font";
+            font_family = config.fontFamily;
             font_size = 14;
             allow_remote_control = "yes";
             auto_reload_config = -1;

@@ -22,6 +22,10 @@ lib.systems.nixosSystem "house-laptop" {
       git.signingKey = "~/.ssh/far-from-home.pub";
       ssh.identityKey = "~/.ssh/far-from-home";
 
+      display = {
+        autoLoginUser = config.userName;
+        defaultSession = "hyprland-uwsm";
+      };
       kitty.useThemeColors = false;
       hyprland = {
         numLock.defaultState = false;

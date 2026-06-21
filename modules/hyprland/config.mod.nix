@@ -130,6 +130,7 @@
                 hl.exec_cmd("uwsm app -- udiskie")
                 hl.exec_cmd("uwsm app -- copyq --start-server")
                 hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+                hl.exec_cmd("systemctl --user start app-com.mitchellh.ghostty.service")
                 hl.exec_cmd("waybar")
                 hl.exec_cmd("hyprpaper")
                 hl.exec_cmd("hypridle")

@@ -2,7 +2,7 @@
   flake.nixosModules.workstation = {lib, ...}: {
     imports = [
       self.nixosModules.baseUser
-      self.nixosModules.baseAssets
+      self.nixosModules.appearance
       self.nixosModules.baseSystem
       self.nixosModules.ai
       self.nixosModules.desktop

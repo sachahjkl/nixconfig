@@ -7,9 +7,7 @@
   }: let
     cfg = config.features.ghostty;
     inherit (config) userName;
-    userShellExe = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.userShell;
     terminalTheme = self.lib.terminalTheme;
-    ghosttyMonoFamily = "JetBrainsMono Nerd Font Mono";
     ghosttyDefaultDesktop = pkgs.makeDesktopItem {
       name = "ghostty-default";
       desktopName = "Ghostty";
@@ -40,27 +38,20 @@
         systemPackages =
           [pkgs.ghostty]
           ++ lib.optionals cfg.defaultTerminal [ghosttyDefaultDesktop];
-        sessionVariables.SHELL = userShellExe;
         sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
       };
 
       services.dbus.packages = [pkgs.ghostty];
       systemd.packages = [pkgs.ghostty];
 
-      systemd.user.services."app-com.mitchellh.ghostty" = {
-        environment.SHELL = userShellExe;
-        wantedBy = ["graphical-session.target"];
-      };
-
       hjem.users.${userName} = {
-        environment.sessionVariables.SHELL = userShellExe;
         environment.sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
 
         rum.programs.ghostty = {
           enable = true;
           package = null;
           settings = {
-            "font-family" = ghosttyMonoFamily;
+            "font-family" = config.preferences.theme.fonts.mono;
             "font-size" = cfg.fontSize;
             "shell-integration" = "detect";
             "cursor-click-to-move" = true;
@@ -93,7 +84,7 @@
             "window-theme" = "ghostty";
             "window-titlebar-background" = terminalTheme.background;
             "window-titlebar-foreground" = terminalTheme.foreground;
-            "window-title-font-family" = "Inter";
+            "window-title-font-family" = config.preferences.theme.fonts.sans;
             "window-padding-x" = 8;
             "window-padding-y" = 6;
             "window-save-state" = "always";

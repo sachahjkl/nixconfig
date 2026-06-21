@@ -10,17 +10,30 @@
     pkgs,
     ...
   }: {
-    options.terminal = lib.mkOption {
-      type = lib.types.str;
-      default = "kitty";
+    options = {
+      terminal = lib.mkOption {
+        type = lib.types.str;
+        default = "kitty";
+      };
+
+      noctaliaCommand = lib.mkOption {
+        type = lib.types.str;
+        default = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell;
+        description = "Noctalia command used by Niri bindings and startup.";
+      };
+
+      whichKeyFont = lib.mkOption {
+        type = lib.types.str;
+        default = "${self.lib.fonts.mono} 12";
+        description = "Font used by wlr-which-key menus.";
+      };
     };
 
     config.settings = let
-      noctaliaExe = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell;
       mkWhichKeyExe = menu: let
         yaml = (pkgs.formats.yaml {}).generate "wlr-which-key.yaml" {
           inherit menu;
-          font = "JetBrainsMono Nerd Font 12";
+          font = config.whichKeyFont;
           background = self.lib.theme.base00;
           color = self.lib.theme.base06;
           border = self.lib.theme.base0F;
@@ -70,12 +83,12 @@
           {
             key = "b";
             desc = "Bluetooth";
-            cmd = "${noctaliaExe} ipc call bluetooth togglePanel";
+            cmd = "${config.noctaliaCommand} ipc call bluetooth togglePanel";
           }
           {
             key = "w";
             desc = "WiFi";
-            cmd = "${noctaliaExe} ipc call wifi togglePanel";
+            cmd = "${config.noctaliaCommand} ipc call wifi togglePanel";
           }
           {
             key = "t";
@@ -106,7 +119,7 @@
         "Mod+Shift+L".move-column-right = _: {};
         "Mod+Shift+K".move-window-up = _: {};
         "Mod+Shift+J".move-window-down = _: {};
-        "Mod+S".spawn-sh = "${noctaliaExe} ipc call launcher toggle";
+        "Mod+S".spawn-sh = "${config.noctaliaCommand} ipc call launcher toggle";
         "Mod+V".spawn-sh = "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
         "XF86AudioRaiseVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%+";
         "XF86AudioLowerVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%-";
@@ -127,7 +140,7 @@
         }) [0 1 2 3 4 5 6 7 8 9]);
       xwayland-satellite.path = lib.getExe pkgs.xwayland-satellite;
       spawn-at-startup = [
-        noctaliaExe
+        config.noctaliaCommand
         (lib.getExe (pkgs.writeShellScriptBin "wallpaper" "${lib.getExe pkgs.swaybg} -i ${self + /modules/wallpaper/wallpaper.jpg} -m fill"))
       ];
     };

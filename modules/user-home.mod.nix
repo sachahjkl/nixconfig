@@ -18,6 +18,7 @@
 
     terminalPkg = self.lib.mkTerminal {
       inherit pkgs;
+      fontFamily = config.preferences.theme.fonts.mono;
       shell = lib.getExe selfPkgs.userShell;
       useThemeColors = kittyUseThemeColors;
     };

@@ -3,8 +3,12 @@
   self,
   ...
 }: {
-  perSystem = {pkgs, ...}: {
-    packages.noctalia-shell = inputs.wrapper-modules.wrappers.noctalia-shell.wrap {
+  flake.lib.mkNoctaliaShell = {
+    pkgs,
+    fontDefault ? self.lib.fonts.sans,
+    fontFixed ? self.lib.fonts.mono,
+  }:
+    inputs.wrapper-modules.wrappers.noctalia-shell.wrap {
       inherit pkgs;
       package = pkgs.noctalia-shell;
       env.NOCTALIA_CACHE_DIR = "/tmp/sacha-noctalia-cache";
@@ -362,9 +366,9 @@
         ui = {
           bluetoothDetailsViewMode = "grid";
           bluetoothHideUnnamedDevices = false;
-          fontDefault = "Inter";
+          inherit fontDefault;
           fontDefaultScale = 1;
-          fontFixed = "JetBrainsMono Nerd Font";
+          inherit fontFixed;
           fontFixedScale = 1;
           panelBackgroundOpacity = 1;
           panelsAttachedToBar = true;
@@ -375,5 +379,8 @@
         wallpaper.enabled = false;
       };
     };
+
+  perSystem = {pkgs, ...}: {
+    packages.noctalia-shell = self.lib.mkNoctaliaShell {inherit pkgs;};
   };
 }

@@ -27,6 +27,10 @@ lib.systems.nixosSystem "house-desktop" {
     };
 
     preferences = {
+      display = {
+        autoLoginUser = config.userName;
+        defaultSession = "hyprland-uwsm";
+      };
       hyprland.numLock.defaultState = true;
       kitty.useThemeColors = false;
     };

@@ -10,7 +10,7 @@ _: {
         antialias = true;
         defaultFonts = {
           sansSerif = [config.preferences.theme.fonts.sans];
-          serif = ["Inter"];
+          serif = [config.preferences.theme.fonts.sans];
           monospace = [config.preferences.theme.fonts.mono];
           emoji = ["Noto Color Emoji"];
         };

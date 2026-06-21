@@ -12,13 +12,21 @@
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     terminalPkg = self.lib.mkTerminal {
       inherit pkgs;
+      fontFamily = config.preferences.theme.fonts.mono;
       shell = lib.getExe selfPkgs.userShell;
       useThemeColors = config.preferences.kitty.useThemeColors;
+    };
+    noctaliaPkg = self.lib.mkNoctaliaShell {
+      inherit pkgs;
+      fontDefault = config.preferences.theme.fonts.sans;
+      fontFixed = config.preferences.theme.fonts.mono;
     };
     niriPkg = inputs.wrapper-modules.wrappers.niri.wrap {
       inherit pkgs;
       imports = [self.wrappersModules.niri];
+      noctaliaCommand = lib.getExe noctaliaPkg;
       terminal = lib.getExe terminalPkg;
+      whichKeyFont = "${config.preferences.theme.fonts.mono} 12";
     };
   in {
     services.displayManager.ly = {
@@ -34,7 +42,7 @@
     environment = {
       systemPackages = [
         niriPkg
-        selfPkgs.noctalia-shell
+        noctaliaPkg
         selfPkgs.quickshell
         terminalPkg
         pkgs.xwayland-satellite
