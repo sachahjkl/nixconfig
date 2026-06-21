@@ -24,7 +24,7 @@
 
       nixConfigPath = lib.mkOption {
         type = lib.types.str;
-        default = self.outPath;
+        default = "${config.homeDirectory}/Projects/nixconfig";
         description = "Local path to this Nix flake checkout.";
       };
 

@@ -37,6 +37,7 @@
     ];
 
     ai.enable = true;
+    ai.herdr.enable = true;
 
     sharedSops.ageKeyFile = lib.mkDefault "/persist/var/lib/sops-nix/key.txt";
     sharedSops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
