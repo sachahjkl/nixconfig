@@ -20,7 +20,7 @@
 
       port = mkOption {
         type = types.port;
-        default = 3000;
+        default = 3001;
         description = "Port for the albumator service.";
       };
 

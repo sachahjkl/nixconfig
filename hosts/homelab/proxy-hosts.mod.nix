@@ -1,4 +1,4 @@
-_: {
+{config, ...}: {
   flake.nixosModules.homelabProxyHosts = {
     homelab.proxy = {
       enable = true;
@@ -15,16 +15,6 @@ _: {
           dockerContainer = "htmxgo";
           dockerPort = 7883;
           websockets = true;
-        };
-
-        "sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 6969;
-        };
-
-        "clockin.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 3000;
         };
 
         "lanblaster.sacha.house" = {
@@ -52,11 +42,6 @@ _: {
         "marketing.sacha.house" = {
           dockerContainer = "marketing-sacha-house";
           dockerPort = 3000;
-        };
-
-        "albumator.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 3000;
         };
 
         "nginx.sacha.house" = {

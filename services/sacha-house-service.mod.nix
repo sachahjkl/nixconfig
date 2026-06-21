@@ -83,7 +83,7 @@
       homelab.proxy.hosts."sacha.house" = {
         upstreamHost = mkDefault "127.0.0.1";
         upstreamPort = mkDefault 6969;
-        http2 = mkDefault false;
+        http2 = mkDefault true;
       };
     };
   };

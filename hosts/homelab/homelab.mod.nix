@@ -47,10 +47,12 @@ in
           lanblaster.enable = true;
           albumator = {
             enable = true;
+            port = 3001;
             dataDir = "/data/Services/albumator";
           };
           clockin = {
             enable = true;
+            port = 3002;
             databaseDir = "/data/Services/clockin";
           };
         };
