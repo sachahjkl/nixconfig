@@ -8,6 +8,8 @@ _: {
   }: let
     editor = lib.attrByPath ["editor"] {} config;
     enabled = lib.attrByPath ["neovim" "enable"] false editor || lib.attrByPath ["default"] "neovim" editor == "neovim";
+    hasTerminal = lib.hasAttrByPath ["terminal" "commandWithShell"] options;
+    terminalCommand = lib.attrByPath ["terminal" "commandWithShell"] null config;
     initLua = pkgs.writeText "init.lua" (
       lib.replaceStrings
       [
@@ -45,6 +47,20 @@ _: {
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasPreservationDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
+    neovimDesktop = ''
+      [Desktop Entry]
+      Name=Neovim wrapper
+      GenericName=Text Editor
+      Comment=Edit files in Neovim
+      TryExec=neovim-editor
+      Exec=neovim-editor %F
+      Terminal=false
+      Type=Application
+      Icon=nvim
+      Categories=Utility;TextEditor;
+      MimeType=text/plain;text/markdown;text/xml;text/x-python;text/x-script.python;text/x-shellscript;application/json;application/toml;application/x-shellscript;
+      StartupNotify=true
+    '';
   in {
     config = lib.mkIf enabled (lib.mkMerge [
       {
@@ -67,7 +83,10 @@ _: {
       })
 
       (lib.optionalAttrs (hasHjemUsers && hasUserName) {
-        hjem.users.${config.userName}.xdg.config.files."nvim/init.lua".source = initLua;
+        hjem.users.${config.userName} = {
+          xdg.config.files."nvim/init.lua".source = initLua;
+          files.".local/share/applications/nvim.desktop".text = neovimDesktop;
+        };
       })
     ]);
   };

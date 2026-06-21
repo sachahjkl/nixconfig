@@ -3,12 +3,12 @@
     terminals = {
       ghostty = {
         id = "ghostty";
-        command = "ghostty +new-window";
-        commandWithShell = "ghostty +new-window -e";
+        command = "uwsm app -- ghostty +new-window";
+        commandWithShell = "uwsm app -- ghostty +new-window -e";
         desktop = "ghostty.desktop";
         emulatorName = "ghostty";
         kdeApplication = "ghostty";
-        openDirCommand = "ghostty +new-window --working-directory %f";
+        openDirCommand = "uwsm app -- ghostty +new-window --working-directory %f";
       };
 
       kitty = {

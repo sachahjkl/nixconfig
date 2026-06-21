@@ -1,9 +1,27 @@
 {self, ...}: {
-  flake.nixosModules.editor = {lib, ...}: let
+  flake.nixosModules.editor = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     editorNames = builtins.attrNames self.lib.editors;
+    terminalCommand = lib.attrByPath ["terminal" "commandWithShell"] null config;
     editorConfigType = lib.types.submodule ({name, ...}: {
       options.enable = lib.mkEnableOption "${name} editor";
     });
+    wrapEditorCommand = editor: command:
+      if editor.needsTerminal && terminalCommand != null
+      then "${terminalCommand} ${command}"
+      else command;
+    editorLaunchers = builtins.map (
+      name: let
+        editor = self.lib.editors.${name};
+      in
+        pkgs.writeShellScriptBin "${name}-editor" ''
+          exec ${wrapEditorCommand editor editor.commandWithFile} "$@"
+        ''
+    ) editorNames;
   in {
     options.editor = lib.mkOption {
       type = lib.types.submodule ({config, ...}: {
@@ -68,11 +86,6 @@
 
         config = let
           editor = self.lib.editors.${config.default};
-          terminalCommand = lib.attrByPath ["terminal" "commandWithShell"] null config;
-          wrap = command:
-            if editor.needsTerminal && terminalCommand != null
-            then "${terminalCommand} ${command}"
-            else command;
         in
           lib.genAttrs editorNames (_: {})
           // {
@@ -85,12 +98,18 @@
               commandWithLocation
               watchCommand
               ;
-            launchCommand = wrap editor.command;
-            launchCommandWithFile = wrap editor.commandWithFile;
-            launchCommandWithLocation = wrap editor.commandWithLocation;
+            launchCommand = wrapEditorCommand editor editor.command;
+            launchCommandWithFile = wrapEditorCommand editor editor.commandWithFile;
+            launchCommandWithLocation = wrapEditorCommand editor editor.commandWithLocation;
           };
       });
       description = "Shared editor interface used by shells and desktop integrations.";
     };
+
+    config.environment.systemPackages = editorLaunchers ++ [
+      (pkgs.writeShellScriptBin "default-editor" ''
+        exec ${config.editor.id}-editor "$@"
+      '')
+    ];
   };
 }

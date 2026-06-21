@@ -1,16 +1,19 @@
 {lib, ...}: {
   flake.nixosModules.mimeapps = {config, ...}: let
+    user = config.userName;
+    editorExec = "${config.editor.id}-editor";
     editorDesktop = ''
       [Desktop Entry]
-      Name=Default Editor
+      Name=Editor (${config.editor.id})
       Comment=Edit files with the current editor
-      Exec=${config.editor.launchCommandWithFile} %F
+      TryExec=${editorExec}
+      Exec=${editorExec} %F
       Type=Application
       Terminal=false
       Icon=${config.editor.icon}
       Categories=Utility;TextEditor;
       MimeType=text/plain;text/markdown;text/xml;text/x-python;text/x-script.python;text/x-shellscript;application/json;application/toml;application/x-shellscript;
-      NoDisplay=true
+      StartupNotify=true
     '';
 
     mimeappsList = ''
@@ -32,41 +35,15 @@
       x-scheme-handler/https=brave-browser.desktop
     '';
 
-    hasPreservation =
-      lib.hasAttrByPath ["persist" "enable"] config
-      && config.persist.enable;
-
-    persistentConfigDir = "${toString config.persist.persistentStoragePath}/home/${config.userName}/.config";
-    persistentAppsDir = "${toString config.persist.persistentStoragePath}/home/${config.userName}/.local/share/applications";
-    homeConfigDir = "${config.homeDirectory}/.config";
-    homeAppsDir = "${config.homeDirectory}/.local/share/applications";
-
-    configDir =
-      if hasPreservation
-      then persistentConfigDir
-      else homeConfigDir;
-    appsDir =
-      if hasPreservation
-      then persistentAppsDir
-      else homeAppsDir;
-
-    mimeappsTargetFile = "${configDir}/mimeapps.list";
-    desktopTargetFile = "${appsDir}/default-editor.desktop";
   in {
-    system.activationScripts.mimeappsList.text = ''
-      install -d -m 0755 -o ${config.userName} -g users ${configDir}
-      cat > ${mimeappsTargetFile} <<'EOF'
-      ${mimeappsList}
-      EOF
-      chown ${config.userName}:users ${mimeappsTargetFile}
-      chmod 0644 ${mimeappsTargetFile}
+    hjem.users.${user} = {
+      xdg.config.files."mimeapps.list".text = mimeappsList;
+      files.".local/share/applications/default-editor.desktop".text = editorDesktop;
+    };
 
-      install -d -m 0755 -o ${config.userName} -g users ${appsDir}
-      cat > ${desktopTargetFile} <<'EOF'
-      ${editorDesktop}
-      EOF
-      chown ${config.userName}:users ${desktopTargetFile}
-      chmod 0644 ${desktopTargetFile}
+    system.activationScripts.removeLegacyEditorDesktop.text = ''
+      rm -f ${config.homeDirectory}/.local/share/applications/kitty-nvim.desktop
+      rm -f ${config.homeDirectory}/.local/share/applications/default-editor.desktop~
     '';
   };
 }

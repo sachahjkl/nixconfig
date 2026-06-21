@@ -1,5 +1,10 @@
 {self, ...}: {
-  flake.nixosModules.terminal = {lib, ...}: let
+  flake.nixosModules.terminal = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     terminalNames = builtins.attrNames self.lib.terminals;
     terminalConfigType = lib.types.submodule ({name, ...}: {
       options = {
@@ -10,8 +15,11 @@
           default = self.lib.terminalThemes.kittyDefault;
           description = "Theme palette for ${name}.";
         };
-      };
-    });
+        };
+      });
+    xtermCompatWrapper = pkgs.writeShellScriptBin "xterm-${config.terminal.emulatorName}" ''
+      exec ${config.terminal.command} "$@"
+    '';
   in {
     options.terminal = lib.mkOption {
       type = lib.types.submodule ({config, ...}: {
@@ -90,5 +98,7 @@
       });
       description = "Shared terminal interface used by desktop integrations.";
     };
+
+    config.environment.systemPackages = [xtermCompatWrapper];
   };
 }
