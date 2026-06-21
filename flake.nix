@@ -106,6 +106,8 @@
 
     lanblaster.url = "gitlab:sachahjkl/lanblaster.sacha.house";
 
+    albumator.url = "gitlab:sachahjkl/albumator";
+
     clockin = {
       url = "gitlab:sachahjkl/clockin.sacha.house";
     };

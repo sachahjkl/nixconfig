@@ -55,8 +55,8 @@ _: {
         };
 
         "albumator.sacha.house" = {
-          dockerContainer = "albumator";
-          dockerPort = 3000;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 3000;
         };
 
         "nginx.sacha.house" = {
