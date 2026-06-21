@@ -8,6 +8,7 @@ lib.systems.nixosSystem "house-desktop" {
     imports = [
       self.diskoConfigurations.house-desktop
       self.nixosModules.workstation
+      self.nixosModules.ghostty
       self.nixosModules.hyprland
       self.nixosModules.niri
       self.nixosModules.gaming
@@ -18,7 +19,12 @@ lib.systems.nixosSystem "house-desktop" {
     gaming.steam.gamescopeSession.enable = true;
     programs.corectrl.enable = true;
 
-    features.ai.codex.enable = true;
+    features = {
+      ghostty.enable = true;
+      ai = {
+        codex.enable = true;
+      };
+    };
 
     preferences = {
       hyprland.numLock.defaultState = true;

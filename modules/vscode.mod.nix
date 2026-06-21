@@ -7,9 +7,14 @@ _: {
     home-manager.users.${config.userName}.programs.vscode = {
       enable = true;
       package = pkgs.vscode;
+      mutableExtensionsDir = true;
       profiles.default = {
+        enableExtensionUpdateCheck = false;
+        enableUpdateCheck = false;
         extensions = with pkgs.vscode-extensions; [
           jdinhlife.gruvbox
+          jnoortheen.nix-ide
+          ms-dotnettools.csdevkit
           vscode-icons-team.vscode-icons
         ];
         userSettings = {
@@ -27,6 +32,8 @@ _: {
           "terminal.integrated.defaultProfile.linux" = "fish";
 
           "chat.commandCenter.enabled" = false;
+          "security.workspace.trust.startupPrompt" = "never";
+          "security.workspace.trust.untrustedFiles" = "open";
           "telemetry.enableCrashReporter" = false;
           "telemetry.enableTelemetry" = false;
           "update.enableWindowsBackgroundUpdates" = false;
@@ -39,6 +46,7 @@ _: {
           "workbench.preferredLightColorTheme" = "Gruvbox Light Hard";
           "workbench.iconTheme" = "vscode-icons";
           "workbench.enableExperiments" = false;
+          "workbench.sideBar.location" = "right";
           "workbench.statusBar.feedback.visible" = false;
 
           "workbench.startupEditor" = "none";

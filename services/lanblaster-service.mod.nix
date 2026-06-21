@@ -1,8 +1,4 @@
-{
-  inputs,
-  self,
-  ...
-}: {
+{inputs, ...}: {
   flake.nixosModules.lanblasterService = {
     config,
     lib,

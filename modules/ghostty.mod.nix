@@ -7,13 +7,26 @@
   }: let
     cfg = config.features.ghostty;
     inherit (config) userName;
-    ghosttyExe = lib.getExe pkgs.ghostty;
-    userShellExe = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.userShell;
     terminalTheme = self.lib.terminalTheme;
     ghosttyMonoFamily = "JetBrainsMono Nerd Font Mono";
+    ghosttyDefaultDesktop = pkgs.makeDesktopItem {
+      name = "ghostty-default";
+      desktopName = "Ghostty";
+      comment = "Open a new Ghostty window";
+      exec = "ghostty +new-window";
+      icon = "com.mitchellh.ghostty";
+      terminal = false;
+      categories = ["System" "TerminalEmulator"];
+      startupNotify = true;
+    };
   in {
     options.features.ghostty = {
       enable = lib.mkEnableOption "Ghostty terminal emulator";
+      defaultTerminal = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Use Ghostty as the default terminal launcher and export TERMINAL=ghostty.";
+      };
       fontSize = lib.mkOption {
         type = lib.types.number;
         default = 14;
@@ -23,14 +36,19 @@
 
     config = lib.mkIf cfg.enable {
       environment = {
-        systemPackages = [pkgs.ghostty];
-        sessionVariables.TERMINAL = "ghostty";
+        systemPackages =
+          [pkgs.ghostty]
+          ++ lib.optionals cfg.defaultTerminal [ghosttyDefaultDesktop];
+        sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
       };
 
+      services.dbus.packages = [pkgs.ghostty];
+      systemd.packages = [pkgs.ghostty];
+
+      systemd.user.services."app-com.mitchellh.ghostty".wantedBy = ["graphical-session.target"];
+
       hjem.users.${userName} = {
-        environment.sessionVariables = {
-          TERMINAL = "ghostty";
-        };
+        environment.sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
 
         rum.programs.ghostty = {
           enable = true;
@@ -38,7 +56,6 @@
           settings = {
             "font-family" = ghosttyMonoFamily;
             "font-size" = cfg.fontSize;
-            command = userShellExe;
             "shell-integration" = "detect";
             "cursor-click-to-move" = true;
             "mouse-hide-while-typing" = true;
@@ -91,17 +108,8 @@
         };
       };
 
-      systemd.user.services.ghostty-daemon = {
-        description = "Ghostty single-instance background process";
-        partOf = ["graphical-session.target"];
-        after = ["graphical-session.target"];
-        wantedBy = ["graphical-session.target"];
-
-        serviceConfig = {
-          ExecStart = ghosttyExe;
-          Restart = "on-failure";
-          RestartSec = 2;
-        };
+      xdg.terminal-exec.settings = lib.mkIf cfg.defaultTerminal {
+        default = ["ghostty-default.desktop"];
       };
     };
   };

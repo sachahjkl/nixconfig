@@ -14,7 +14,9 @@ lib.systems.nixosSystem "house-laptop" {
       self.nixosModules.house-laptop-hardware
     ];
 
-    features.ghostty.enable = true;
+    features = {
+      ghostty.enable = true;
+    };
 
     preferences = {
       kitty.useThemeColors = false;
