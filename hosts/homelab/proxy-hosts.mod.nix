@@ -30,17 +30,17 @@
         };
 
         "button.sacha.house" = {
-          dockerContainer = "button-sacha-house";
+          dockerContainer = "button_sacha_house";
           dockerPort = 3000;
         };
 
         "react-training.sacha.house" = {
-          dockerContainer = "react-sacha-house";
+          dockerContainer = "react_sacha_house";
           dockerPort = 3000;
         };
 
         "marketing.sacha.house" = {
-          dockerContainer = "marketing-sacha-house";
+          dockerContainer = "marketing_sacha_house";
           dockerPort = 3000;
         };
 
@@ -78,7 +78,7 @@
         };
 
         "chat.sacha.house" = {
-          dockerContainer = "chat-sacha-house";
+          dockerContainer = "chat_sacha_house";
           dockerPort = 3030;
         };
 
