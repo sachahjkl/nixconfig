@@ -450,11 +450,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1781770893,
-        "narHash": "sha256-GC174j2y6KrGktBkcUYWMI0GdYGVyMaUaVao7EYzbMQ=",
+        "lastModified": 1782042654,
+        "narHash": "sha256-gtKzOXtumkF+d0f4SvZBqrPFnnUG8ue4gqZ5ra8cT+U=",
         "owner": "sachahjkl",
         "repo": "lanblaster.sacha.house",
-        "rev": "0449052c3aabf60e0eeaddea3636308fa8d07bc5",
+        "rev": "124d67015dbb607ce2682ae6b189243511dcfd85",
         "type": "gitlab"
       },
       "original": {
