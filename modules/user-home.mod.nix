@@ -6,34 +6,12 @@
   flake.nixosModules.user-home = {
     config,
     lib,
-    pkgs,
     ...
   }: let
     user = config.userName;
     home = config.homeDirectory;
-    selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     faceIcon = lib.attrByPath ["assets" "faceIcon"] null config;
-    installTerminal = lib.attrByPath ["preferences" "userHome" "installTerminal"] true config;
-    terminalPkg = self.lib.mkTerminal {
-      inherit pkgs;
-      fontFamily = config.preferences.theme.fonts.mono;
-      shell = lib.getExe selfPkgs.userShell;
-      terminalTheme = config.preferences.kitty.theme;
-    };
-
-    # xdg-terminal's generic fallback tries to execute $TERM as a command.
-    # Inside kitty, $TERM is "xterm-kitty" (a terminfo name, not a binary).
-    # Provide a compatibility wrapper so xdg-terminal works outside XFCE/GNOME/KDE.
-    xtermKittyWrapper = pkgs.writeShellScriptBin "xterm-kitty" ''
-      exec kitty "$@"
-    '';
   in {
-    options.preferences.userHome.installTerminal = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Install the wrapped Kitty terminal package and export TERMINAL=kitty.";
-    };
-
     config = {
       hjem = {
         clobberByDefault = true;
@@ -44,7 +22,9 @@
           directory = home;
 
           environment.sessionVariables = {
-            EDITOR = "nvim";
+            EDITOR = config.editor.command;
+            VISUAL = config.editor.command;
+            GIT_EDITOR = config.editor.watchCommand;
           };
 
           rum.environment.hideWarning = true;
@@ -72,11 +52,6 @@
           programs.home-manager.enable = true;
         };
       };
-
-      environment.systemPackages = lib.optionals installTerminal [
-        terminalPkg
-        xtermKittyWrapper
-      ];
     };
   };
 }

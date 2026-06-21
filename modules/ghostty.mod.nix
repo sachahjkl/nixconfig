@@ -5,35 +5,20 @@
     pkgs,
     ...
   }: let
-    cfg = config.features.ghostty;
-    defaultTerminal = config.preferences.terminal.id == "ghostty";
+    terminalPreferences = lib.attrByPath ["terminal"] {} config;
+    enabled = lib.attrByPath ["ghostty" "enable"] false terminalPreferences || lib.attrByPath ["default"] null terminalPreferences == "ghostty";
     inherit (config) userName;
-    terminalTheme = self.lib.terminalTheme;
-    ghosttyDefaultDesktop = pkgs.makeDesktopItem {
-      name = "ghostty-default";
-      desktopName = "Ghostty";
-      comment = "Open a new Ghostty window";
-      exec = "ghostty +new-window";
-      icon = "com.mitchellh.ghostty";
-      terminal = false;
-      categories = ["System" "TerminalEmulator"];
-      startupNotify = true;
-    };
+    terminalTheme = lib.attrByPath ["ghostty" "theme"] self.lib.terminalThemes.kittyDefault terminalPreferences;
   in {
-    options.features.ghostty = {
-      enable = lib.mkEnableOption "Ghostty terminal emulator";
-      fontSize = lib.mkOption {
-        type = lib.types.number;
-        default = 14;
-        description = "Ghostty terminal font size.";
-      };
+    options.terminal.ghostty.fontSize = lib.mkOption {
+      type = lib.types.number;
+      default = 14;
+      description = "Ghostty terminal font size.";
     };
 
-    config = lib.mkIf cfg.enable {
+    config = lib.mkIf enabled {
       environment = {
-        systemPackages =
-          [pkgs.ghostty]
-          ++ lib.optionals defaultTerminal [ghosttyDefaultDesktop];
+        systemPackages = [pkgs.ghostty];
       };
 
       services.dbus.packages = [pkgs.ghostty];
@@ -44,8 +29,8 @@
           enable = true;
           package = null;
           settings = {
-            "font-family" = config.preferences.theme.fonts.mono;
-            "font-size" = cfg.fontSize;
+            "font-family" = config.theme.fonts.mono;
+            "font-size" = config.terminal.ghostty.fontSize;
             "shell-integration" = "detect";
             "cursor-click-to-move" = true;
             "mouse-hide-while-typing" = true;
@@ -77,7 +62,7 @@
             "window-theme" = "ghostty";
             "window-titlebar-background" = terminalTheme.background;
             "window-titlebar-foreground" = terminalTheme.foreground;
-            "window-title-font-family" = config.preferences.theme.fonts.sans;
+            "window-title-font-family" = config.theme.fonts.sans;
             "window-padding-x" = 8;
             "window-padding-y" = 6;
             "window-save-state" = "always";

@@ -9,7 +9,7 @@
     inherit (config) userName;
     rofiPkg = self.lib.mkRofi {
       inherit pkgs;
-      theme = config.preferences.theme.rofiTheme;
+      theme = config.theme.rofiTheme;
     };
   in {
     hjem.users.${userName}.xdg.config.files."dunst/dunstrc".source = ini.generate "dunstrc" {

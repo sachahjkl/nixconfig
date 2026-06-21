@@ -50,6 +50,6 @@
       };
     };
 
-    preferences.preservation.user.directories = [".local/share/direnv"];
+    persist.user.directories = [".local/share/direnv"];
   };
 }

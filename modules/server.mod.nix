@@ -1,12 +1,14 @@
 {self, ...}: {
-  flake.nixosModules.server = {lib, ...}: {
+  flake.nixosModules.server = {...}: {
     imports = [
       self.nixosModules.baseUser
       self.nixosModules.external-preservation
+      self.nixosModules.editor
       self.nixosModules.hjem
       self.nixosModules.home-manager
       self.nixosModules.mosh
       self.nixosModules.nixCommon
+      self.nixosModules.neovim
       self.nixosModules.nukeDefaultPackages
       self.nixosModules.opencode
       self.nixosModules.packages
@@ -19,7 +21,5 @@
       self.nixosModules.serverSsh
       self.nixosModules.serverTailscale
     ];
-
-    preferences.userHome.installTerminal = lib.mkDefault false;
   };
 }

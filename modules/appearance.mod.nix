@@ -14,7 +14,7 @@
         };
       };
 
-      preferences.theme = {
+      theme = {
         cursor = lib.mkOption {
           type = lib.types.str;
           default = "Posy_Cursor_Black_125_175";
@@ -64,49 +64,6 @@
             description = "Shared monospace UI font name.";
           };
         };
-      };
-
-      preferences.terminal = lib.mkOption {
-        type = lib.types.submodule {
-          options = {
-            id = lib.mkOption {
-              type = lib.types.str;
-              description = "Terminal identifier.";
-            };
-
-            command = lib.mkOption {
-              type = lib.types.str;
-              description = "Command used to open a new terminal window.";
-            };
-
-            commandWithShell = lib.mkOption {
-              type = lib.types.str;
-              description = "Command used to run a shell command in the terminal.";
-            };
-
-            desktop = lib.mkOption {
-              type = lib.types.str;
-              description = "Desktop entry used by xdg-terminal-exec.";
-            };
-
-            emulatorName = lib.mkOption {
-              type = lib.types.str;
-              description = "Terminal emulator program name.";
-            };
-
-            kdeApplication = lib.mkOption {
-              type = lib.types.str;
-              description = "KDE terminal application name.";
-            };
-
-            openDirCommand = lib.mkOption {
-              type = lib.types.str;
-              description = "Command used to open a terminal in a directory.";
-            };
-          };
-        };
-        default = self.lib.terminals.kitty;
-        description = "Shared terminal interface used by desktop integrations.";
       };
     };
   };

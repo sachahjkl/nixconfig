@@ -8,9 +8,7 @@ lib.systems.nixosSystem "house-desktop" {
     imports = [
       self.diskoConfigurations.house-desktop
       self.nixosModules.workstation
-      self.nixosModules.ghostty
       self.nixosModules.hyprland
-      self.nixosModules.niri
       self.nixosModules.gaming
       self.nixosModules.mt7927
       self.nixosModules.house-desktop-hardware
@@ -19,21 +17,17 @@ lib.systems.nixosSystem "house-desktop" {
     gaming.steam.gamescopeSession.enable = true;
     programs.corectrl.enable = true;
 
-    features = {
-      ghostty.enable = true;
-      ai = {
-        codex.enable = true;
-      };
-    };
+    ai.codex.enable = true;
 
-    preferences = {
-      terminal = self.lib.terminals.ghostty;
-      display = {
-        autoLoginUser = config.userName;
-        defaultSession = "hyprland-uwsm";
-      };
-      hyprland.numLock.defaultState = true;
+    terminal = {
+      default = "ghostty";
+      ghostty.theme = self.lib.terminalThemes.kittyDefault;
     };
+    display = {
+      autoLoginUser = config.userName;
+      defaultSession = "hyprland-uwsm";
+    };
+    hyprland.numLock.defaultState = true;
 
     services.xserver.videoDrivers = ["nvidia"];
 

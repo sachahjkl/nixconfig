@@ -1,11 +1,15 @@
 _: {
   flake.nixosModules.vscode = {
     config,
+    lib,
     pkgs,
     ...
-  }: {
+  }: let
+    editor = lib.attrByPath ["editor"] {} config;
+    enabled = lib.attrByPath ["vscode" "enable"] false editor || lib.attrByPath ["default"] "neovim" editor == "vscode";
+  in {
     home-manager.users.${config.userName}.programs.vscode = {
-      enable = true;
+      enable = enabled;
       package = pkgs.vscode;
       mutableExtensionsDir = true;
       profiles.default = {
@@ -18,7 +22,7 @@ _: {
           vscode-icons-team.vscode-icons
         ];
         userSettings = {
-          "editor.fontFamily" = config.preferences.theme.fonts.mono;
+          "editor.fontFamily" = config.theme.fonts.mono;
           "extensions.autoCheckUpdates" = false;
           "extensions.autoUpdate" = false;
           "files.autoSave" = "afterDelay";
@@ -57,6 +61,6 @@ _: {
       };
     };
 
-    preferences.preservation.user.directories = [".config/Code"];
+    persist.user.directories = lib.mkIf enabled [".config/Code"];
   };
 }

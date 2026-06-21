@@ -6,7 +6,7 @@
     pkgs,
     ...
   }: let
-    cfg = config.features.ai.omp;
+    cfg = config.ai.omp;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
 
@@ -170,7 +170,7 @@
         ompCompletions
       ];
 
-      preferences.preservation.user.directories = [
+      persist.user.directories = [
         ".omp"
       ];
 

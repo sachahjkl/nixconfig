@@ -9,9 +9,9 @@ _: {
     inherit (lib.lists) singleton;
     inherit (lib.meta) getExe;
     inherit (lib.modules) mkAfter mkIf;
-    hasPreservationDirs = lib.hasAttrByPath ["preferences" "preservation" "system" "directories"] options;
+    hasPreservationDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
   in {
-    options.preferences.tailscale = {
+    options.network.tailscale = {
       authKeyFile = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
         default = null;
@@ -29,8 +29,8 @@ _: {
       {
         assertions = [
           {
-            assertion = !(config.preferences.tailscale.authKeyFile != null && config.preferences.tailscale.sopsSecretName != null);
-            message = "Use either preferences.tailscale.authKeyFile or preferences.tailscale.sopsSecretName, not both.";
+            assertion = !(config.network.tailscale.authKeyFile != null && config.network.tailscale.sopsSecretName != null);
+            message = "Use either network.tailscale.authKeyFile or network.tailscale.sopsSecretName, not both.";
           }
         ];
       }
@@ -52,23 +52,23 @@ _: {
       }
 
       (lib.optionalAttrs hasPreservationDirs {
-        preferences.preservation.system.directories = singleton "/var/lib/tailscale";
+        persist.system.directories = singleton "/var/lib/tailscale";
       })
 
-      (mkIf (config.preferences.tailscale.sopsSecretName != null) {
-        preferences.sops.enable = true;
+      (mkIf (config.network.tailscale.sopsSecretName != null) {
+        sharedSops.enable = true;
 
-        sops.secrets.${config.preferences.tailscale.sopsSecretName} = {
+        sops.secrets.${config.network.tailscale.sopsSecretName} = {
           owner = "root";
           group = "root";
           mode = "0400";
         };
 
-        services.tailscale.authKeyFile = config.sops.secrets.${config.preferences.tailscale.sopsSecretName}.path;
+        services.tailscale.authKeyFile = config.sops.secrets.${config.network.tailscale.sopsSecretName}.path;
       })
 
-      (mkIf (config.preferences.tailscale.authKeyFile != null) {
-        services.tailscale.authKeyFile = config.preferences.tailscale.authKeyFile;
+      (mkIf (config.network.tailscale.authKeyFile != null) {
+        services.tailscale.authKeyFile = config.network.tailscale.authKeyFile;
       })
 
       (mkIf config.networking.nftables.enable {

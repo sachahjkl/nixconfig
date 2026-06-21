@@ -11,13 +11,13 @@
     hasHomeDirectory = lib.hasAttrByPath ["homeDirectory"] options;
     hasFishAliases = lib.hasAttrByPath ["programs" "fish" "shellAliases"] options;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
-    hasPreservationDirs = lib.hasAttrByPath ["preferences" "preservation" "user" "directories"] options;
-    hasPreservationFiles = lib.hasAttrByPath ["preferences" "preservation" "system" "files"] options;
+    hasPreservationDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
+    hasPreservationFiles = lib.hasAttrByPath ["persist" "system" "files"] options;
     hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
   in {
     imports = [self.nixosModules.yubikeySshKeys];
 
-    options.preferences.ssh.identityKey = lib.mkOption {
+    options.ssh.identityKey = lib.mkOption {
       type = lib.types.str;
       default = "~/.ssh/id_ed25519_sk";
       description = "Primary SSH identity key path.";
@@ -50,11 +50,11 @@
       })
 
       (lib.optionalAttrs hasPreservationFiles (let
-        persistentSshDir = "${toString config.preferences.preservation.persistentStoragePath}/etc/ssh";
+        persistentSshDir = "${toString config.persist.persistentStoragePath}/etc/ssh";
         persistentEd25519Key = "${persistentSshDir}/ssh_host_ed25519_key";
         persistentEd25519Pub = "${persistentSshDir}/ssh_host_ed25519_key.pub";
       in {
-        preferences.preservation.system.files = [
+        persist.system.files = [
           "/etc/ssh/ssh_host_ed25519_key"
           "/etc/ssh/ssh_host_ed25519_key.pub"
         ];
@@ -86,7 +86,7 @@
       }))
 
       (lib.optionalAttrs hasPreservationDirs {
-        preferences.preservation.user.directories = [".cache/ssh"];
+        persist.user.directories = [".cache/ssh"];
       })
 
       (lib.optionalAttrs (hasUserName && hasHomeDirectory) {
@@ -107,7 +107,7 @@
                 ForwardX11 no
                 ForwardX11Trusted no
                 IdentitiesOnly yes
-                IdentityFile ${config.preferences.ssh.identityKey}
+                IdentityFile ${config.ssh.identityKey}
                 ServerAliveCountMax 3
                 ServerAliveInterval 0
                 SetEnv COLORTERM=truecolor TERM=xterm-256color

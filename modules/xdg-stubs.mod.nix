@@ -49,7 +49,7 @@ _: {
       '';
     };
 
-    preferences.preservation.user.directories = [
+    persist.user.directories = [
       ".config/aws"
       ".config/claude-code"
       ".config/codex"

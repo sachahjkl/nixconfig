@@ -6,10 +6,10 @@
     pkgs,
     ...
   }: let
-    cfg = config.preferences.git;
+    cfg = config.git;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
   in {
-    options.preferences.git = {
+    options.git = {
       authorName = lib.mkOption {
         type = lib.types.str;
         default = "sachahjkl";
@@ -31,7 +31,7 @@
 
     config = lib.mkMerge [
       {
-        preferences.preservation.user.directories = [
+        persist.user.directories = [
           ".config/gitui"
         ];
 

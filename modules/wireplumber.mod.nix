@@ -1,5 +1,5 @@
 _: {
   flake.nixosModules.wireplumber = {
-    preferences.preservation.user.directories = [".local/share/wireplumber"];
+    persist.user.directories = [".local/share/wireplumber"];
   };
 }

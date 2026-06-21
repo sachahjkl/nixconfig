@@ -1,8 +1,4 @@
-{
-  inputs,
-  lib,
-  ...
-}: {
+{inputs, ...}: {
   perSystem = {
     pkgs,
     self',
@@ -38,7 +34,6 @@
           wget
           self'.packages.lf
         ];
-        env.EDITOR = lib.getExe pkgs.neovim;
       };
 
       default = self'.packages.userShell;

@@ -2,9 +2,9 @@ _: {
   flake.nixosModules.hyprlandApps = {config, ...}: {
     hjem.users.${config.userName} = {
       environment.sessionVariables = {
-        XCURSOR_THEME = config.preferences.theme.cursor;
-        XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
-        HYPRCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+        XCURSOR_THEME = config.theme.cursor;
+        XCURSOR_SIZE = toString config.theme.cursorSize;
+        HYPRCURSOR_SIZE = toString config.theme.cursorSize;
         QT_QPA_PLATFORM = "wayland";
         QT_QPA_PLATFORMTHEME = "qt5ct";
         QT_STYLE_OVERRIDE = "kvantum";

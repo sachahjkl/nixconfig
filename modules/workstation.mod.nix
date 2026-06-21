@@ -3,6 +3,10 @@
     imports = [
       self.nixosModules.baseUser
       self.nixosModules.appearance
+      self.nixosModules.editor
+      self.nixosModules.terminal
+      self.nixosModules.ghostty
+      self.nixosModules.kitty
       self.nixosModules.baseSystem
       self.nixosModules.ai
       self.nixosModules.desktop
@@ -32,16 +36,12 @@
       self.nixosModules.zoxide
     ];
 
-    features = {
-      ai.enable = true;
-      steam.enable = true;
-    };
+    ai.enable = true;
 
-    preferences = {
-      sops.ageKeyFile = lib.mkDefault "/persist/var/lib/sops-nix/key.txt";
-      sops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
-      tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
-      opencode.homelabServerUrl = lib.mkDefault "http://homelab:4096";
-    };
+    sharedSops.ageKeyFile = lib.mkDefault "/persist/var/lib/sops-nix/key.txt";
+    sharedSops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
+    network.tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
+
+    opencode.homelabServerUrl = lib.mkDefault "http://homelab:4096";
   };
 }

@@ -7,7 +7,7 @@ _: {
     dataRoot = config.homelab.dataRoot;
   in {
     config = {
-      preferences.preservation.system.directories = [
+      persist.system.directories = [
         "/var/lib/containers"
       ];
 

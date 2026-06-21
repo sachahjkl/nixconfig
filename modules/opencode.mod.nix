@@ -52,7 +52,7 @@
     pkgs,
     ...
   }: let
-    cfg = config.preferences.opencode;
+    cfg = config.opencode;
     inherit (lib) mkEnableOption mkIf mkOption types;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
 
@@ -77,7 +77,7 @@
   in {
     imports = [self.nixosModules.sops];
 
-    options.preferences.opencode = {
+    options.opencode = {
       enable = mkOption {
         type = types.bool;
         default = true;
@@ -120,7 +120,7 @@
         mode = "0400";
       };
 
-      preferences.preservation.user.directories = [
+      persist.user.directories = [
         ".config/opencode"
         ".local/share/opencode"
       ];

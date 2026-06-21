@@ -12,6 +12,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.baseUser
       self.nixosModules.external-preservation
       self.nixosModules.ai
+      self.nixosModules.editor
       self.nixosModules.fish
       self.nixosModules.home-manager
       self.nixosModules.hjem
@@ -38,23 +39,20 @@ lib.systems.nixosSystem "wsl" {
     fullName = "NixOS";
     homeDirectory = "/home/nixos";
 
-    features.ai = {
+    ai = {
       enable = true;
       handy.enable = false;
     };
 
-    preferences = {
-      git.signingKey = "~/.ssh/far-from-home.pub";
-      ssh.identityKey = "~/.ssh/far-from-home";
+    git.signingKey = "~/.ssh/far-from-home.pub";
+    ssh.identityKey = "~/.ssh/far-from-home";
 
-      sops = {
-        enable = true;
-        passwordHashSecretName = "shared/password-hash";
-      };
-
-      preservation.enable = lib.mkForce false;
-      userHome.installTerminal = false;
+    sharedSops = {
+      enable = true;
+      passwordHashSecretName = "shared/password-hash";
     };
+
+    persist.enable = lib.mkForce false;
 
     security.pki.certificateFiles = [
       ./certs/zscaler-root-ca.pem

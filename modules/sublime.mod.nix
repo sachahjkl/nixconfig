@@ -6,7 +6,7 @@ _: {
     #  "openssl-1.1.1w"
     #];
 
-    preferences.preservation.user.directories = [
+    persist.user.directories = [
       ".config/sublime-text"
       ".local/share/sublime-text"
     ];

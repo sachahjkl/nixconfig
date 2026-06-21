@@ -11,7 +11,6 @@
       self.nixosModules.firefox
       self.nixosModules.flatpak
       self.nixosModules.fonts
-      self.nixosModules.kitty
       self.nixosModules.mimeapps
       self.nixosModules.obsStudio
       self.nixosModules.theming
@@ -20,7 +19,7 @@
       self.nixosModules.wireplumber
     ];
 
-    features.brave.enable = true;
+    apps.brave.enable = true;
 
     security = {
       polkit = {
@@ -67,7 +66,7 @@
     };
 
     environment = {
-      sessionVariables.TERMINAL = lib.mkDefault config.preferences.terminal.emulatorName;
+      sessionVariables.TERMINAL = lib.mkDefault config.terminal.emulatorName;
     };
 
     qt = {
@@ -78,7 +77,7 @@
     xdg = {
       terminal-exec.settings = {
         enable = true;
-        default = lib.mkDefault [config.preferences.terminal.desktop];
+        default = lib.mkDefault [config.terminal.desktop];
       };
       portal = {
         enable = true;

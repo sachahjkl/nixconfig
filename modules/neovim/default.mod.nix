@@ -6,6 +6,8 @@ _: {
     pkgs,
     ...
   }: let
+    editor = lib.attrByPath ["editor"] {} config;
+    enabled = lib.attrByPath ["neovim" "enable"] false editor || lib.attrByPath ["default"] "neovim" editor == "neovim";
     initLua = pkgs.writeText "init.lua" (
       lib.replaceStrings
       [
@@ -41,10 +43,10 @@ _: {
       (builtins.readFile ./init.lua.in)
     );
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
-    hasPreservationDirs = lib.hasAttrByPath ["preferences" "preservation" "user" "directories"] options;
+    hasPreservationDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
   in {
-    config = lib.mkMerge [
+    config = lib.mkIf enabled (lib.mkMerge [
       {
         environment.systemPackages = with pkgs; [
           dotnet-sdk
@@ -56,7 +58,7 @@ _: {
       }
 
       (lib.optionalAttrs hasPreservationDirs {
-        preferences.preservation.user.directories = [
+        persist.user.directories = [
           ".cache/nvim"
           ".config/nvim"
           ".local/share/nvim"
@@ -67,6 +69,6 @@ _: {
       (lib.optionalAttrs (hasHjemUsers && hasUserName) {
         hjem.users.${config.userName}.xdg.config.files."nvim/init.lua".source = initLua;
       })
-    ];
+    ]);
   };
 }

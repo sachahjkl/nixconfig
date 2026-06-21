@@ -14,7 +14,7 @@
       (mkAliasOptionModule ["secrets"] ["age" "secrets"])
     ];
 
-    options.preferences.secrets.mediaKeyLabel = mkOption {
+    options.ageKey.mediaLabel = mkOption {
       type = str;
       default = "sopskey";
       description = "Filesystem label of the USB media key used for age identities at boot.";
@@ -33,7 +33,7 @@
         ];
 
         fileSystems."/media/key" = {
-          device = "/dev/disk/by-label/${config.preferences.secrets.mediaKeyLabel}";
+          device = "/dev/disk/by-label/${config.ageKey.mediaLabel}";
           fsType = "exfat";
           options = [
             "ro"

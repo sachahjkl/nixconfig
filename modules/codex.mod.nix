@@ -9,11 +9,11 @@
     pkgs,
     ...
   }: let
-    cfg = config.preferences.codex;
+    cfg = config.codex;
     inherit (lib) mkIf mkOption types;
     openaiKeyPath = lib.attrByPath ["sops" "secrets" "ai/openai-api-key" "path"] "/run/secrets/ai/openai-api-key" config;
   in {
-    options.preferences.codex = {
+    options.codex = {
       enable = mkOption {
         type = types.bool;
         default = false;
@@ -48,7 +48,7 @@
         codexCompletions
       ];
 
-      preferences.preservation.user.directories = [
+      persist.user.directories = [
         ".codex"
       ];
     });

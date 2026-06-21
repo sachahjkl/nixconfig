@@ -1,5 +1,5 @@
 _: {
   flake.nixosModules.obsStudio = {
-    preferences.preservation.user.directories = [".config/obs-studio"];
+    persist.user.directories = [".config/obs-studio"];
   };
 }

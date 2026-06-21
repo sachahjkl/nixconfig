@@ -139,7 +139,7 @@ _: {
 
     config = mkIf cfg.enable (mkMerge [
       {
-        preferences.preservation.system.directories = [
+        persist.system.directories = [
           "/var/lib/acme"
         ];
 

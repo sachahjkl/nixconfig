@@ -70,7 +70,7 @@
   flake.nixosModules.meshcentral = {pkgs, ...}: let
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
   in {
-    preferences.preservation.user.directories = [
+    persist.user.directories = [
       ".cache/meshcentral"
       ".local/share/meshcentral"
     ];

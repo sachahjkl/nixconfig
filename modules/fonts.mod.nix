@@ -9,9 +9,9 @@ _: {
         enable = true;
         antialias = true;
         defaultFonts = {
-          sansSerif = [config.preferences.theme.fonts.sans];
-          serif = [config.preferences.theme.fonts.sans];
-          monospace = [config.preferences.theme.fonts.mono];
+          sansSerif = [config.theme.fonts.sans];
+          serif = [config.theme.fonts.sans];
+          monospace = [config.theme.fonts.mono];
           emoji = ["Noto Color Emoji"];
         };
         hinting = {

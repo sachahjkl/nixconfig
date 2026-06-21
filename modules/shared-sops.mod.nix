@@ -6,12 +6,12 @@
     pkgs,
     ...
   }: let
-    cfg = config.preferences.sops;
+    cfg = config.sharedSops;
     hasPasswordHashFile = lib.hasAttrByPath ["passwordHashFile"] options;
   in {
     imports = [self.nixosModules.sops];
 
-    options.preferences.sops = {
+    options.sharedSops = {
       enable = lib.mkEnableOption "shared sops-nix integration";
 
       defaultSopsFile = lib.mkOption {
@@ -35,7 +35,7 @@
       passwordHashSopsFile = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
         default = null;
-        description = "Optional encrypted SOPS file used specifically for the password-hash secret. When null, the secret is read from preferences.sops.defaultSopsFile.";
+        description = "Optional encrypted SOPS file used specifically for the password-hash secret. When null, the secret is read from sharedSops.defaultSopsFile.";
       };
     };
 
@@ -53,7 +53,7 @@
       assertions = [
         {
           assertion = cfg.defaultSopsFile != null;
-          message = "preferences.sops.defaultSopsFile must point to an encrypted SOPS file when preferences.sops.enable = true.";
+          message = "sharedSops.defaultSopsFile must point to an encrypted SOPS file when sharedSops.enable = true.";
         }
       ];
 

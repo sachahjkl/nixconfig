@@ -25,8 +25,8 @@
       ];
 
       sessionVariables = {
-        XCURSOR_THEME = config.preferences.theme.cursor;
-        XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+        XCURSOR_THEME = config.theme.cursor;
+        XCURSOR_SIZE = toString config.theme.cursorSize;
       };
     };
 
@@ -35,11 +35,11 @@
       profiles.user.databases = [
         {
           settings."org/gnome/desktop/interface" = with lib.gvariant; {
-            gtk-theme = config.preferences.theme.gtkTheme;
-            icon-theme = config.preferences.theme.iconTheme;
-            font-name = "${config.preferences.theme.fonts.sans} 10";
-            cursor-theme = config.preferences.theme.cursor;
-            cursor-size = mkInt32 config.preferences.theme.cursorSize;
+            gtk-theme = config.theme.gtkTheme;
+            icon-theme = config.theme.iconTheme;
+            font-name = "${config.theme.fonts.sans} 10";
+            cursor-theme = config.theme.cursor;
+            cursor-size = mkInt32 config.theme.cursorSize;
             color-scheme = "prefer-dark";
           };
         }
@@ -50,11 +50,11 @@
       rum.misc.gtk = {
         enable = true;
         settings = {
-          "theme-name" = config.preferences.theme.gtkTheme;
-          "icon-theme-name" = config.preferences.theme.iconTheme;
-          "font-name" = "${config.preferences.theme.fonts.sans} 10";
-          "cursor-theme-name" = config.preferences.theme.cursor;
-          "cursor-theme-size" = config.preferences.theme.cursorSize;
+          "theme-name" = config.theme.gtkTheme;
+          "icon-theme-name" = config.theme.iconTheme;
+          "font-name" = "${config.theme.fonts.sans} 10";
+          "cursor-theme-name" = config.theme.cursor;
+          "cursor-theme-size" = config.theme.cursorSize;
           "xft-antialias" = 1;
           "xft-hinting" = 1;
           "xft-hintstyle" = "hintfull";
@@ -66,18 +66,18 @@
       xdg.config.files = {
         "qt5ct/qt5ct.conf".text = ''
           [Appearance]
-          icon_theme=${config.preferences.theme.iconTheme}
+          icon_theme=${config.theme.iconTheme}
         '';
 
         "qt6ct/qt6ct.conf".text = ''
           [Appearance]
-          icon_theme=${config.preferences.theme.iconTheme}
+          icon_theme=${config.theme.iconTheme}
         '';
       };
 
       files.".icons/default/index.theme".text = ''
         [Icon Theme]
-        Inherits=${config.preferences.theme.cursor}
+        Inherits=${config.theme.cursor}
       '';
     };
   };

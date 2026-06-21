@@ -6,7 +6,7 @@ _: {
   }: let
     user = config.userName;
   in {
-    options.preferences.preservation = {
+    options.persist = {
       enable =
         lib.mkEnableOption "ephemeral root state preservation"
         // {
@@ -48,14 +48,14 @@ _: {
       };
     };
 
-    config = lib.mkIf config.preferences.preservation.enable {
+    config = lib.mkIf config.persist.enable {
       # SOPS neededForUsers secrets can be decrypted before preservation bind mounts exist,
       # so key files referenced directly under /persist must have the backing filesystem mounted early.
-      fileSystems.${toString config.preferences.preservation.persistentStoragePath}.neededForBoot = lib.mkDefault true;
+      fileSystems.${toString config.persist.persistentStoragePath}.neededForBoot = lib.mkDefault true;
 
       preservation = {
         enable = true;
-        preserveAt.${toString config.preferences.preservation.persistentStoragePath} = {
+        preserveAt.${toString config.persist.persistentStoragePath} = {
           commonMountOptions = [
             "x-gvfs-hide"
             "x-gdu.hide"
@@ -80,7 +80,7 @@ _: {
               "/var/lib/systemd/coredump"
               "/var/log"
             ]
-            ++ config.preferences.preservation.system.directories;
+            ++ config.persist.system.directories;
 
           files =
             [
@@ -89,7 +89,7 @@ _: {
                 inInitrd = true;
               }
             ]
-            ++ config.preferences.preservation.system.files;
+            ++ config.persist.system.files;
 
           users.${user} = {
             directories = lib.unique ([
@@ -109,9 +109,9 @@ _: {
                 "Templates"
                 "Videos"
               ]
-              ++ config.preferences.preservation.user.directories);
+              ++ config.persist.user.directories);
 
-            files = config.preferences.preservation.user.files;
+            files = config.persist.user.files;
           };
         };
       };

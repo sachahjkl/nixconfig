@@ -24,7 +24,7 @@
     };
 
     config = mkIf cfg.enable {
-      preferences.sops = {
+      sharedSops = {
         enable = true;
         inherit (cfg) defaultSopsFile ageKeyFile;
         passwordHashSecretName = "shared/password-hash";

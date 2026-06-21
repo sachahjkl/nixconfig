@@ -5,10 +5,9 @@ _: {
     self,
     ...
   }: let
-    selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
     rofiPkg = self.lib.mkRofi {
       inherit pkgs;
-      theme = config.preferences.theme.rofiTheme;
+      theme = config.theme.rofiTheme;
     };
   in {
     environment.systemPackages = with pkgs; [
@@ -39,7 +38,6 @@ _: {
       inter
       rofiPkg
       hyprlock
-      selfPkgs.terminal
     ];
   };
 }

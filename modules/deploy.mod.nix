@@ -24,11 +24,7 @@
     };
   };
 
-  perSystem = {
-    pkgs,
-    system,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     packages.deploy-rs = pkgs.deploy-rs;
 
     apps.deploy = {
@@ -38,7 +34,7 @@
 
     checks =
       if pkgs.stdenv.isLinux
-      then inputs.deploy-rs.lib.${system}.deployChecks self.deploy
+      then inputs.deploy-rs.lib.${pkgs.stdenv.hostPlatform.system}.deployChecks self.deploy
       else {};
   };
 }

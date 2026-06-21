@@ -3,11 +3,11 @@ _: {
     config,
     lib,
     ...
-  }: {
-    options.features.steam.enable = lib.mkEnableOption "Steam";
-
-    config = lib.mkIf config.features.steam.enable {
-      preferences.preservation.user.directories = [".local/share/Steam"];
+  }: let
+    steamEnabled = lib.attrByPath ["gaming" "steam" "enable"] false config;
+  in {
+    config = lib.mkIf steamEnabled {
+      persist.user.directories = [".local/share/Steam"];
     };
   };
 }

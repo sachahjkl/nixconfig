@@ -6,7 +6,7 @@ _: {
     ...
   }: let
     hyprCfg =
-      lib.attrByPath ["preferences" "hyprland"]
+      lib.attrByPath ["hyprland"]
       {
         display.scale = 1.875;
         laptopMode = {
@@ -22,7 +22,7 @@ _: {
     lockUiScale = scaleValue / desktopReferenceScale;
     scalePx = value: builtins.floor ((value * lockUiScale) + 0.5);
     laptopCfg =
-      lib.attrByPath ["preferences" "hyprland" "laptopMode"]
+      lib.attrByPath ["hyprland" "laptopMode"]
       {
         enable = false;
         lockTimeoutSeconds = 300;

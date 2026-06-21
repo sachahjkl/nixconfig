@@ -6,7 +6,7 @@
   }: {
     imports = [self.nixosModules.tailscale];
 
-    preferences.tailscale.sopsSecretName = lib.mkDefault "tailscale/server-authkey";
+    network.tailscale.sopsSecretName = lib.mkDefault "tailscale/server-authkey";
 
     services.tailscale = {
       enable = true;

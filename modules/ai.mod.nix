@@ -237,29 +237,30 @@
     ...
   }: let
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-    cfg = config.features.ai;
+    cfg = config.ai;
     isWsl = lib.attrByPath ["wsl" "enable"] false config;
   in {
     imports = [
       self.nixosModules.codex
+      self.nixosModules.herdr
       self.nixosModules.omp
     ];
 
-    options.features.ai = {
+    options.ai = {
       enable = lib.mkEnableOption "AI features (speech-to-text, dictation tools)";
 
       handy.enable = lib.mkOption {
         type = lib.types.bool;
-        default = config.features.ai.enable;
-        defaultText = lib.literalExpression "config.features.ai.enable";
-        description = "Enable Handy offline speech-to-text. Enabled by default when features.ai.enable is true.";
+        default = config.ai.enable;
+        defaultText = lib.literalExpression "config.ai.enable";
+        description = "Enable Handy offline speech-to-text. Enabled by default when ai.enable is true.";
       };
 
       omp.enable = lib.mkOption {
         type = lib.types.bool;
-        default = config.features.ai.enable;
-        defaultText = lib.literalExpression "config.features.ai.enable";
-        description = "Enable Oh My Pi terminal coding agent. Enabled by default when features.ai.enable is true.";
+        default = config.ai.enable;
+        defaultText = lib.literalExpression "config.ai.enable";
+        description = "Enable Oh My Pi terminal coding agent. Enabled by default when ai.enable is true.";
       };
 
       codex.enable = lib.mkOption {
@@ -267,13 +268,20 @@
         default = false;
         description = "Enable Codex CLI. Disabled by default because it builds from source.";
       };
+
+      herdr.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable herdr CLI.";
+      };
     };
 
     config = lib.mkMerge [
       (lib.mkIf cfg.enable {
         environment.systemPackages = [pkgs.dotool] ++ lib.optional (!isWsl) pkgs.ydotool;
 
-        preferences.codex.enable = cfg.codex.enable;
+        codex.enable = cfg.codex.enable;
+        herdr.enable = cfg.herdr.enable;
 
         programs.ydotool.enable = !isWsl;
 
@@ -287,7 +295,7 @@
       (lib.mkIf (cfg.enable && cfg.handy.enable) {
         environment.systemPackages = [selfPkgs.handy];
 
-        preferences.preservation.user.directories = [
+        persist.user.directories = [
           ".local/share/com.pais.handy"
         ];
       })

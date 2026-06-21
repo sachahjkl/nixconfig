@@ -5,9 +5,9 @@ _: {
     pkgs,
     ...
   }: {
-    options.features.brave.enable = lib.mkEnableOption "Brave browser";
+    options.apps.brave.enable = lib.mkEnableOption "Brave browser";
 
-    config = lib.mkIf config.features.brave.enable {
+    config = lib.mkIf config.apps.brave.enable {
       environment.systemPackages = [
         (pkgs.brave.override {
           # Keep Chromium's encrypted profile data on one secrets backend
@@ -16,7 +16,7 @@ _: {
           commandLineArgs = "--password-store=gnome-libsecret";
         })
       ];
-      preferences.preservation.user.directories = [".config/BraveSoftware"];
+      persist.user.directories = [".config/BraveSoftware"];
     };
   };
 }

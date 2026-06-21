@@ -62,6 +62,6 @@
       setlocal ${home}/Downloads/ sortby time
     '';
 
-    preferences.preservation.user.directories = [".local/share/lf"];
+    persist.user.directories = [".local/share/lf"];
   };
 }

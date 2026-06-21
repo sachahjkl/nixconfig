@@ -2,7 +2,7 @@
   flake.nixosModules.thunar = {config, ...}: let
     helpersRc = ''
       [Configuration]
-      TerminalEmulator=${config.preferences.terminal.emulatorName}
+      TerminalEmulator=${config.terminal.emulatorName}
       TerminalEmulatorDismissed=true
     '';
 
@@ -14,7 +14,7 @@
       	<name>Open Terminal Here</name>
       	<submenu></submenu>
       	<unique-id>1781344842619400-1</unique-id>
-         <command>${config.preferences.terminal.openDirCommand}</command>
+         <command>${config.terminal.openDirCommand}</command>
        	<description>Open a terminal in the selected directory</description>
       	<range></range>
       	<patterns>*</patterns>
@@ -25,10 +25,10 @@
     '';
 
     hasPreservation =
-      lib.hasAttrByPath ["preferences" "preservation" "enable"] config
-      && config.preferences.preservation.enable;
+      lib.hasAttrByPath ["persist" "enable"] config
+      && config.persist.enable;
 
-    persistentConfigDir = "${toString config.preferences.preservation.persistentStoragePath}/home/${config.userName}/.config";
+    persistentConfigDir = "${toString config.persist.persistentStoragePath}/home/${config.userName}/.config";
     homeConfigDir = "${config.homeDirectory}/.config";
     configDir =
       if hasPreservation
@@ -41,7 +41,7 @@
     thunarTargetDir = "${configDir}/Thunar";
     thunarTargetFile = "${thunarTargetDir}/uca.xml";
   in {
-    preferences.preservation.user.files = lib.mkIf hasPreservation [
+    persist.user.files = lib.mkIf hasPreservation [
       ".config/xfce4/helpers.rc"
       ".config/Thunar/uca.xml"
     ];

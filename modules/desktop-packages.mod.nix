@@ -47,7 +47,7 @@ _: {
         neovide
       ]);
 
-    preferences.preservation.user = {
+    persist.user = {
       directories = [
         ".audacity-data"
         ".cache/zed"
@@ -70,8 +70,8 @@ _: {
       #   settings = {
       #     load_direnv = "shell_hook";
       #     vim_mode = false;
-      #     ui_font_family = config.preferences.theme.fonts.sans;
-      #     buffer_font_family = config.preferences.theme.fonts.mono;
+      #     ui_font_family = config.theme.fonts.sans;
+      #     buffer_font_family = config.theme.fonts.mono;
       #     buffer_font_size = 14;
       #     theme = {
       #       mode = "system";
@@ -89,7 +89,7 @@ _: {
           vsync = true;
           maximized = false;
           font = {
-            normal = [config.preferences.theme.fonts.mono];
+            normal = [config.theme.fonts.mono];
             size = 14.0;
           };
         };

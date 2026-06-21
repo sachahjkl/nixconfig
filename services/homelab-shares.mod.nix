@@ -4,7 +4,7 @@ _: {
     lanInterface = config.homelab.lanInterface;
   in {
     config = {
-      preferences.preservation.system.directories = [
+      persist.system.directories = [
         "/var/lib/nfs"
         "/var/lib/samba"
       ];

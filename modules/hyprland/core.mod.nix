@@ -8,7 +8,7 @@ _: {
     hyprSessionTarget = "wayland-session@hyprland.desktop.target";
     defaultAutoLoginUser = lib.attrByPath ["userName"] null config;
   in {
-    options.preferences.display = {
+    options.display = {
       defaultSession = lib.mkOption {
         type = lib.types.str;
         default = "hyprland-uwsm";
@@ -26,8 +26,8 @@ _: {
       services = {
         displayManager = {
           autoLogin = {
-            enable = config.preferences.display.autoLoginUser != null;
-            user = config.preferences.display.autoLoginUser;
+            enable = config.display.autoLoginUser != null;
+            user = config.display.autoLoginUser;
           };
 
           ly = {
@@ -44,7 +44,7 @@ _: {
               save = true;
             };
           };
-          defaultSession = config.preferences.display.defaultSession;
+          defaultSession = config.display.defaultSession;
         };
       };
 

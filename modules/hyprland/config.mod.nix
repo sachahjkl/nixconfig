@@ -5,15 +5,15 @@
     pkgs,
     ...
   }: let
-    hyprCfg = config.preferences.hyprland;
+    hyprCfg = config.hyprland;
     powerChoices = "lockscreen/logout/suspend/hibernate/shutdown/reboot";
     inherit (config) userName;
     rofiPkg = self.lib.mkRofi {
       inherit pkgs;
-      theme = config.preferences.theme.rofiTheme;
+      theme = config.theme.rofiTheme;
     };
   in {
-    options.preferences.hyprland = {
+    options.hyprland = {
       laptopMode = {
         enable = lib.mkEnableOption "laptop-specific Hyprland power behavior";
 
@@ -98,9 +98,9 @@
     config = lib.mkMerge [
       {
         environment.sessionVariables = {
-          XCURSOR_THEME = config.preferences.theme.cursor;
-          XCURSOR_SIZE = toString config.preferences.theme.cursorSize;
-          HYPRCURSOR_SIZE = toString config.preferences.theme.cursorSize;
+          XCURSOR_THEME = config.theme.cursor;
+          XCURSOR_SIZE = toString config.theme.cursorSize;
+          HYPRCURSOR_SIZE = toString config.theme.cursorSize;
           QT_QPA_PLATFORM = "wayland";
           QT_QPA_PLATFORMTHEME = "qt5ct";
           QT_STYLE_OVERRIDE = "kvantum";
@@ -110,7 +110,7 @@
 
         hjem.users.${userName}.xdg.config.files = {
           "hypr/hyprland.lua".text = ''
-            local terminal = "${config.preferences.terminal.command}"
+            local terminal = "${config.terminal.command}"
             local fileManager = "uwsm app -- thunar"
             local menu = "uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command \"uwsm app -- {cmd}\""
             local mainMod = "SUPER"

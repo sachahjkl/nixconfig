@@ -1,4 +1,4 @@
-{config, ...}: {
+{...}: {
   flake.nixosModules.homelabProxyHosts = {
     homelab.proxy = {
       enable = true;

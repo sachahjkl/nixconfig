@@ -8,32 +8,28 @@ lib.systems.nixosSystem "house-laptop" {
     imports = [
       self.diskoConfigurations.house-laptop
       self.nixosModules.workstation
-      self.nixosModules.ghostty
       self.nixosModules.hyprland
       self.nixosModules.mt7927
       self.nixosModules.house-laptop-hardware
     ];
 
-    features = {
-      ghostty.enable = true;
+    git.signingKey = "~/.ssh/far-from-home.pub";
+    ssh.identityKey = "~/.ssh/far-from-home";
+    terminal = {
+      default = "ghostty";
+      ghostty.theme = self.lib.terminalThemes.kittyDefault;
     };
 
-    preferences = {
-      git.signingKey = "~/.ssh/far-from-home.pub";
-      ssh.identityKey = "~/.ssh/far-from-home";
-      terminal = self.lib.terminals.ghostty;
-
+    display = {
+      autoLoginUser = config.userName;
+      defaultSession = "hyprland-uwsm";
+    };
+    hyprland = {
+      numLock.defaultState = false;
+      laptopMode.enable = true;
       display = {
-        autoLoginUser = config.userName;
-        defaultSession = "hyprland-uwsm";
-      };
-      hyprland = {
-        numLock.defaultState = false;
-        laptopMode.enable = true;
-        display = {
-          output = "eDP-1";
-          scale = 1.25;
-        };
+        output = "eDP-1";
+        scale = 1.25;
       };
     };
 

@@ -4,6 +4,6 @@ _: {
 
     environment.systemPackages = [pkgs.firefox];
 
-    preferences.preservation.user.directories = [".mozilla"];
+    persist.user.directories = [".mozilla"];
   };
 }
