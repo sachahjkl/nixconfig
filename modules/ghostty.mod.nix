@@ -7,6 +7,7 @@
   }: let
     cfg = config.features.ghostty;
     inherit (config) userName;
+    userShellExe = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.userShell;
     terminalTheme = self.lib.terminalTheme;
     ghosttyMonoFamily = "JetBrainsMono Nerd Font Mono";
     ghosttyDefaultDesktop = pkgs.makeDesktopItem {
@@ -39,15 +40,20 @@
         systemPackages =
           [pkgs.ghostty]
           ++ lib.optionals cfg.defaultTerminal [ghosttyDefaultDesktop];
+        sessionVariables.SHELL = userShellExe;
         sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
       };
 
       services.dbus.packages = [pkgs.ghostty];
       systemd.packages = [pkgs.ghostty];
 
-      systemd.user.services."app-com.mitchellh.ghostty".wantedBy = ["graphical-session.target"];
+      systemd.user.services."app-com.mitchellh.ghostty" = {
+        environment.SHELL = userShellExe;
+        wantedBy = ["graphical-session.target"];
+      };
 
       hjem.users.${userName} = {
+        environment.sessionVariables.SHELL = userShellExe;
         environment.sessionVariables.TERMINAL = lib.mkIf cfg.defaultTerminal "ghostty";
 
         rum.programs.ghostty = {
