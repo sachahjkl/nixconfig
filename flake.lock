@@ -106,11 +106,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1781941914,
-        "narHash": "sha256-LMZCVFlvibjUmPeePocmiN8BCcKpEheA8h8isrjC3gs=",
+        "lastModified": 1782130121,
+        "narHash": "sha256-uX0M4/35RRAcG6/2qzUYYHamXVxDw3MW7VSnh8yy1dk=",
         "owner": "sachahjkl",
         "repo": "clockin.sacha.house",
-        "rev": "d61a225dd739d14f056c17ddf83dba6c8f57e482",
+        "rev": "9d242084d534bed7af34488a6d1706091c188fb4",
         "type": "gitlab"
       },
       "original": {
