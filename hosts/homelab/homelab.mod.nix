@@ -3,72 +3,72 @@
   lib,
   ...
 }:
-  lib.systems.nixosSystem "homelab" {
-    module = {config, ...}: {
-      imports = [
-        self.nixosModules.disko
-        self.diskoConfigurations.homelab
-        self.nixosModules.deployUser
-        self.nixosModules.homelab
-        self.nixosModules.homelab-hardware
-        self.nixosModules.homelabProxyHosts
-        self.nixosModules.albumatorService
-        self.nixosModules.clockinService
-        self.nixosModules.lanblasterService
-        self.nixosModules.ai
-      ];
+lib.systems.nixosSystem "homelab" {
+  module = {config, ...}: {
+    imports = [
+      self.nixosModules.disko
+      self.diskoConfigurations.homelab
+      self.nixosModules.deployUser
+      self.nixosModules.homelab
+      self.nixosModules.homelab-hardware
+      self.nixosModules.homelabProxyHosts
+      self.nixosModules.albumatorService
+      self.nixosModules.clockinService
+      self.nixosModules.lanblasterService
+      self.nixosModules.ai
+    ];
 
-      userName = "sacha";
-      fullName = "Sacha";
-      extraUserGroups = ["docker"];
-      users.mutableUsers = lib.mkForce false;
-      homeDirectory = "/data/Home/sacha";
+    userName = "sacha";
+    fullName = "Sacha";
+    extraUserGroups = ["docker"];
+    users.mutableUsers = lib.mkForce false;
+    homeDirectory = "/data/Home/sacha";
 
-      ai = {
+    ai = {
+      enable = true;
+      handy.enable = false;
+    };
+
+    homelab = {
+      lanInterface = "eno1";
+      dataRoot = "/data";
+
+      sops = {
         enable = true;
-        handy.enable = false;
       };
 
-      homelab = {
-        lanInterface = "eno1";
-        dataRoot = "/data";
-
-        sops = {
+      services = {
+        hermesDashboard.enable = false;
+        sachaHouse.enable = true;
+        filebrowser.enable = true;
+        lanblaster.enable = true;
+        albumator = {
           enable = true;
+          port = 3001;
+          dataDir = "/data/Services/albumator";
         };
-
-        services = {
-          hermesDashboard.enable = false;
-          sachaHouse.enable = true;
-          filebrowser.enable = true;
-          lanblaster.enable = true;
-          albumator = {
-            enable = true;
-            port = 3001;
-            dataDir = "/data/Services/albumator";
-          };
-          clockin = {
-            enable = true;
-            port = 3002;
-            databaseDir = "/data/Services/clockin";
-          };
+        clockin = {
+          enable = true;
+          port = 3002;
+          databaseDir = "/data/Services/clockin";
         };
-      };
-
-      git.signingKey = "~/.ssh/far-from-home.pub";
-      ssh.identityKey = "~/.ssh/far-from-home";
-
-      opencode.server = {
-        enable = false;
-        hostname = "0.0.0.0";
-        port = 4096;
-      };
-
-      system.autoUpgrade = {
-        enable = true;
-        flake = "${config.nixConfigPath}#homelab";
-        dates = "daily";
-        randomizedDelaySec = "45min";
       };
     };
-  }
+
+    git.signingKey = "~/.ssh/far-from-home.pub";
+    ssh.identityKey = "~/.ssh/far-from-home";
+
+    opencode.server = {
+      enable = false;
+      hostname = "0.0.0.0";
+      port = 4096;
+    };
+
+    system.autoUpgrade = {
+      enable = true;
+      flake = "${config.nixConfigPath}#homelab";
+      dates = "daily";
+      randomizedDelaySec = "45min";
+    };
+  };
+}

@@ -1,4 +1,4 @@
-{lib, ...}: {
+_: {
   flake.nixosModules.mimeapps = {config, ...}: let
     user = config.userName;
     editorExec = "${config.editor.id}-editor";
@@ -34,7 +34,6 @@
       x-scheme-handler/http=brave-browser.desktop
       x-scheme-handler/https=brave-browser.desktop
     '';
-
   in {
     hjem.users.${user} = {
       xdg.config.files."mimeapps.list".text = mimeappsList;

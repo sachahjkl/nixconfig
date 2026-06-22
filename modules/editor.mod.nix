@@ -14,14 +14,16 @@
       if editor.needsTerminal && terminalCommand != null
       then "${terminalCommand} ${command}"
       else command;
-    editorLaunchers = builtins.map (
-      name: let
-        editor = self.lib.editors.${name};
-      in
-        pkgs.writeShellScriptBin "${name}-editor" ''
-          exec ${wrapEditorCommand editor editor.commandWithFile} "$@"
-        ''
-    ) editorNames;
+    editorLaunchers =
+      builtins.map (
+        name: let
+          editor = self.lib.editors.${name};
+        in
+          pkgs.writeShellScriptBin "${name}-editor" ''
+            exec ${wrapEditorCommand editor editor.commandWithFile} "$@"
+          ''
+      )
+      editorNames;
   in {
     options.editor = lib.mkOption {
       type = lib.types.submodule ({config, ...}: {
@@ -106,10 +108,12 @@
       description = "Shared editor interface used by shells and desktop integrations.";
     };
 
-    config.environment.systemPackages = editorLaunchers ++ [
-      (pkgs.writeShellScriptBin "default-editor" ''
-        exec ${config.editor.id}-editor "$@"
-      '')
-    ];
+    config.environment.systemPackages =
+      editorLaunchers
+      ++ [
+        (pkgs.writeShellScriptBin "default-editor" ''
+          exec ${config.editor.id}-editor "$@"
+        '')
+      ];
   };
 }

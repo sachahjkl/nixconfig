@@ -8,8 +8,6 @@ _: {
   }: let
     editor = lib.attrByPath ["editor"] {} config;
     enabled = lib.attrByPath ["neovim" "enable"] false editor || lib.attrByPath ["default"] "neovim" editor == "neovim";
-    hasTerminal = lib.hasAttrByPath ["terminal" "commandWithShell"] options;
-    terminalCommand = lib.attrByPath ["terminal" "commandWithShell"] null config;
     initLua = pkgs.writeText "init.lua" (
       lib.replaceStrings
       [

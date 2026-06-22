@@ -177,6 +177,9 @@
                 ecosystem = {
                     no_update_news = true,
                 },
+                render = {
+                    cm_auto_hdr = 0,
+                },
                 input = {
                 kb_layout        = "fr",
                 repeat_delay     = 200,

@@ -15,8 +15,8 @@
           default = self.lib.terminalThemes.kittyDefault;
           description = "Theme palette for ${name}.";
         };
-        };
-      });
+      };
+    });
     xtermCompatWrapper = pkgs.writeShellScriptBin "xterm-${config.terminal.emulatorName}" ''
       exec ${config.terminal.command} "$@"
     '';
