@@ -44,5 +44,7 @@
     network.tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
 
     opencode.homelabServerUrl = lib.mkDefault "http://homelab:4096";
+
+    editor.vscode.enable = true;
   };
 }
