@@ -111,6 +111,7 @@
         hjem.users.${userName}.xdg.config.files = {
           "hypr/hyprland.lua".text = ''
             local terminal = "${config.terminal.command}"
+            local scratchpadTerminal = "[workspace special:magic silent; float; size 1200 1000; move 80 80] ${config.terminal.command} --class=${config.terminal.scratchpadClass} --title Scratchpad"
             local fileManager = "uwsm app -- thunar"
             local menu = "uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command \"uwsm app -- {cmd}\""
             local mainMod = "SUPER"
@@ -135,7 +136,6 @@
                 hl.exec_cmd("waybar")
                 hl.exec_cmd("hyprpaper")
                 hl.exec_cmd("hypridle")
-                hl.exec_cmd("[workspace special:magic silent; float; size 1200 1000; move 80 80] " .. terminal .. " --title Scratchpad")
             end)
 
             hl.config({
@@ -295,6 +295,7 @@
             hl.bind(mainMod .. " + SHIFT + agrave",    hl.dsp.window.move({ workspace = 10 }))
 
             hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
+            hl.bind(mainMod .. " + CONTROL + S", hl.dsp.exec_cmd(scratchpadTerminal))
             hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
             hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))

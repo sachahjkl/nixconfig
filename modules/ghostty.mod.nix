@@ -76,6 +76,8 @@
             "gtk-tabs-location" = "top";
             "gtk-wide-tabs" = false;
             "window-show-tab-bar" = "always";
+            "gtk-single-instance" = true;
+            "initial-window" = false;
             "quit-after-last-window-closed" = false;
           };
         };

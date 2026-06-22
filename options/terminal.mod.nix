@@ -9,6 +9,7 @@
         emulatorName = "ghostty";
         kdeApplication = "ghostty";
         openDirCommand = "uwsm app -- ghostty +new-window --working-directory %f";
+        scratchpadClass = "dropdown.ghostty";
       };
 
       kitty = {
@@ -19,6 +20,7 @@
         emulatorName = "kitty";
         kdeApplication = "kitty";
         openDirCommand = "kitty --directory %f";
+        scratchpadClass = "dropdown.kitty";
       };
     };
 

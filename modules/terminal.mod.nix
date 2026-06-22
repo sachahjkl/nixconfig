@@ -73,6 +73,12 @@
             description = "Command used to open a terminal in a directory.";
             internal = true;
           };
+
+          scratchpadClass = lib.mkOption {
+            type = lib.types.str;
+            description = "Window class used for the terminal scratchpad.";
+            internal = true;
+          };
         };
 
         config = let
@@ -93,6 +99,7 @@
               emulatorName
               kdeApplication
               openDirCommand
+              scratchpadClass
               ;
           };
       });
