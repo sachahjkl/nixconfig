@@ -122,6 +122,8 @@
                 mode     = ${builtins.toJSON hyprCfg.display.mode},
                 position = "auto",
                 scale    = ${toString hyprCfg.display.scale},
+                cm       = "srgb",
+                supports_hdr = -1,
             })
 
             hl.on("hyprland.start", function()
@@ -176,9 +178,6 @@
                 },
                 ecosystem = {
                     no_update_news = true,
-                },
-                render = {
-                    cm_auto_hdr = 0,
                 },
                 input = {
                 kb_layout        = "fr",
