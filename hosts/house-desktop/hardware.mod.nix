@@ -9,6 +9,27 @@ _: {
       (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
+    hardware = {
+      graphics.enable = true;
+
+      nvidia = {
+        modesetting.enable = true;
+        nvidiaSettings = true;
+        open = true;
+        nvidiaPersistenced = true;
+        powerManagement.enable = true;
+      };
+
+      mediatek-mt7927 = {
+        enable = true;
+        enableWifi = true;
+        enableBluetooth = true;
+        disableAspm = true;
+      };
+
+      facter.reportPath = ./report.json;
+    };
+
     boot = {
       initrd = {
         availableKernelModules = ["nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod"];

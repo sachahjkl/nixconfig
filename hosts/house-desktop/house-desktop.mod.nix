@@ -38,25 +38,6 @@ lib.systems.nixosSystem "house-desktop" {
 
     boot.kernelParams = ["nvidia_drm.fbdev=1"];
 
-    hardware = {
-      graphics.enable = true;
-
-      nvidia = {
-        modesetting.enable = true;
-        nvidiaSettings = true;
-        open = true;
-        nvidiaPersistenced = true;
-        powerManagement.enable = true;
-      };
-
-      mediatek-mt7927 = {
-        enable = true;
-        enableWifi = true;
-        enableBluetooth = true;
-        disableAspm = true;
-      };
-    };
-
     system.autoUpgrade = {
       enable = true;
       flake = "${config.nixConfigPath}#house-desktop";

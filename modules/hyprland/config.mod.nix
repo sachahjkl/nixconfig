@@ -122,7 +122,7 @@
                 mode     = ${builtins.toJSON hyprCfg.display.mode},
                 position = "auto",
                 scale    = ${toString hyprCfg.display.scale},
-                cm       = "srgb",
+                cm       = "auto",
                 supports_hdr = -1,
             })
 
