@@ -19,14 +19,19 @@ lib.systems.nixosSystem "house-desktop" {
 
     ai.codex.enable = true;
 
+    git.signingKey = "~/.ssh/far-from-home.pub";
+    ssh.identityKey = "~/.ssh/far-from-home";
+
     terminal = {
       default = "ghostty";
       ghostty.theme = self.lib.terminalThemes.kittyDefault;
     };
+
     display = {
       autoLoginUser = config.userName;
       defaultSession = "hyprland-uwsm";
     };
+
     hyprland.numLock.defaultState = true;
 
     services.xserver.videoDrivers = ["nvidia"];
