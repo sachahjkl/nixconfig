@@ -1023,11 +1023,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1782253080,
-        "narHash": "sha256-cC3lk0g9gwA/tvdCwLW/wq/pHaIh6//Oys6H9KJWFUg=",
+        "lastModified": 1782253727,
+        "narHash": "sha256-ojfb8NAVAEhI8i+78hqDolZBtG8+BZzV8FM3k8blI5Y=",
         "owner": "sachahjkl",
         "repo": "sacha.house",
-        "rev": "6cbcdd9f6b06a0c15f16a4ab3fd69018c36ac52b",
+        "rev": "8b58ac1cdc5460a38247005f34e011dd05e9450f",
         "type": "gitlab"
       },
       "original": {
