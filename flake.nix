@@ -115,6 +115,8 @@
     clockin = {
       url = "gitlab:sachahjkl/clockin.sacha.house";
     };
+
+    sacha-house.url = "gitlab:sachahjkl/sacha.house";
   };
 
   outputs = inputs:
