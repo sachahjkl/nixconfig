@@ -68,9 +68,11 @@
           # machine keeps a stable host identity across rebuilds and reboots.
           install -d -m 0755 ${persistentSshDir}
 
-          if [ ! -s ${persistentEd25519Key} ] || [ ! -s ${persistentEd25519Pub} ]; then
+          if [ ! -s ${persistentEd25519Key} ]; then
             rm -f ${persistentEd25519Key} ${persistentEd25519Pub}
             ${pkgs.openssh}/bin/ssh-keygen -q -t ed25519 -N "" -f ${persistentEd25519Key}
+          elif [ ! -s ${persistentEd25519Pub} ]; then
+            ${pkgs.openssh}/bin/ssh-keygen -q -y -f ${persistentEd25519Key} > ${persistentEd25519Pub}
           fi
 
           chmod 0600 ${persistentEd25519Key}
