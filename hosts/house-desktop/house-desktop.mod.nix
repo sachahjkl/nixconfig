@@ -17,7 +17,7 @@ lib.systems.nixosSystem "house-desktop" {
     gaming.steam.gamescopeSession.enable = true;
     programs.corectrl.enable = true;
 
-    ai.codex.enable = true;
+    ai.codex.enable = false;
 
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
