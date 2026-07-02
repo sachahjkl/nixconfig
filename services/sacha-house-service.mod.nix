@@ -43,6 +43,10 @@
         inherit (cfg) package port dataDir openFirewall;
       };
 
+      systemd.tmpfiles.rules = [
+        "d ${cfg.dataDir} 0755 sacha-house sacha-house -"
+      ];
+
       homelab.proxy.hosts."sacha.house" = {
         upstreamHost = mkDefault "127.0.0.1";
         upstreamPort = mkDefault cfg.port;

@@ -43,6 +43,10 @@
         inherit (cfg) host port databaseDir openFirewall;
       };
 
+      systemd.tmpfiles.rules = [
+        "d ${cfg.databaseDir} 0755 clockin clockin -"
+      ];
+
       homelab.proxy.hosts."clockin.sacha.house" = {
         upstreamHost = mkDefault "127.0.0.1";
         upstreamPort = mkDefault cfg.port;
