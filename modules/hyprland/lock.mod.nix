@@ -31,6 +31,7 @@ _: {
       }
       config;
     lockCmd = "pidof hyprlock || ${lib.getExe pkgs.hyprlock}";
+    lockAndDpmsCycle = "${lockCmd}; sleep 5; hyprctl dispatch dpms off";
     inherit (config) userName;
   in {
     hjem.users.${userName}.rum.programs = {
@@ -129,7 +130,7 @@ _: {
             then [
               {
                 timeout = laptopCfg.lockTimeoutSeconds;
-                on-timeout = lockCmd;
+                on-timeout = "hyprctl dispatch dpms on; sleep 0.5; ${lockAndDpmsCycle}";
               }
               {
                 timeout = laptopCfg.displayOffTimeoutSeconds;
@@ -144,7 +145,7 @@ _: {
             else [
               {
                 timeout = 300;
-                on-timeout = lockCmd;
+                on-timeout = "hyprctl dispatch dpms on; sleep 0.5; ${lockAndDpmsCycle}";
               }
               {
                 timeout = 120;
