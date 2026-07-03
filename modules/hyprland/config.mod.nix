@@ -301,7 +301,7 @@
             hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
             hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 
-            local MAX_ZOOM = 4
+            local MAX_ZOOM = 6
             local MIN_ZOOM = 1
             local function zoom(offset)
                 local current = hl.get_config("cursor.zoom_factor")
