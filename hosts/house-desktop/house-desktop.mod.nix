@@ -21,7 +21,7 @@ lib.systems.nixosSystem "house-desktop" {
     };
     programs.corectrl.enable = true;
 
-    ai.codex.enable = false;
+    ai.codex.enable = true;
 
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";

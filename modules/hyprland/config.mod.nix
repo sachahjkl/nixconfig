@@ -216,6 +216,74 @@
                 float = true,
             })
 
+            hl.window_rule({
+                match = { class = "(dialog|confirm|error|notification|splash|confirmreset)" },
+                float = true,
+                center = true,
+                size = "60% 70%",
+            })
+            hl.window_rule({
+                match = { class = "(dialog|confirm|error|notification|splash|confirmreset)" },
+                suppress_event = "maximize",
+            })
+            hl.window_rule({
+                match = { class = "(dialog|confirm|error|notification|splash|confirmreset)" },
+                suppress_event = "fullscreen",
+            })
+
+            hl.window_rule({
+                match = { class = "^(brave|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
+                float = true,
+                center = true,
+                size = "60% 70%",
+            })
+            hl.window_rule({
+                match = { class = "^(brave|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
+                suppress_event = "maximize",
+            })
+            hl.window_rule({
+                match = { class = "^(brave|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
+                suppress_event = "fullscreen",
+            })
+
+            hl.window_rule({
+                match = { class = "(org.pulseaudio.pavucontrol)" },
+                float = true,
+                center = true,
+            })
+            hl.window_rule({
+                match = { class = "(pwvucontrol|com.saivert.pwvucontrol)" },
+                float = true,
+                center = true,
+            })
+            hl.window_rule({
+                match = { class = "(blueman-manager)" },
+                float = true,
+                center = true,
+            })
+            hl.window_rule({
+                match = { class = "(nm-connection-editor)" },
+                float = true,
+                center = true,
+            })
+
+            hl.window_rule({
+                match = { title = "(Open File)(.*)" },
+                float = true,
+            })
+            hl.window_rule({
+                match = { title = "(Select a File)(.*)" },
+                float = true,
+            })
+            hl.window_rule({
+                match = { title = "(Choose wallpaper)(.*)" },
+                float = true,
+            })
+            hl.window_rule({
+                match = { title = "(Open Folder)(.*)" },
+                float = true,
+            })
+
             hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
             hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1}    } })
             hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1}       } })
