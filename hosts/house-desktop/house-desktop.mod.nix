@@ -15,6 +15,10 @@ lib.systems.nixosSystem "house-desktop" {
     ];
 
     gaming.steam.gamescopeSession.enable = true;
+    gaming.streaming.sunshine = {
+      enable = true;
+      cudaSupport = true;
+    };
     programs.corectrl.enable = true;
 
     ai.codex.enable = false;

@@ -23,6 +23,18 @@ _: {
       vinegar.enable = boolDefault true;
 
       mangohud.enable = boolDefault true;
+
+      streaming = {
+        moonlight.enable = boolDefault true;
+
+        sunshine = {
+          enable = boolDefault false;
+          autoStart = boolDefault true;
+          openFirewall = boolDefault true;
+          capSysAdmin = boolDefault true;
+          cudaSupport = boolDefault false;
+        };
+      };
     };
 
     config = lib.mkMerge [
@@ -41,6 +53,27 @@ _: {
 
       (lib.mkIf cfg.mangohud.enable {
         environment.systemPackages = [pkgs.mangohud];
+      })
+
+      (lib.mkIf cfg.streaming.moonlight.enable {
+        environment.systemPackages = [pkgs.moonlight-qt];
+      })
+
+      (lib.mkIf cfg.streaming.sunshine.enable {
+        services.sunshine = {
+          enable = true;
+          autoStart = cfg.streaming.sunshine.autoStart;
+          openFirewall = cfg.streaming.sunshine.openFirewall;
+          capSysAdmin = cfg.streaming.sunshine.capSysAdmin;
+          package =
+            if cfg.streaming.sunshine.cudaSupport
+            then
+              pkgs.sunshine.override {
+                cudaSupport = true;
+                inherit (pkgs) cudaPackages;
+              }
+            else pkgs.sunshine;
+        };
       })
     ];
   };
