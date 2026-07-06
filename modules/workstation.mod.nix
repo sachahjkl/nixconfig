@@ -17,6 +17,7 @@
       self.nixosModules.hjem
       self.nixosModules.lf
       self.nixosModules.mosh
+      ./moshi-hook.nix
       self.nixosModules.neovim
       self.nixosModules.nix
       self.nixosModules.nixCommon
@@ -36,9 +37,12 @@
       self.nixosModules.zoxide
     ];
 
-    ai.enable = true;
-    ai.herdr.enable = true;
+    ai = {
+      enable = true;
+      herdr.enable = true;
+    };
 
+    moshi.enable = true;
     sharedSops.ageKeyFile = lib.mkDefault "/persist/var/lib/sops-nix/key.txt";
     sharedSops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
     network.tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
