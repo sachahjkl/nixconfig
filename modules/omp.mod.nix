@@ -12,15 +12,11 @@
 
     upstreamOmp = selfPkgs.omp;
     exaKeyPath = lib.attrByPath ["sops" "secrets" "ai/exa-api-key" "path"] "/run/secrets/ai/exa-api-key" config;
-    openaiKeyPath = lib.attrByPath ["sops" "secrets" "ai/openai-api-key" "path"] "/run/secrets/ai/openai-api-key" config;
     opencodeKeyPath = lib.attrByPath ["sops" "secrets" "ai/opencode-api-key" "path"] "/run/secrets/ai/opencode-api-key" config;
 
     wrappedOmp = pkgs.writeShellScriptBin "omp" ''
       if [ -r ${exaKeyPath} ]; then
         export EXA_API_KEY="$(cat ${exaKeyPath})"
-      fi
-      if [ -r ${openaiKeyPath} ]; then
-        export OPENAI_API_KEY="$(cat ${openaiKeyPath})"
       fi
       if [ -r ${opencodeKeyPath} ]; then
         export OPENCODE_API_KEY="$(cat ${opencodeKeyPath})"
@@ -114,13 +110,6 @@
 
     ompModels = pkgs.writeText "omp-models.yml" (lib.generators.toYAML {} {
       providers = {
-        openai = {
-          baseUrl = "https://api.openai.com/v1";
-          apiKey = "OPENAI_API_KEY";
-          api = "openai-completions";
-          authHeader = true;
-        };
-
         opencode-go = {
           baseUrl = "https://opencode.ai/zen/go/v1";
           apiKey = "OPENCODE_API_KEY";
@@ -147,12 +136,6 @@
     config = lib.mkIf cfg.enable {
       sops.secrets = lib.mkIf (config.sops.defaultSopsFile != null) {
         "ai/exa-api-key" = {
-          sopsFile = self + /secrets/shared.yaml;
-          owner = config.userName;
-          mode = "0400";
-        };
-
-        "ai/openai-api-key" = {
           sopsFile = self + /secrets/shared.yaml;
           owner = config.userName;
           mode = "0400";

@@ -11,7 +11,6 @@
   }: let
     cfg = config.codex;
     inherit (lib) mkIf mkOption types;
-    openaiKeyPath = lib.attrByPath ["sops" "secrets" "ai/openai-api-key" "path"] "/run/secrets/ai/openai-api-key" config;
   in {
     options.codex = {
       enable = mkOption {
@@ -25,9 +24,6 @@
       upstreamCodex = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex;
 
       wrappedCodex = pkgs.writeShellScriptBin "codex" ''
-        if [ -r ${openaiKeyPath} ]; then
-          export OPENAI_API_KEY="$(cat ${openaiKeyPath})"
-        fi
         exec ${lib.getExe upstreamCodex} "$@"
       '';
 
