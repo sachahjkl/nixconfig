@@ -1,4 +1,4 @@
-{self, ...}: {
+_: {
   perSystem = {pkgs, ...}: let
     version = "0.2.39";
     platform =
