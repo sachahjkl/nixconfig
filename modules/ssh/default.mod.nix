@@ -99,8 +99,8 @@
 
       (lib.optionalAttrs (hasHjemUsers && hasUserName) {
         hjem.users.${config.userName} = {
-          xdg.config.files = {
-            "ssh/config".text = ''
+          files = {
+            ".ssh/config".text = ''
               Host *
                 CheckHostIP yes
                 ControlMaster auto
