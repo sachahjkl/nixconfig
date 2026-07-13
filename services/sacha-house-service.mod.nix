@@ -41,6 +41,7 @@
       services.sacha-house = {
         enable = true;
         inherit (cfg) package port dataDir openFirewall;
+        configFile = "${cfg.dataDir}/config.json";
       };
 
       systemd.tmpfiles.rules = [
