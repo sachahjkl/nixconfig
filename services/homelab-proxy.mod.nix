@@ -74,6 +74,53 @@ _: {
         description = "Optional domain used by the catch-all vhost redirect.";
       };
 
+      dns = {
+        enable = mkOption {
+          type = types.bool;
+          default = false;
+        };
+
+        defaultType = mkOption {
+          type = types.enum ["A" "CNAME"];
+          default = "CNAME";
+        };
+
+        defaultTarget = mkOption {
+          type = types.str;
+          default = "homelab.sacha.house";
+        };
+
+        defaultValue = mkOption {
+          type = types.nullOr types.str;
+          default = null;
+        };
+
+        defaultProxied = mkOption {
+          type = types.bool;
+          default = true;
+        };
+
+        defaultTTL = mkOption {
+          type = types.int;
+          default = 1;
+        };
+
+        zoneNames = mkOption {
+          type = types.listOf types.str;
+          default = [];
+        };
+
+        managedComment = mkOption {
+          type = types.str;
+          default = "managed-by=nixconfig.cloudflare-dns";
+        };
+
+        tokenPath = mkOption {
+          type = types.str;
+          default = "/run/secrets/cloudflare-api-key";
+        };
+      };
+
       hosts = mkOption {
         type = types.attrsOf (types.submodule (_: {
           options = {
@@ -130,6 +177,38 @@ _: {
             basicAuthFile = mkOption {
               type = types.nullOr types.str;
               default = null;
+            };
+
+            dns = {
+              enable = mkOption {
+                type = types.bool;
+                default = true;
+              };
+
+              type = mkOption {
+                type = types.nullOr (types.enum ["A" "CNAME"]);
+                default = null;
+              };
+
+              target = mkOption {
+                type = types.nullOr types.str;
+                default = null;
+              };
+
+              value = mkOption {
+                type = types.nullOr types.str;
+                default = null;
+              };
+
+              proxied = mkOption {
+                type = types.nullOr types.bool;
+                default = null;
+              };
+
+              ttl = mkOption {
+                type = types.nullOr types.int;
+                default = null;
+              };
             };
           };
         }));

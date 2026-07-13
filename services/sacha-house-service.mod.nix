@@ -51,6 +51,11 @@
         upstreamHost = mkDefault "127.0.0.1";
         upstreamPort = mkDefault cfg.port;
         http2 = mkDefault true;
+        dns = {
+          type = mkDefault "A";
+          value = mkDefault "82.66.185.90";
+          proxied = mkDefault false;
+        };
       };
     };
   };

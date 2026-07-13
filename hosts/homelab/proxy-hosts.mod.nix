@@ -4,6 +4,16 @@ _: {
       enable = true;
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
+      dns = {
+        defaultType = "CNAME";
+        defaultValue = "82.66.185.90";
+        defaultProxied = false;
+        defaultTarget = "homelab.sacha.house";
+        zoneNames = [
+          "sacha.house"
+          "froment.software"
+        ];
+      };
       hosts = {
         "secret.homelab.sacha.house" = {
           dockerContainer = "vaultwarden";
@@ -53,11 +63,15 @@ _: {
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
+          dns = {
+            enable = false;
+          };
         };
 
         "sae.aubetoile.dev" = {
           dockerContainer = "sae.aubetoile";
           dockerPort = 8080;
+          dns.enable = false;
         };
 
         "admin.sacha.house" = {
@@ -91,6 +105,11 @@ _: {
           dockerContainer = "dashy";
           dockerPort = 8080;
           websockets = true;
+          dns = {
+            type = "A";
+            value = "82.66.185.90";
+            proxied = false;
+          };
         };
 
         "php.homelab.sacha.house" = {
@@ -102,12 +121,14 @@ _: {
           dockerContainer = "pixels-web";
           dockerPort = 80;
           websockets = true;
+          dns.enable = false;
         };
 
         "api.pixels.aubetoile.dev" = {
           dockerContainer = "pixels-api";
           dockerPort = 8080;
           websockets = true;
+          dns.enable = false;
         };
 
         "ai.sacha.house" = {
@@ -132,12 +153,18 @@ _: {
         "froment.software" = {
           dockerContainer = "froment-software";
           dockerPort = 80;
+          dns = {
+            type = "A";
+            value = "82.66.185.90";
+            proxied = false;
+          };
         };
 
         "tmp.aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
           websockets = true;
+          dns.enable = false;
         };
 
         "portainer.homelab.sacha.house" = {
