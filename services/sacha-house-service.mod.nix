@@ -27,7 +27,7 @@
       dataDir = mkOption {
         type = types.path;
         default = "/data/Services/sacha.house";
-        description = "Working directory for runtime data; config is read from ${dataDir}/config.json.";
+        description = "Working directory for runtime data; config is read from dataDir/config.json.";
       };
 
       openFirewall = mkOption {
