@@ -53,6 +53,7 @@
       services.albumator = {
         enable = true;
         enableDemoUser = true;
+        addressHeader = "x-forwarded-for";
         inherit (cfg) host port dataDir databaseUrl publicGitRepoId environmentFile;
       };
 

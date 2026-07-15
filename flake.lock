@@ -29,11 +29,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784148110,
-        "narHash": "sha256-ksbB31npl3OyTJG0BdB6QRmtja3ordPh1IPOWiXWWjA=",
+        "lastModified": 1784150535,
+        "narHash": "sha256-zs3YYeeIRiRr68RX34JcNKGUGxyW2Y6V+ujE5axf2G0=",
         "owner": "sachahjkl",
         "repo": "albumator",
-        "rev": "fd2a3c310b6d9daaefd3d6692f489458d9d27a66",
+        "rev": "84be11a93a43b173140175af391dbe36c14c9ecb",
         "type": "gitlab"
       },
       "original": {
