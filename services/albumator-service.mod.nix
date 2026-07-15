@@ -52,6 +52,7 @@
     config = mkIf cfg.enable {
       services.albumator = {
         enable = true;
+        enableDemoUser = true;
         inherit (cfg) host port dataDir databaseUrl publicGitRepoId environmentFile;
       };
 
