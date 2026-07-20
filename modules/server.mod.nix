@@ -7,6 +7,7 @@
       self.nixosModules.hjem
       self.nixosModules.home-manager
       self.nixosModules.mosh
+      self.nixosModules.moshiHook
       self.nixosModules.nixCommon
       self.nixosModules.neovim
       self.nixosModules.nukeDefaultPackages
@@ -21,5 +22,7 @@
       self.nixosModules.serverSsh
       self.nixosModules.serverTailscale
     ];
+
+    moshi.enable = true;
   };
 }

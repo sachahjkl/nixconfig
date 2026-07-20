@@ -17,7 +17,7 @@
       self.nixosModules.hjem
       self.nixosModules.lf
       self.nixosModules.mosh
-      ./moshi-hook.nix
+      self.nixosModules.moshiHook
       self.nixosModules.neovim
       self.nixosModules.nix
       self.nixosModules.nixCommon
