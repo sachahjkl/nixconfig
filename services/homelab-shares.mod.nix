@@ -35,6 +35,7 @@ _: {
               "read only" = "no";
               "guest ok" = "yes";
               "guest only" = "yes";
+              "force group" = "users";
               "create mask" = "0664";
               "directory mask" = "0775";
               "force create mode" = "0664";
