@@ -3,6 +3,7 @@ _: {
     hjem.users.${config.userName} = {
       xdg = {
         config.files = {
+          "ripgrep".type = "directory";
           "ripgrep/config".text = "";
         };
 
@@ -11,11 +12,17 @@ _: {
           "python".type = "directory";
         };
 
-        data.files."go".type = "directory";
+        data.files = {
+          "cargo".type = "directory";
+          "go".type = "directory";
+          "gradle".type = "directory";
+        };
       };
 
       environment.sessionVariables = {
+        CARGO_HOME = "${config.homeDirectory}/.local/share/cargo";
         GOPATH = "${config.homeDirectory}/.local/share/go";
+        GRADLE_USER_HOME = "${config.homeDirectory}/.local/share/gradle";
         RIPGREP_CONFIG_PATH = "${config.homeDirectory}/.config/ripgrep/config";
         LESSHISTFILE = "${config.homeDirectory}/.local/state/less/history";
         PYTHON_HISTORY = "${config.homeDirectory}/.local/state/python/history";
@@ -23,7 +30,9 @@ _: {
     };
 
     persist.user.directories = [
+      ".local/share/cargo"
       ".local/share/go"
+      ".local/share/gradle"
     ];
   };
 }
