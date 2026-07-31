@@ -110,9 +110,9 @@ _: {
         };
 
         storage = mkOption {
-          type = types.nullOr types.str;
-          default = null;
-          description = "State directory quota; null disables persistent state.";
+          type = types.bool;
+          default = false;
+          description = "Whether to provide a persistent state directory.";
         };
 
         syscalls = mkOption {
@@ -174,10 +174,9 @@ _: {
           ProtectSystem = "strict";
         })
 
-        (mkIf (config.limits.storage != null) {
+        (mkIf config.limits.storage {
           StateDirectory = name;
           StateDirectoryMode = "0700";
-          StateDirectoryQuota = config.limits.storage;
           WorkingDirectory = "%S/${name}";
         })
 

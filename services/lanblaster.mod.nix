@@ -37,7 +37,10 @@
         bind = [{v4.tcp = cfg.port;}];
       };
 
-      limits.storage = "1G";
+      limits = {
+        storage = true;
+        syscalls = ["@system-service" "@pkey"];
+      };
 
       ${
         if options ? systemd
