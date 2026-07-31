@@ -8,6 +8,115 @@
   }: let
     cfg = config.git;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
+    isDark = lib.attrByPath ["theme" "isDark"] true config;
+    cornerRadius = lib.attrByPath ["theme" "cornerRadius"] 0 config;
+    difft = pkgs.writeShellScriptBin "difft" ''
+      exec ${lib.getExe pkgs.difftastic} --background ${
+        if isDark
+        then "dark"
+        else "light"
+      } "$@"
+    '';
+    jjOpen = pkgs.writers.writeNuBin "jj-open" (builtins.readFile ./jujutsu/jj-open.nu);
+    jjFork = pkgs.writers.writeNuBin "jj-fork" (builtins.readFile ./jujutsu/jj-fork.nu);
+    jjConfig = pkgs.writers.writeTOML "jj-config.toml" {
+      user = {
+        name = cfg.authorName;
+        email = cfg.authorEmail;
+      };
+
+      aliases = {
+        ".." = ["edit" "@-"];
+        ",," = ["edit" "@+"];
+        f = ["git" "fetch"];
+        p = ["git" "push"];
+        cl = ["git" "clone"];
+        i = ["git" "init"];
+        a = ["abandon"];
+        c = ["commit"];
+        ci = ["commit" "--interactive"];
+        d = ["diff"];
+        e = ["edit"];
+        l = ["log"];
+        la = ["log" "--revisions" "::"];
+        r = ["rebase"];
+        res = ["resolve"];
+        resa = ["resolve-ast"];
+        resolve-ast = ["resolve" "--tool" "mergiraf"];
+        s = ["squash"];
+        si = ["squash" "--interactive"];
+        sh = ["show"];
+        u = ["undo"];
+        open = ["util" "exec" "--" (lib.getExe jjOpen)];
+        fork = ["util" "exec" "--" (lib.getExe jjFork)];
+      };
+
+      revsets = {
+        bookmark-advance-from = ''
+          coalesce(
+            heads(::to & bookmarks() & ~immutable()),
+            heads(::to & bookmarks()),
+          )
+        '';
+        bookmark-advance-to = ''
+          heads(::@ & mutable() & ~description(exact:"") & (~empty() | merges()))
+        '';
+        log = ''
+          present(@) | present(trunk()) | ancestors(remote_bookmarks().. | @.., 8)
+        '';
+      };
+
+      ui = {
+        default-command = "log";
+        diff-editor = ":builtin";
+        diff-formatter = [(lib.getExe difft) "--color" "always" "$left" "$right"];
+        conflict-marker-style = "snapshot";
+        graph.style =
+          if cornerRadius > 0
+          then "curved"
+          else "square";
+      };
+
+      templates = {
+        log = "builtin_log_compact";
+        draft_commit_description = ''
+          concat(
+            coalesce(description, "\n"),
+            surround(
+              "\nJJ: This commit contains the following changes:\n", "",
+              indent("JJ:     ", diff.stat(72)),
+            ),
+            "\nJJ: ignore-rest\n",
+            diff.git(),
+          )
+        '';
+        git_push_bookmark = ''"${cfg.forgeUser}/change-" ++ change_id.short()'';
+      };
+
+      remotes."*" = {
+        auto-track-bookmarks = "${cfg.forgeUser}/*";
+        push-new-bookmarks = true;
+      };
+
+      git = {
+        fetch = ["origin"];
+        push = "origin";
+        sign-on-push = true;
+      };
+
+      signing = {
+        backend = "ssh";
+        behavior = "drop";
+        key = cfg.signingKey;
+      };
+
+      merge-tools.mergiraf.program = lib.getExe pkgs.mergiraf;
+
+      fsmonitor = {
+        backend = "watchman";
+        watchman.register-snapshot-trigger = true;
+      };
+    };
   in {
     options.git = {
       authorName = lib.mkOption {
@@ -27,6 +136,12 @@
         default = "~/.ssh/id_ed25519_sk.pub";
         description = "SSH public key path used for Git commit signing.";
       };
+
+      forgeUser = lib.mkOption {
+        type = lib.types.str;
+        default = "sachahjkl";
+        description = "Forge user namespace used for generated push bookmarks.";
+      };
     };
 
     config = lib.mkMerge [
@@ -36,18 +151,34 @@
         ];
 
         environment.systemPackages = with pkgs; [
-          difftastic
+          difft
           fzf
           git
           git-lfs
           gitui
+          jjFork
+          jjOpen
+          jjui
+          jujutsu
           mergiraf
+          watchman
         ];
       }
 
       (lib.optionalAttrs hasHjemUsers {
         hjem.users.${config.userName} = {
           files.".ssh/allowed_signers".text = lib.concatMapStrings (key: "${cfg.authorEmail} ${key}\n") self.keys-admin;
+
+          xdg.config.files = {
+            "jj/config.toml".source = jjConfig;
+            "watchman/watchman.json".text = builtins.toJSON {
+              ignore_dirs = [
+                ".direnv"
+                "node_modules"
+                "target"
+              ];
+            };
+          };
 
           rum.programs.git = {
             enable = true;
@@ -73,7 +204,10 @@
                 colorMoved = "plain";
                 mnemonicPrefix = true;
                 renames = true;
+                tool = "difftastic";
               };
+              difftool.prompt = false;
+              "difftool \"difftastic\"".cmd = "${lib.getExe difft} \"$LOCAL\" \"$REMOTE\"";
               push = {
                 default = "simple";
                 autoSetupRemote = true;
@@ -83,7 +217,10 @@
                 prune = true;
                 pruneTags = true;
                 all = true;
+                fsckObjects = true;
               };
+              receive.fsckObjects = true;
+              transfer.fsckObjects = true;
               help.autocorrect = "prompt";
               commit = {
                 verbose = true;

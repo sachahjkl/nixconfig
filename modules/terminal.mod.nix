@@ -12,7 +12,7 @@
 
         theme = lib.mkOption {
           type = lib.types.attrs;
-          default = self.lib.terminalThemes.kittyDefault;
+          default = config.theme.terminalPalette;
           description = "Theme palette for ${name}.";
         };
       };

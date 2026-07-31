@@ -2,8 +2,15 @@ _: {
   flake.nixosModules.serverBase = {pkgs, ...}: {
     config = {
       boot = {
+        initrd.systemd.enable = true;
         loader = {
-          systemd-boot.enable = true;
+          systemd-boot = {
+            enable = true;
+            editor = false;
+            consoleMode = "keep";
+            configurationLimit = 10;
+          };
+          timeout = 3;
           efi.canTouchEfiVariables = true;
         };
         kernelPackages = pkgs.linuxPackages_latest;

@@ -1,4 +1,8 @@
-{inputs, ...}: {
+{
+  inputs,
+  self,
+  ...
+}: {
   flake.nixosModules.lanblasterService = {
     config,
     lib,
@@ -29,49 +33,13 @@
         default = 8013;
         description = "Port the game server listens on.";
       };
-
-      user = mkOption {
-        type = types.str;
-        default = "lanblaster";
-        description = "User that runs the game server.";
-      };
-
-      group = mkOption {
-        type = types.str;
-        default = "lanblaster";
-        description = "Group that runs the game server.";
-      };
     };
 
     config = mkIf cfg.enable {
-      users.users.lanblaster = {
-        isSystemUser = true;
-        inherit (cfg) group;
-        home = "/var/lib/lanblaster";
-        createHome = true;
-      };
-      users.groups.lanblaster = {};
-
-      systemd.services.lanblaster = {
-        description = "Lanblaster game server";
-        after = ["network-online.target"];
-        wants = ["network-online.target"];
-        wantedBy = ["multi-user.target"];
-        startLimitIntervalSec = 0;
-        serviceConfig = {
-          Type = "simple";
-          User = cfg.user;
-          Group = cfg.group;
-          WorkingDirectory = "${cfg.package}/share/lanblaster";
-          ExecStart = "${cfg.package}/bin/lanblaster-server";
-          Environment = [
-            "HOST=${cfg.host}"
-            "PORT=${toString cfg.port}"
-          ];
-          Restart = "on-failure";
-          RestartSec = 10;
-          StandardOutput = "journal";
-          StandardError = "journal";
+      system.services.lanblaster = {
+        imports = [self.serviceModules.lanblaster];
+        lanblaster = {
+          inherit (cfg) package host port;
         };
       };
 

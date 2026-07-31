@@ -28,6 +28,7 @@ _: {
       pwvucontrol
       qt6.qtwayland
       satty
+      smile
       slurp
       udiskie
       waybar

@@ -315,6 +315,7 @@
             hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("SUPER + V", hl.dsp.exec_cmd("copyq menu"))
+            hl.bind("SUPER + semicolon", hl.dsp.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile}"))
             hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe rofiPkg} -show power-menu -modi \"power-menu:rofi-power-menu --choices=${powerChoices}\""))
             hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
             hl.bind(mainMod .. " + SHIFT + SPACE", hl.dsp.window.float({ action = "toggle" }))

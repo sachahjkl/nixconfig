@@ -26,10 +26,7 @@ lib.systems.nixosSystem "house-desktop" {
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
 
-    terminal = {
-      default = "ghostty";
-      ghostty.theme = self.lib.terminalThemes.kittyDefault;
-    };
+    terminal.default = "ghostty";
 
     display = {
       autoLoginUser = config.userName;

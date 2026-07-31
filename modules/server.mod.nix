@@ -6,6 +6,7 @@
       self.nixosModules.editor
       self.nixosModules.hjem
       self.nixosModules.home-manager
+      self.nixosModules.kernelHardening
       self.nixosModules.mosh
       self.nixosModules.moshiHook
       self.nixosModules.nixCommon

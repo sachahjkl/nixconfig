@@ -7,6 +7,7 @@
       self.nixosModules.terminal
       self.nixosModules.ghostty
       self.nixosModules.kitty
+      self.nixosModules.kernelHardening
       self.nixosModules.baseSystem
       self.nixosModules.ai
       self.nixosModules.desktop

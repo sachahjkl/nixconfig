@@ -7,7 +7,10 @@
     ...
   }: let
     cfg = config.sharedSops;
+    hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasPasswordHashFile = lib.hasAttrByPath ["passwordHashFile"] options;
+    hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
+    hasUserName = lib.hasAttrByPath ["userName"] options;
   in {
     imports = [self.nixosModules.sops];
 
@@ -39,53 +42,63 @@
       };
     };
 
-    config = lib.mkIf cfg.enable {
-      boot = {
-        initrd.availableKernelModules = {
-          exfat = true;
-          usb_storage = true;
-          uas = true;
+    config = lib.mkIf cfg.enable (lib.mkMerge [
+      {
+        boot = {
+          initrd.availableKernelModules = {
+            exfat = true;
+            usb_storage = true;
+            uas = true;
+          };
+
+          supportedFilesystems.exfat = true;
         };
 
-        supportedFilesystems.exfat = true;
-      };
+        assertions = [
+          {
+            assertion = cfg.defaultSopsFile != null;
+            message = "sharedSops.defaultSopsFile must point to an encrypted SOPS file when sharedSops.enable = true.";
+          }
+        ];
 
-      assertions = [
-        {
-          assertion = cfg.defaultSopsFile != null;
-          message = "sharedSops.defaultSopsFile must point to an encrypted SOPS file when sharedSops.enable = true.";
-        }
-      ];
+        sops = {
+          inherit (cfg) defaultSopsFile;
+          defaultSopsFormat = "yaml";
 
-      sops = {
-        inherit (cfg) defaultSopsFile;
-        defaultSopsFormat = "yaml";
+          age = {
+            keyFile = cfg.ageKeyFile;
+            sshKeyPaths = [];
+          };
 
-        age = {
-          keyFile = cfg.ageKeyFile;
-          sshKeyPaths = [];
+          gnupg.sshKeyPaths = [];
+
+          secrets = lib.mkIf (cfg.passwordHashSecretName != null) {
+            ${cfg.passwordHashSecretName} =
+              {
+                neededForUsers = true;
+                path = "/run/secrets-for-users/${config.userName}-password-hash";
+              }
+              // lib.optionalAttrs (cfg.passwordHashSopsFile != null) {
+                sopsFile = cfg.passwordHashSopsFile;
+              };
+          };
         };
 
-        gnupg.sshKeyPaths = [];
+        passwordHashFile = lib.mkIf (hasPasswordHashFile && cfg.passwordHashSecretName != null) (lib.mkDefault config.sops.secrets.${cfg.passwordHashSecretName}.path);
 
-        secrets = lib.mkIf (cfg.passwordHashSecretName != null) {
-          ${cfg.passwordHashSecretName} =
-            {
-              neededForUsers = true;
-              path = "/run/secrets-for-users/${config.userName}-password-hash";
-            }
-            // lib.optionalAttrs (cfg.passwordHashSopsFile != null) {
-              sopsFile = cfg.passwordHashSopsFile;
-            };
-        };
-      };
+        environment.systemPackages = [
+          pkgs.cryptsetup
+          pkgs.exfatprogs
+        ];
+      }
 
-      passwordHashFile = lib.mkIf (hasPasswordHashFile && cfg.passwordHashSecretName != null) (lib.mkDefault config.sops.secrets.${cfg.passwordHashSecretName}.path);
+      (lib.optionalAttrs (hasHjemUsers && hasUserName) {
+        hjem.users.${config.userName}.xdg.config.files."sops/age".type = "directory";
+      })
 
-      environment.systemPackages = [
-        pkgs.cryptsetup
-        pkgs.exfatprogs
-      ];
-    };
+      (lib.optionalAttrs hasPersistDirs {
+        persist.user.directories = [".config/sops"];
+      })
+    ]);
   };
 }

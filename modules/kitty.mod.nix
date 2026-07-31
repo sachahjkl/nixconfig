@@ -1,4 +1,4 @@
-{self, ...}: {
+_: {
   flake.nixosModules.kitty = {
     config,
     lib,
@@ -7,7 +7,7 @@
   }: let
     terminalPreferences = lib.attrByPath ["terminal"] {} config;
     enabled = lib.attrByPath ["kitty" "enable"] false terminalPreferences || lib.attrByPath ["default"] null terminalPreferences == "kitty";
-    terminalTheme = lib.attrByPath ["kitty" "theme"] self.lib.terminalThemes.kittyDefault terminalPreferences;
+    terminalTheme = lib.attrByPath ["kitty" "theme"] config.theme.terminalPalette terminalPreferences;
     inherit (config) userName;
   in {
     config = lib.mkIf enabled {
@@ -16,7 +16,8 @@
       hjem.users.${userName}.xdg.config.files."kitty/kitty.conf".text = ''
         enable_audio_bell no
         font_family ${config.theme.fonts.mono}
-        font_size 14
+        font_size ${toString config.theme.fonts.size.normal}
+        window_padding_width ${toString config.theme.padding}
         allow_remote_control yes
         shell_integration enabled
         background_opacity 0.85

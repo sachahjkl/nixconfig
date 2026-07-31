@@ -5,17 +5,26 @@
   ...
 }: let
   inherit (lib.attrsets) mapAttrs optionalAttrs;
+  inherit (lib.fixedPoints) fix;
   inherit (lib.options) mkOption;
   inherit (lib.types) deferredModule lazyAttrsOf;
 
-  wrap = kind: name: value:
-    {
-      _file = "${toString moduleLocation}#${kind}.${name}";
-      imports = [value];
-    }
-    // optionalAttrs (value ? meta) {
-      inherit (value) meta;
-    };
+  wrap = {
+    kind,
+    class ? null,
+  }: name: value:
+    fix (module:
+      {
+        _file = "${toString moduleLocation}#${kind}.${name}";
+        key = module._file;
+        imports = [value];
+      }
+      // optionalAttrs (class != null) {
+        _class = class;
+      }
+      // optionalAttrs (value ? meta) {
+        inherit (value) meta;
+      });
 in {
   config.flake.nixosModules = {
     disko = inputs.disko.nixosModules.disko;
@@ -41,29 +50,38 @@ in {
     commonModules = mkOption {
       type = lazyAttrsOf deferredModule;
       default = {};
-      apply = mapAttrs (wrap "commonModules");
+      apply = mapAttrs (wrap {kind = "commonModules";});
       description = "Modules shared between systems.";
     };
 
     darwinModules = mkOption {
       type = lazyAttrsOf deferredModule;
       default = {};
-      apply = mapAttrs (wrap "darwinModules");
+      apply = mapAttrs (wrap {
+        kind = "darwinModules";
+        class = "darwin";
+      });
       description = "Darwin modules.";
     };
 
     homeModules = mkOption {
       type = lazyAttrsOf deferredModule;
       default = {};
-      apply = mapAttrs (wrap "homeModules");
+      apply = mapAttrs (wrap {
+        kind = "homeModules";
+        class = "hjem";
+      });
       description = "Home modules.";
     };
 
-    modularServices = mkOption {
+    serviceModules = mkOption {
       type = lazyAttrsOf deferredModule;
       default = {};
-      apply = mapAttrs (wrap "modularServices");
-      description = "Modular service modules.";
+      apply = mapAttrs (wrap {
+        kind = "serviceModules";
+        class = "service";
+      });
+      description = "Service modules.";
     };
   };
 }

@@ -15,6 +15,30 @@
       };
 
       theme = {
+        isDark = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Whether applications should use dark color variants.";
+        };
+
+        cornerRadius = lib.mkOption {
+          type = lib.types.int;
+          default = 0;
+          description = "Shared application corner radius in pixels.";
+        };
+
+        terminalPalette = lib.mkOption {
+          type = lib.types.attrs;
+          default = self.lib.terminalThemes.kittyDefault;
+          description = "Shared terminal color palette.";
+        };
+
+        padding = lib.mkOption {
+          type = lib.types.int;
+          default = 8;
+          description = "Shared application padding in pixels.";
+        };
+
         cursor = lib.mkOption {
           type = lib.types.str;
           default = "Posy_Cursor_Black_125_175";
@@ -62,6 +86,20 @@
             type = lib.types.str;
             default = self.lib.fonts.mono;
             description = "Shared monospace UI font name.";
+          };
+
+          size = {
+            normal = lib.mkOption {
+              type = lib.types.number;
+              default = 14;
+              description = "Shared normal font size.";
+            };
+
+            big = lib.mkOption {
+              type = lib.types.number;
+              default = 20;
+              description = "Shared large font size.";
+            };
           };
         };
       };

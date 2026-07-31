@@ -1,4 +1,4 @@
-{self, ...}: {
+_: {
   flake.nixosModules.ghostty = {
     config,
     lib,
@@ -8,14 +8,8 @@
     terminalPreferences = lib.attrByPath ["terminal"] {} config;
     enabled = lib.attrByPath ["ghostty" "enable"] false terminalPreferences || lib.attrByPath ["default"] null terminalPreferences == "ghostty";
     inherit (config) userName;
-    terminalTheme = lib.attrByPath ["ghostty" "theme"] self.lib.terminalThemes.kittyDefault terminalPreferences;
+    terminalTheme = lib.attrByPath ["ghostty" "theme"] config.theme.terminalPalette terminalPreferences;
   in {
-    options.terminal.ghostty.fontSize = lib.mkOption {
-      type = lib.types.number;
-      default = 14;
-      description = "Ghostty terminal font size.";
-    };
-
     config = lib.mkIf enabled {
       environment = {
         systemPackages = [pkgs.ghostty];
@@ -30,7 +24,7 @@
           package = null;
           settings = {
             "font-family" = config.theme.fonts.mono;
-            "font-size" = config.terminal.ghostty.fontSize;
+            "font-size" = config.theme.fonts.size.normal;
             "shell-integration" = "detect";
             "cursor-click-to-move" = true;
             "mouse-hide-while-typing" = true;
@@ -63,8 +57,8 @@
             "window-titlebar-background" = terminalTheme.background;
             "window-titlebar-foreground" = terminalTheme.foreground;
             "window-title-font-family" = config.theme.fonts.sans;
-            "window-padding-x" = 8;
-            "window-padding-y" = 6;
+            "window-padding-x" = config.theme.padding;
+            "window-padding-y" = config.theme.padding;
             "window-save-state" = "always";
             "window-inherit-working-directory" = true;
             "tab-inherit-working-directory" = true;

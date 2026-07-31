@@ -39,13 +39,15 @@
           HOME=$TMPDIR codex completion zsh > "$out/share/zsh/site-functions/_codex"
         '';
     in {
+      hjem.users.${config.userName}.environment.sessionVariables.CODEX_HOME = "${config.homeDirectory}/.config/codex";
+
       environment.systemPackages = [
         wrappedCodex
         codexCompletions
       ];
 
       persist.user.directories = [
-        ".codex"
+        ".config/codex"
       ];
     });
   };
