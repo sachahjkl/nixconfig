@@ -1,4 +1,8 @@
-{inputs, ...}: {
+{
+  inputs,
+  self,
+  ...
+}: {
   flake.nixosModules.clockinService = {
     config,
     lib,
@@ -9,8 +13,6 @@
     cfg = config.homelab.services.clockin;
     package = inputs.clockin.packages.${pkgs.stdenv.hostPlatform.system}.default;
   in {
-    imports = [inputs.clockin.nixosModules.default];
-
     options.homelab.services.clockin = {
       enable = mkEnableOption "clockin.sacha.house web service";
 
@@ -52,14 +54,25 @@
     };
 
     config = mkIf cfg.enable {
-      services.clockin = {
-        enable = true;
-        inherit (cfg) package host port databaseDir openFirewall allowedHosts;
+      users.users.clockin = {
+        isSystemUser = true;
+        group = "clockin";
+        home = cfg.databaseDir;
+      };
+      users.groups.clockin = {};
+
+      system.services.clockin = {
+        imports = [self.serviceModules.clockin];
+        clockin = {
+          inherit (cfg) package host port databaseDir allowedHosts;
+        };
       };
 
       systemd.tmpfiles.rules = [
         "d ${cfg.databaseDir} 0755 clockin clockin -"
       ];
+
+      networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [cfg.port];
 
       homelab.proxy.hosts."clockin.sacha.house" = {
         upstreamHost = mkDefault "127.0.0.1";
