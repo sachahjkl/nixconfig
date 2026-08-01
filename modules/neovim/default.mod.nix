@@ -24,6 +24,7 @@ _: {
         "@blink_cmp@"
         "@friendly_snippets@"
         "@roslyn_nvim@"
+        "@satellite_nvim@"
       ]
       [
         "${pkgs.vimPlugins."lazy-nvim"}"
@@ -39,6 +40,7 @@ _: {
         "${pkgs.vimPlugins."blink-cmp"}"
         "${pkgs.vimPlugins."friendly-snippets"}"
         "${pkgs.vimPlugins."roslyn-nvim"}"
+        "${pkgs.vimPlugins."satellite-nvim"}"
       ]
       (builtins.readFile ./init.lua.in)
     );

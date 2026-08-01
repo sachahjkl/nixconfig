@@ -28,6 +28,8 @@ _: {
             "shell-integration" = "detect";
             "cursor-click-to-move" = true;
             "mouse-hide-while-typing" = true;
+            "mouse-scroll-multiplier" = "precision:1,discrete:1";
+            scrollbar = "system";
             inherit (terminalTheme) foreground;
             inherit (terminalTheme) background;
             "cursor-color" = terminalTheme.cursorColor;

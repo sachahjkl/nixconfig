@@ -74,6 +74,14 @@ require('lazy').setup({
       lazy = false,
     },
     {
+      dir = '@satellite_nvim@',
+      name = 'satellite.nvim',
+      lazy = false,
+      opts = {
+        width = 1,
+      },
+    },
+    {
       dir = '@which_key_nvim@',
       name = 'which-key.nvim',
       lazy = false,

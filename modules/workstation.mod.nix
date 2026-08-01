@@ -35,6 +35,7 @@
       self.nixosModules.sublime
       self.nixosModules.tailscale
       self.nixosModules.vscode
+      self.nixosModules.windowsApps
       self.nixosModules.zoxide
     ];
 
