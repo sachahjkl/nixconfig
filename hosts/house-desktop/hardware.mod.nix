@@ -1,8 +1,9 @@
-_: {
+{inputs, ...}: {
   flake.nixosModules.house-desktop-hardware = {
     config,
     lib,
     modulesPath,
+    pkgs,
     ...
   }: {
     imports = [
@@ -26,6 +27,14 @@ _: {
         enableBluetooth = true;
         disableAspm = true;
       };
+
+      firmware = [
+        (pkgs.runCommand "mediatek-mt7927-bluetooth-firmware" {} ''
+          install -Dm644 \
+            ${inputs.mt7927.packages.${pkgs.stdenv.hostPlatform.system}.firmware}/lib/firmware/mediatek/mt6639/BT_RAM_CODE_MT6639_2_1_hdr.bin \
+            $out/lib/firmware/mediatek/mt7927/BT_RAM_CODE_MT6639_2_1_hdr.bin
+        '')
+      ];
 
       facter.reportPath = ./report.json;
     };
