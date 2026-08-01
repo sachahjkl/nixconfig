@@ -2,15 +2,23 @@
   flake.nixosModules.clockinService = {
     config,
     lib,
+    pkgs,
     ...
   }: let
     inherit (lib) mkDefault mkEnableOption mkIf mkOption types;
     cfg = config.homelab.services.clockin;
+    package = inputs.clockin.packages.${pkgs.stdenv.hostPlatform.system}.default;
   in {
     imports = [inputs.clockin.nixosModules.default];
 
     options.homelab.services.clockin = {
       enable = mkEnableOption "clockin.sacha.house web service";
+
+      package = mkOption {
+        type = types.package;
+        default = package;
+        description = "Clock-in package to run.";
+      };
 
       host = mkOption {
         type = types.str;
@@ -35,12 +43,18 @@
         default = false;
         description = "Open the configured port in the firewall.";
       };
+
+      allowedHosts = mkOption {
+        type = types.listOf types.str;
+        default = ["clockin.sacha.house" "127.0.0.1" "localhost"];
+        description = "Allowed Host headers for Angular SSR host validation.";
+      };
     };
 
     config = mkIf cfg.enable {
       services.clockin = {
         enable = true;
-        inherit (cfg) host port databaseDir openFirewall;
+        inherit (cfg) package host port databaseDir openFirewall allowedHosts;
       };
 
       systemd.tmpfiles.rules = [
