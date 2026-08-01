@@ -6,12 +6,12 @@
     ...
   }: let
     hyprCfg = config.hyprland;
-    powerChoices = "lockscreen/logout/suspend/hibernate/shutdown/reboot";
     inherit (config) userName;
     rofiPkg = self.lib.mkRofi {
       inherit pkgs;
       theme = config.theme.rofiTheme;
     };
+    powerMenuLauncher = config.powerMenu.package;
   in {
     options.hyprland = {
       laptopMode = {
@@ -79,20 +79,6 @@
         default = null;
         description = "Default Num Lock state in Hyprland. Use null to leave it unset, false to disable Num Lock, or true to enable it.";
       };
-
-      waybar.temperature = {
-        hwmonPath = lib.mkOption {
-          type = lib.types.str;
-          default = "/sys/devices/platform/coretemp.0/hwmon";
-          description = "Absolute hwmon directory Waybar should read for temperatures.";
-        };
-
-        inputFilename = lib.mkOption {
-          type = lib.types.str;
-          default = "temp2_input";
-          description = "Waybar temperature input filename inside the configured hwmon directory.";
-        };
-      };
     };
 
     config = lib.mkMerge [
@@ -134,7 +120,6 @@
                 hl.exec_cmd("uwsm app -- copyq --start-server")
                 hl.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile} --start-hidden")
                 hl.exec_cmd("dbus-update-activation-environment --systemd --all")
-                hl.exec_cmd("waybar")
                 hl.exec_cmd("hyprpaper")
                 hl.exec_cmd("hypridle")
             end)
@@ -216,6 +201,14 @@
                 match = { class = "it.mijorus.smile" },
                 float = true,
                 center = true,
+            })
+            hl.window_rule({
+                match = { class = "^(gsimplecal|Gsimplecal)$" },
+                float = true,
+                move = "monitor_w-window_w-6 monitor_h-window_h-42",
+                allows_input = true,
+                opaque = true,
+                force_rgbx = true,
             })
             hl.window_rule({
                 match = { class = "Handy", title = "^(Recording|Transcribing|Processing)$" },
@@ -331,7 +324,7 @@
             hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${lib.getExe' pkgs.procps "pkill"} -USR2 -n handy"))
             hl.bind("SUPER + V", hl.dsp.exec_cmd("copyq menu"))
             hl.bind("SUPER + semicolon", hl.dsp.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile}"))
-            hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe rofiPkg} -show power-menu -modi \"power-menu:rofi-power-menu --choices=${powerChoices}\""))
+            hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe powerMenuLauncher}"))
             hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
             hl.bind(mainMod .. " + SHIFT + SPACE", hl.dsp.window.float({ action = "toggle" }))
             hl.bind("CTRL + SHIFT + ugrave", hl.dsp.exec_cmd("copyq toggle"))
