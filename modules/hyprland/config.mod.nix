@@ -218,6 +218,14 @@
                 center = true,
             })
             hl.window_rule({
+                match = { class = "Handy", title = "^(Recording|Transcribing|Processing)$" },
+                float = true,
+                pin = true,
+                no_focus = true,
+                size = "400 200",
+                move = "50%-w/2 20",
+            })
+            hl.window_rule({
                 match = { class = "(satty|org.satty.Satty)" },
                 float = true,
             })
@@ -320,6 +328,7 @@
             hl.bind("PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -o)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
+            hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${lib.getExe' pkgs.procps "pkill"} -USR2 -n handy"))
             hl.bind("SUPER + V", hl.dsp.exec_cmd("copyq menu"))
             hl.bind("SUPER + semicolon", hl.dsp.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile}"))
             hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe rofiPkg} -show power-menu -modi \"power-menu:rofi-power-menu --choices=${powerChoices}\""))

@@ -6,7 +6,6 @@ _: {
     ...
   }: let
     hyprSessionTarget = "wayland-session@hyprland.desktop.target";
-    defaultAutoLoginUser = lib.attrByPath ["userName"] null config;
   in {
     options.display = {
       defaultSession = lib.mkOption {
@@ -17,7 +16,10 @@ _: {
 
       autoLoginUser = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
-        default = defaultAutoLoginUser;
+        # Auto-login skips PAM password entry, leaving GNOME Keyring locked and
+        # forcing applications such as Brave to prompt when accessing secrets.
+        # default = lib.attrByPath ["userName"] null config;
+        default = null;
         description = "User to auto-login through the configured display manager. Set to null to disable.";
       };
     };

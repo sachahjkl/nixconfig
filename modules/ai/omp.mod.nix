@@ -133,6 +133,8 @@
   in {
     imports = [self.nixosModules.sops];
 
+    options.ai.omp.enable = lib.mkEnableOption "Oh My Pi terminal coding agent";
+
     config = lib.mkIf cfg.enable {
       sops.secrets = lib.mkIf (config.sops.defaultSopsFile != null) {
         "ai/exa-api-key" = {

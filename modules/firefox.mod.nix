@@ -1,9 +1,14 @@
 _: {
-  flake.nixosModules.firefox = {pkgs, ...}: {
-    programs.firefox.enable = true;
+  flake.nixosModules.firefox = {
+    config,
+    lib,
+    ...
+  }: {
+    options.apps.firefox.enable = lib.mkEnableOption "Firefox browser";
 
-    environment.systemPackages = [pkgs.firefox];
-
-    persist.user.directories = [".mozilla"];
+    config = lib.mkIf config.apps.firefox.enable {
+      programs.firefox.enable = true;
+      persist.user.directories = [".mozilla"];
+    };
   };
 }

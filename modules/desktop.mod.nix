@@ -20,6 +20,7 @@
     ];
 
     apps.brave.enable = true;
+    apps.firefox.enable = true;
 
     security = {
       polkit = {
