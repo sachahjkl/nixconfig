@@ -162,6 +162,7 @@
       hjem.users.${config.userName} = lib.mkIf hasHjemUsers {
         files = {
           ".omp/agent/config.yml".source = ompConfig;
+          ".omp/agent/AGENTS.md".source = self + /modules/ai/instructions.md;
           ".omp/agent/models.yml".source = ompModels;
         };
       };

@@ -50,6 +50,7 @@
         "${pkgs.writeText "opencode-version-control.md" ''
           - Use `jj` for version control.
         ''}"
+        "${self + /modules/ai/instructions.md}"
       ];
       permission = {
         bash =
