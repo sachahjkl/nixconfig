@@ -6,8 +6,9 @@
     ...
   }: let
     unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+    inherit (unstablePkgs) umu-launcher-unwrapped;
     umuLauncher = pkgs.umu-launcher.override {
-      umu-launcher-unwrapped = unstablePkgs.umu-launcher-unwrapped;
+      inherit umu-launcher-unwrapped;
     };
   in {
     config = lib.mkMerge [

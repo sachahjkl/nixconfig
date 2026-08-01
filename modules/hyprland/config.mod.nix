@@ -132,6 +132,7 @@
                 hl.exec_cmd("uwsm app -- thunar --daemon")
                 hl.exec_cmd("uwsm app -- udiskie")
                 hl.exec_cmd("uwsm app -- copyq --start-server")
+                hl.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile} --start-hidden")
                 hl.exec_cmd("dbus-update-activation-environment --systemd --all")
                 hl.exec_cmd("waybar")
                 hl.exec_cmd("hyprpaper")
@@ -210,6 +211,11 @@
             hl.window_rule({
                 match = { class = "com.github.hluk.copyq" },
                 float = true,
+            })
+            hl.window_rule({
+                match = { class = "it.mijorus.smile" },
+                float = true,
+                center = true,
             })
             hl.window_rule({
                 match = { class = "(satty|org.satty.Satty)" },
