@@ -1,16 +1,21 @@
-_: {
+{inputs, ...}: {
   flake.nixosModules.windowsApps = {
     lib,
     options,
     pkgs,
     ...
-  }: {
+  }: let
+    unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+    umuLauncher = pkgs.umu-launcher.override {
+      umu-launcher-unwrapped = unstablePkgs.umu-launcher-unwrapped;
+    };
+  in {
     config = lib.mkMerge [
       {
         environment.systemPackages = with pkgs; [
           bottles
           lutris
-          umu-launcher
+          umuLauncher
           wineWow64Packages.stableFull
           winetricks
         ];
