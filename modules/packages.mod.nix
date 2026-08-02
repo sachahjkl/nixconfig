@@ -11,6 +11,7 @@
       self.nixosModules.gh
       self.nixosModules.git
       self.nixosModules.golang
+      self.nixosModules.hunk
       self.nixosModules.meshcentral
       self.nixosModules.nodejs
     ];
