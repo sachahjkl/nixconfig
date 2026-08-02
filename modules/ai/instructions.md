@@ -32,3 +32,16 @@ Match the language that the user uses. For English, use pragmatic ASD-STE100 Sim
 - Do not change established APIs, commands, identifiers, paths, quoted errors, logs, or product names only to obey this style.
 
 Before delivery, remove ambiguity, filler, synonym rotation, hidden conditions, and sentences that exceed the limits without good reason.
+
+## Engineering Principles
+
+- Do not preserve backward compatibility. Remove obsolete paths instead of adding compatibility layers, fallbacks, or migrations.
+- Choose the simplest implementation that fully meets current requirements. Avoid speculative abstractions, configuration, and indirection.
+- Grow the system in layers. Start with the smallest end-to-end version that works.
+- Add each capability to a product that already works. Never replace working behavior with unfinished complexity.
+- Keep components modular and keep concerns separate.
+- Prefer established, well-maintained libraries when they reduce complexity or improve reliability.
+- Do not reimplement common functionality without a clear reason.
+- Use existing project dependencies before writing an implementation or adding packages.
+- Check dependency documentation and types before deciding that a dependency lacks a capability.
+- Make architectural decisions for the long term. Do not accept temporary solutions that require later replacement.
