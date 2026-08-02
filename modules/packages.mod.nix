@@ -12,6 +12,7 @@
       self.nixosModules.git
       self.nixosModules.golang
       self.nixosModules.meshcentral
+      self.nixosModules.nodejs
     ];
 
     config = {

@@ -67,7 +67,6 @@ _: {
         environment.systemPackages = with pkgs; [
           dotnet-sdk
           neovim
-          nodejs
           wl-clipboard
           xclip
         ];
