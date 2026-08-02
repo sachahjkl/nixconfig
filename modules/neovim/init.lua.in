@@ -386,6 +386,11 @@ require('lazy').setup({
           },
         })
 
+        vim.lsp.config('gopls', {
+          cmd = { 'gopls' },
+          root_dir = util.root_pattern('go.work', 'go.mod', '.git'),
+        })
+
         vim.lsp.config('nixd', {
           cmd = { 'nixd' },
           root_dir = util.root_pattern('flake.nix', 'default.nix', 'shell.nix', '.git'),
@@ -425,6 +430,7 @@ require('lazy').setup({
         })
 
         vim.lsp.enable('angularls')
+        vim.lsp.enable('gopls')
         vim.lsp.enable('lua_ls')
         vim.lsp.enable('nixd')
         vim.lsp.enable('ts_ls')

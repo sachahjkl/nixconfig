@@ -10,6 +10,7 @@
       self.nixosModules.bat
       self.nixosModules.gh
       self.nixosModules.git
+      self.nixosModules.golang
       self.nixosModules.meshcentral
     ];
 
@@ -95,7 +96,6 @@
         nmap
 
         # Language tooling
-        go
         python3
         uv
       ];

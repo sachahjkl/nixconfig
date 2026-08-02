@@ -87,10 +87,12 @@
       settings ? {},
     }:
       pkgs.writeText "opencode.json" (
-        builtins.toJSON ({
+        builtins.toJSON (
+          {
             "$schema" = "https://opencode.ai/config.json";
           }
-          // self.lib.opencode.defaultSettings pkgs // settings)
+          // lib.recursiveUpdate (self.lib.opencode.defaultSettings pkgs) settings
+        )
       );
   };
 
@@ -111,7 +113,7 @@
 
     opencodeConfig = self.lib.opencode.mkOpenCodeConfig {
       inherit pkgs;
-      settings = {};
+      inherit (cfg) settings;
     };
 
     upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
@@ -163,6 +165,12 @@
         type = types.nullOr types.str;
         default = null;
         description = "URL of a remote OpenCode server to attach to via a shell function.";
+      };
+
+      settings = mkOption {
+        type = types.attrs;
+        default = {};
+        description = "Settings merged into the generated OpenCode configuration.";
       };
     };
 

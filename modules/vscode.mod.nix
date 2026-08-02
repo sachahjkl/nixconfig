@@ -18,6 +18,7 @@ _: {
         extensions = with pkgs.vscode-extensions; [
           jdinhlife.gruvbox
           jnoortheen.nix-ide
+          golang.go
           ms-dotnettools.csdevkit
           vscode-icons-team.vscode-icons
         ];
@@ -27,6 +28,8 @@ _: {
           "extensions.autoUpdate" = false;
           "files.autoSave" = "afterDelay";
           "git.autofetch" = false;
+          "go.toolsManagement.autoUpdate" = false;
+          "go.useLanguageServer" = true;
           "nix.enableLanguageServer" = true;
           "nix.formatterPath" = "alejandra";
           "nix.serverPath" = "nixd";

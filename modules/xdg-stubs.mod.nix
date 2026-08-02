@@ -14,14 +14,12 @@ _: {
 
         data.files = {
           "cargo".type = "directory";
-          "go".type = "directory";
           "gradle".type = "directory";
         };
       };
 
       environment.sessionVariables = {
         CARGO_HOME = "${config.homeDirectory}/.local/share/cargo";
-        GOPATH = "${config.homeDirectory}/.local/share/go";
         GRADLE_USER_HOME = "${config.homeDirectory}/.local/share/gradle";
         RIPGREP_CONFIG_PATH = "${config.homeDirectory}/.config/ripgrep/config";
         LESSHISTFILE = "${config.homeDirectory}/.local/state/less/history";
@@ -31,7 +29,6 @@ _: {
 
     persist.user.directories = [
       ".local/share/cargo"
-      ".local/share/go"
       ".local/share/gradle"
     ];
   };
