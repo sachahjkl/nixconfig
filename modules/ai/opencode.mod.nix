@@ -60,7 +60,7 @@
             })
             readOnlyJjCommands)
           // {
-            "git*" = "deny";
+            "git*" = "allow";
           };
         external_directory = {
           "/home/sacha/Projects/**" = "allow";
