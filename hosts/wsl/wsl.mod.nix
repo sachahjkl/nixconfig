@@ -26,6 +26,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.sharedSops
       self.nixosModules.ssh
       self.nixosModules.user-home
+      self.nixosModules.wslContainers
       self.nixosModules.xdgStubs
     ];
 
@@ -38,6 +39,7 @@ lib.systems.nixosSystem "wsl" {
     userName = "nixos";
     fullName = "NixOS";
     homeDirectory = "/home/nixos";
+    extraUserGroups = ["docker"];
 
     ai = {
       enable = true;
