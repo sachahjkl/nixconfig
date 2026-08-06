@@ -968,11 +968,11 @@
         "nixpkgs": "nixpkgs_7"
       },
       "locked": {
-        "lastModified": 1783982049,
-        "narHash": "sha256-X6tzJ6fwPTW7COofVu7tEgH2K0e03uyrDU8KxtJQynU=",
+        "lastModified": 1786001325,
+        "narHash": "sha256-z/AocJ53gNRf14MTogt5Ogq0Z/UL2OLH0pVSmNeWyUY=",
         "owner": "sachahjkl",
         "repo": "sacha.house",
-        "rev": "e1929cf29c105b1a8420ef74a7c61d8651994391",
+        "rev": "fe8e1ff90cc6c01da16757438939b689f6e8d667",
         "type": "gitlab"
       },
       "original": {
