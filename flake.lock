@@ -680,6 +680,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-secretspec": {
+      "locked": {
+        "lastModified": 1786113507,
+        "narHash": "sha256-fs6lC7pMHblMo7zcLYS4dZl1/rPRJFiBPCK3xi8z6ps=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "47c09e9652b5c3d6c0b4b1bba154c92aeab04280",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "master",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-unstable": {
       "locked": {
         "lastModified": 1785454630,
@@ -965,14 +981,15 @@
     "sacha-house": {
       "inputs": {
         "flake-utils": "flake-utils_4",
-        "nixpkgs": "nixpkgs_7"
+        "nixpkgs": "nixpkgs_7",
+        "nixpkgs-secretspec": "nixpkgs-secretspec"
       },
       "locked": {
-        "lastModified": 1786010434,
-        "narHash": "sha256-jYDBLNo+ecAEbaVW7wcI835O+Ts53Lac/M040+u/4UU=",
+        "lastModified": 1786115846,
+        "narHash": "sha256-p8cM4qcv2DfPqfdPv7+yBiFF4kmg2VTuMOaPlvThrhY=",
         "owner": "sachahjkl",
         "repo": "sacha.house",
-        "rev": "e1e79dbbec46b7085e399e19fd75d01603f33b37",
+        "rev": "0b8b4d6e399947ffc8b1477cceb52de1f9ff18eb",
         "type": "gitlab"
       },
       "original": {
