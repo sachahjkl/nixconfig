@@ -1,8 +1,4 @@
-{
-  inputs,
-  self,
-  ...
-}: {
+{inputs, ...}: {
   flake.nixosModules.herdrService = {
     config,
     lib,
@@ -10,7 +6,6 @@
     ...
   }: let
     cfg = config.homelab.services.herdr;
-    inherit (config) homeDirectory;
   in {
     options.homelab.services.herdr = {
       enable = lib.mkEnableOption "Herdr terminal workspace service";
@@ -23,40 +18,24 @@
     };
 
     config = lib.mkIf cfg.enable {
-      system.services.herdr = {
-        imports = [self.serviceModules.herdr];
+      users.manageLingering = true;
+      users.users.${config.userName}.linger = true;
 
-        herdr.package = cfg.package;
-
-        exec = {
-          allow = [homeDirectory];
-          environment = {
-            HOME = homeDirectory;
-            LOGNAME = config.userName;
-            SHELL = lib.getExe config.users.users.${config.userName}.shell;
-            USER = config.userName;
-          };
-          path = [config.system.path];
-          workingDirectory = homeDirectory;
+      systemd.user.services.herdr = {
+        description = "Herdr terminal workspace server";
+        wantedBy = ["default.target"];
+        path = [config.system.path];
+        environment = {
+          HOME = config.homeDirectory;
+          LOGNAME = config.userName;
+          SHELL = lib.getExe config.users.users.${config.userName}.shell;
+          USER = config.userName;
         };
-
-        files.${homeDirectory} = ["read" "write"];
-
-        systemd.service = {
-          description = "Herdr terminal workspace server";
-          after = ["network-online.target"];
-          wants = ["network-online.target"];
-          wantedBy = ["multi-user.target"];
-          serviceConfig = {
-            User = config.userName;
-            Group = "users";
-            DevicePolicy = lib.mkForce "auto";
-            DynamicUser = lib.mkForce false;
-            PrivateDevices = lib.mkForce false;
-            PrivatePIDs = lib.mkForce false;
-            PrivateUsers = lib.mkForce false;
-            RestrictNamespaces = lib.mkForce false;
-          };
+        serviceConfig = {
+          ExecStart = "${lib.getExe cfg.package} server";
+          Restart = "on-failure";
+          RestartSec = 5;
+          WorkingDirectory = config.homeDirectory;
         };
       };
     };
