@@ -9,6 +9,11 @@
     cfg = config.homelab.services.githubRunner;
     runnerUser = "github-runner";
     secretName = "github/actions-runner";
+    runnerContainersConf = pkgs.writeText "github-runner-containers.conf" ''
+      [engine]
+      cgroup_manager = "cgroupfs"
+      events_logger = "file"
+    '';
     hasPersistDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
   in {
     imports = [self.nixosModules.sops];
@@ -81,7 +86,10 @@
               config.virtualisation.podman.package
               pkgs.cachix
             ];
-            extraEnvironment.XDG_RUNTIME_DIR = "%t/github-runner/${repositoryName}";
+            extraEnvironment = {
+              CONTAINERS_CONF_OVERRIDE = runnerContainersConf;
+              XDG_RUNTIME_DIR = "%t/github-runner/${repositoryName}";
+            };
             extraLabels = [
               "nixos"
               "nix"
