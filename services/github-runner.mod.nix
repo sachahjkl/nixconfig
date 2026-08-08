@@ -90,10 +90,22 @@
             serviceOverrides = {
               CapabilityBoundingSet = lib.mkForce "~";
               NoNewPrivileges = lib.mkForce false;
+              PrivateDevices = lib.mkForce false;
+              PrivateMounts = lib.mkForce false;
               PrivateTmp = lib.mkForce false;
               PrivateUsers = lib.mkForce false;
+              ProtectClock = lib.mkForce false;
+              ProtectControlGroups = lib.mkForce false;
               ProtectHome = lib.mkForce false;
+              ProtectHostname = lib.mkForce false;
+              ProtectKernelLogs = lib.mkForce false;
+              ProtectKernelModules = lib.mkForce false;
+              ProtectKernelTunables = lib.mkForce false;
               ProtectProc = lib.mkForce "default";
+              ReadWritePaths = [
+                "/tmp"
+                "/var/tmp"
+              ];
               Restart = lib.mkForce "on-failure";
               RestartSec = 5;
               RestrictNamespaces = lib.mkForce false;
