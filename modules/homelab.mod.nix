@@ -12,6 +12,7 @@
       self.nixosModules.hermesDashboard
       self.nixosModules.sachaHouseService
       self.nixosModules.homelabFilebrowser
+      self.nixosModules.githubRunner
     ];
   };
 }

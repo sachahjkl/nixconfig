@@ -152,6 +152,57 @@ nh os switch --hostname house-laptop
 sudo nixos-rebuild switch --flake /home/sacha/Projects/nixconfig#homelab
 ```
 
+## GitHub Actions Runner
+
+The homelab module provides disabled GitHub Actions runners under `homelab.services.githubRunner`.
+
+GitHub does not support account-wide runners for personal accounts. The module registers one runner instance for each configured repository.
+
+Create a dedicated fine-grained PAT with runner access to all configured repositories. Add it as `github.actions-runner` in `secrets/homelab.yaml`:
+
+```bash
+nix shell nixpkgs#sops -c sops secrets/homelab.yaml
+```
+
+Enable the runners on `homelab` after the repository URLs and encrypted PAT exist:
+
+```nix
+homelab.services.githubRunner = {
+  enable = true;
+  repositories = {
+    git-migrate = "https://github.com/owner/git-migrate";
+    nixconfig = "https://github.com/owner/nixconfig";
+  };
+};
+```
+
+Each service runs as the `github-runner` system user. It uses journald and provides the default `self-hosted`, `linux`, and `x64` labels.
+
+The module also adds `nixos`, `nix`, and `homelab`. Workflows can select it with `runs-on: [self-hosted, nixos]`.
+
+After deployment, verify the service and Nix access:
+
+```bash
+systemctl status github-runner-git-migrate
+journalctl -u github-runner-git-migrate
+sudo -u github-runner nix --version
+```
+
+Use a manual workflow in the registered repository to test job assignment:
+
+```yaml
+name: Homelab runner test
+on:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: [self-hosted, nixos]
+    steps:
+      - uses: actions/checkout@v4
+      - run: nix --version
+      - run: nix flake check
+```
+
 ## Rebuild
 
 Preferred:

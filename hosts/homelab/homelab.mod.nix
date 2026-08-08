@@ -40,6 +40,30 @@ lib.systems.nixosSystem "homelab" {
       };
 
       services = {
+        githubRunner = {
+          enable = true;
+          repositories = {
+            acheteteper = "https://github.com/sachahjkl/acheteteper";
+            albumator = "https://github.com/sachahjkl/albumator";
+            chat = "https://github.com/sachahjkl/chat.sacha.house";
+            client-serv-ipc = "https://github.com/sachahjkl/client_serv_ipc";
+            cool = "https://github.com/sachahjkl/cool.sacha.house";
+            dut-a2-expcom-disscog = "https://github.com/sachahjkl/dut_a2_expcom_disscog";
+            dut-a2-mpa-auvergne = "https://github.com/sachahjkl/dut_a2_mpa_auvergne";
+            dut-a2-pwebc-carte = "https://github.com/sachahjkl/dut_a2_pwebc_carte";
+            froment-software = "https://github.com/sachahjkl/froment.software";
+            grind-brother-grind = "https://github.com/sachahjkl/grind-brother-grind";
+            htmx-go = "https://github.com/sachahjkl/htmx-go";
+            js-canvas-experiment = "https://github.com/sachahjkl/js_canvas_experiment";
+            kelio-rewrite = "https://github.com/sachahjkl/kelio-rewrite";
+            nuitdelinfojb = "https://github.com/sachahjkl/nuitdelinfojb.gitlab.io";
+            old-site = "https://github.com/sachahjkl/old.sachahjkl.gitlab.io";
+            sacha-house = "https://github.com/sachahjkl/sacha.house";
+            sachahjkl-site = "https://github.com/sachahjkl/sachahjkl.gitlab.io";
+            sqrt-eth-site = "https://github.com/sachahjkl/sqrt-eth.gitlab.io";
+            wthhyb = "https://github.com/sachahjkl/wthhyb.sacha.house";
+          };
+        };
         herdr.enable = true;
         hermesDashboard.enable = false;
         sachaHouse.enable = true;
