@@ -88,6 +88,7 @@
             ];
             extraEnvironment = {
               CONTAINERS_CONF_OVERRIDE = runnerContainersConf;
+              TMPDIR = "%S/github-runner/${repositoryName}";
               XDG_RUNTIME_DIR = "%t/github-runner/${repositoryName}";
             };
             extraLabels = [
