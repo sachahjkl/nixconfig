@@ -43,7 +43,7 @@ Clone the repo where the config expects it:
 
 ```bash
 mkdir -p /home/sacha/Projects
-git clone git@gitlab.com:sachahjkl/nixconfig.git /home/sacha/Projects/nixconfig
+git clone git@github.com:sachahjkl/nixconfig.git /home/sacha/Projects/nixconfig
 cd /home/sacha/Projects/nixconfig
 ```
 
@@ -229,7 +229,7 @@ Warning: disko is destructive. Verify the target disk in the host's `hosts/<host
 
 ```bash
 mkdir -p /home/nixos/Projects
-git clone git@gitlab.com:sachahjkl/nixconfig.git /home/nixos/Projects/nixconfig
+git clone git@github.com:sachahjkl/nixconfig.git /home/nixos/Projects/nixconfig
 cd /home/nixos/Projects/nixconfig
 sudo nix --extra-experimental-features 'nix-command flakes' \
   run github:nix-community/disko -- \

@@ -106,12 +106,12 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    lanblaster.url = "gitlab:sachahjkl/lanblaster.sacha.house";
+    lanblaster.url = "github:sachahjkl/lanblaster.sacha.house";
 
-    albumator.url = "gitlab:sachahjkl/albumator";
+    albumator.url = "github:sachahjkl/albumator";
 
     clockin = {
-      url = "gitlab:sachahjkl/clockin.sacha.house";
+      url = "github:sachahjkl/clockin.sacha.house";
     };
 
     sacha-house.url = "github:sachahjkl/sacha.house";

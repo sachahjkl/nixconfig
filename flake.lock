@@ -30,16 +30,16 @@
       },
       "locked": {
         "lastModified": 1784150535,
-        "narHash": "sha256-zs3YYeeIRiRr68RX34JcNKGUGxyW2Y6V+ujE5axf2G0=",
+        "narHash": "sha256-QvKDoZycicNmfdBsHgHoW0vpVaBRgE/ZreBswVbUtP8=",
         "owner": "sachahjkl",
         "repo": "albumator",
-        "rev": "84be11a93a43b173140175af391dbe36c14c9ecb",
-        "type": "gitlab"
+        "rev": "33d3b1ffa395510bd741100bafcd71eda5bf12f7",
+        "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "albumator",
-        "type": "gitlab"
+        "type": "github"
       }
     },
     "bun2nix": {
@@ -81,17 +81,17 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1785582347,
-        "narHash": "sha256-H5MLgc49zpRN+kDmlX3xqos+3+37yThGg7I3JG+ZznM=",
+        "lastModified": 1785581750,
+        "narHash": "sha256-IFFVBisBU0s1kTDS4KkXHluVmlKLAsYS+3vOleB1tpA=",
         "owner": "sachahjkl",
         "repo": "clockin.sacha.house",
-        "rev": "aa0488ad960baf8c7af7f59bfb76a9dc91549f24",
-        "type": "gitlab"
+        "rev": "04f81f180049077d83fb13ac0716574708f2c779",
+        "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "clockin.sacha.house",
-        "type": "gitlab"
+        "type": "github"
       }
     },
     "darwin": {
@@ -479,17 +479,17 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1782372430,
-        "narHash": "sha256-S0y96W2vDaxxwf0UUvQ5e5q+EDG4OSvEs6rFaI55XnI=",
+        "lastModified": 1782329022,
+        "narHash": "sha256-8J4q6wnLlhCjh95vrccG37yd14MSuzoh0/ukdLJ9h6w=",
         "owner": "sachahjkl",
         "repo": "lanblaster.sacha.house",
-        "rev": "ea901750c7bddda42027df4bb6a6beaad8ed6594",
-        "type": "gitlab"
+        "rev": "742f382c30476c2d7e5f53a1c76e11b2d0ca46a6",
+        "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "lanblaster.sacha.house",
-        "type": "gitlab"
+        "type": "github"
       }
     },
     "llm-agents": {
