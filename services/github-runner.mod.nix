@@ -82,8 +82,13 @@
               "homelab"
             ];
             serviceOverrides = {
+              NoNewPrivileges = lib.mkForce false;
+              PrivateUsers = lib.mkForce false;
               Restart = lib.mkForce "on-failure";
               RestartSec = 5;
+              RestrictNamespaces = lib.mkForce false;
+              RestrictSUIDSGID = lib.mkForce false;
+              SystemCallFilter = lib.mkForce [];
             };
           })
           cfg.repositories;
