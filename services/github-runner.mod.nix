@@ -3,6 +3,7 @@
     config,
     lib,
     options,
+    pkgs,
     ...
   }: let
     cfg = config.homelab.services.githubRunner;
@@ -76,6 +77,10 @@
             tokenType = "access";
             user = runnerUser;
             group = runnerUser;
+            extraPackages = [
+              config.virtualisation.podman.package
+              pkgs.cachix
+            ];
             extraLabels = [
               "nixos"
               "nix"
