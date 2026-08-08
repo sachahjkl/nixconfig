@@ -114,7 +114,7 @@
       url = "gitlab:sachahjkl/clockin.sacha.house";
     };
 
-    sacha-house.url = "gitlab:sachahjkl/sacha.house";
+    sacha-house.url = "github:sachahjkl/sacha.house";
   };
 
   outputs = inputs:

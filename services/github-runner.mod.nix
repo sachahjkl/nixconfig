@@ -87,8 +87,13 @@
               "homelab"
             ];
             serviceOverrides = {
+              CapabilityBoundingSet = [
+                "CAP_SETGID"
+                "CAP_SETUID"
+              ];
               NoNewPrivileges = lib.mkForce false;
               PrivateUsers = lib.mkForce false;
+              ProtectProc = lib.mkForce "default";
               Restart = lib.mkForce "on-failure";
               RestartSec = 5;
               RestrictNamespaces = lib.mkForce false;
