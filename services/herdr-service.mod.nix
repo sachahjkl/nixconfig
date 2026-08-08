@@ -33,7 +33,7 @@
           environment = {
             HOME = homeDirectory;
             LOGNAME = config.userName;
-            SHELL = toString config.users.users.${config.userName}.shell;
+            SHELL = lib.getExe config.users.users.${config.userName}.shell;
             USER = config.userName;
           };
           path = [config.system.path];
@@ -50,6 +50,7 @@
           serviceConfig = {
             User = config.userName;
             Group = "users";
+            DevicePolicy = lib.mkForce "auto";
             DynamicUser = lib.mkForce false;
             PrivateDevices = lib.mkForce false;
             PrivatePIDs = lib.mkForce false;
