@@ -1,0 +1,11 @@
+name: "nixconfig"
+description: "Personal Nix and NixOS config, using flake-parts and wrapped modules"
+topics:
+  - "nix"
+  - "nix-flake"
+  - "nixos"
+homepage: ""
+source:
+  provider: gitlab
+  namespace: "sachahjkl"
+  path: "sachahjkl/nixconfig"
