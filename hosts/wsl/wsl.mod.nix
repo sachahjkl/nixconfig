@@ -3,9 +3,8 @@
   self,
   lib,
   ...
-}:
-lib.systems.nixosSystem "wsl" {
-  module = {lib, ...}: {
+}: let
+  commonModule = {lib, ...}: {
     imports = [
       inputs.nixos-wsl.nixosModules.default
       self.nixosModules.wsl-hardware
@@ -17,6 +16,7 @@ lib.systems.nixosSystem "wsl" {
       self.nixosModules.home-manager
       self.nixosModules.hjem
       self.nixosModules.mosh
+      self.nixosModules.moshiHook
       self.nixosModules.neovim
       self.nixosModules.nix
       self.nixosModules.nixCommon
@@ -44,7 +44,10 @@ lib.systems.nixosSystem "wsl" {
     ai = {
       enable = true;
       handy.enable = false;
+      herdr.enable = true;
     };
+
+    moshi.enable = true;
 
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
@@ -56,11 +59,31 @@ lib.systems.nixosSystem "wsl" {
 
     persist.enable = lib.mkForce false;
 
-    security.pki.certificateFiles = [
-      ./certs/zscaler-root-ca.pem
-      ./certs/ca-ogfprod-root.pem
-    ];
-
     system.stateVersion = "26.05";
   };
+in {
+  imports = [
+    (lib.systems.nixosSystem "ogf-wsl" {
+      module = {
+        imports = [commonModule];
+
+        security.pki.certificateFiles = [
+          ./certs/zscaler-root-ca.pem
+          ./certs/ca-ogfprod-root.pem
+        ];
+      };
+    })
+
+    (lib.systems.nixosSystem "sacha-pc-wsl" {
+      module = {
+        imports = [
+          commonModule
+          self.nixosModules.tailscale
+        ];
+
+        network.tailscale.sopsSecretName = "tailscale/user-authkey";
+        services.tailscale.extraSetFlags = lib.mkAfter ["--hostname=sacha-pc-wsl"];
+      };
+    })
+  ];
 }
