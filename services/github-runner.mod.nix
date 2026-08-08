@@ -81,18 +81,18 @@
               config.virtualisation.podman.package
               pkgs.cachix
             ];
+            extraEnvironment.XDG_RUNTIME_DIR = "%t/github-runner/${repositoryName}";
             extraLabels = [
               "nixos"
               "nix"
               "homelab"
             ];
             serviceOverrides = {
-              CapabilityBoundingSet = [
-                "CAP_SETGID"
-                "CAP_SETUID"
-              ];
+              CapabilityBoundingSet = lib.mkForce "~";
               NoNewPrivileges = lib.mkForce false;
+              PrivateTmp = lib.mkForce false;
               PrivateUsers = lib.mkForce false;
+              ProtectHome = lib.mkForce false;
               ProtectProc = lib.mkForce "default";
               Restart = lib.mkForce "on-failure";
               RestartSec = 5;
