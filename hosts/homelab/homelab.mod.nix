@@ -12,7 +12,6 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelab
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabProxyHosts
-      self.nixosModules.herdrService
       self.nixosModules.albumatorService
       self.nixosModules.clockinService
       self.nixosModules.lanblasterService
@@ -64,7 +63,6 @@ lib.systems.nixosSystem "homelab" {
             wthhyb = "https://github.com/sachahjkl/wthhyb.sacha.house";
           };
         };
-        herdr.enable = true;
         hermesDashboard.enable = false;
         sachaHouse.enable = true;
         filebrowser.enable = true;

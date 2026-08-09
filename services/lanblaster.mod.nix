@@ -55,6 +55,10 @@
           HOST = cfg.host;
           PORT = toString cfg.port;
         };
+        serviceConfig = {
+          PrivatePIDs = lib.mkForce false;
+          PrivateUsers = lib.mkForce false;
+        };
       };
     };
   };

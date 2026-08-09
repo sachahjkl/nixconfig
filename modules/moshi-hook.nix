@@ -13,22 +13,10 @@
   hasUserName = lib.hasAttrByPath ["userName"] options;
   moshiHookPkg = self.packages.${pkgs.stdenv.hostPlatform.system}.moshiHook;
   pairingTokenPath = "/run/secrets/moshi-pairing-token";
-  syncProjects = lib.concatStringsSep "\n" (
-    map (projectRoot: ''
-      if [ -d ${lib.escapeShellArg projectRoot} ]; then
-        (
-          cd ${lib.escapeShellArg projectRoot}
-          ${lib.getExe moshiHookPkg} install
-        )
-      fi
-    '')
-    cfg.projectRoots
-  );
   moshiSyncHooks = pkgs.writeShellScriptBin "moshi-sync-hooks" ''
     set -eu
 
     ${lib.getExe moshiHookPkg} install
-    ${syncProjects}
   '';
   moshiPair = pkgs.writeShellScriptBin "moshi-pair" ''
     set -eu
@@ -56,22 +44,7 @@
 in {
   imports = [self.nixosModules.sops];
 
-  options.moshi = {
-    enable = lib.mkEnableOption "Moshi hook daemon and helpers";
-
-    service.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Whether to run moshi-hook serve as a user service.";
-    };
-
-    projectRoots = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [config.nixConfigPath];
-      defaultText = lib.literalExpression "[ config.nixConfigPath ]";
-      description = "Project roots where moshi-sync-hooks should install the OpenCode plugin.";
-    };
-  };
+  options.moshi.enable = lib.mkEnableOption "Moshi hook daemon and helpers";
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     {
@@ -82,12 +55,14 @@ in {
         moshiPairFromSecret
       ];
 
-      systemd.user.services.moshi-hook = lib.mkIf cfg.service.enable {
+      systemd.user.services.moshi-hook = {
         description = "Moshi hook daemon";
         wantedBy = ["default.target"];
         after = ["network.target"];
+        unitConfig.ConditionUser = config.userName;
         serviceConfig = {
           Type = "simple";
+          ExecStartPre = lib.getExe moshiSyncHooks;
           ExecStart = "${lib.getExe moshiHookPkg} serve";
           Restart = "on-failure";
           RestartSec = 5;
@@ -113,8 +88,6 @@ in {
 
     (lib.optionalAttrs (hasHjemUsers && hasUserName) {
       hjem.users.${config.userName}.rum.programs.fish.functions = {
-        # OpenCode plugin setup is project-scoped, so keep a helper that can
-        # refresh user hooks and this repo's plugin after pairing or upgrades.
         moshi-sync = ''
           ${lib.getExe moshiSyncHooks}
         '';
