@@ -985,11 +985,11 @@
         "nixpkgs-secretspec": "nixpkgs-secretspec"
       },
       "locked": {
-        "lastModified": 1786209575,
-        "narHash": "sha256-Zinmr3IiAKjMzYkEMJCt/Q3CUdYjRcX6FpmGQuMQ8c4=",
+        "lastModified": 1786454503,
+        "narHash": "sha256-1txoI8Njyq4/s9p3YBkajZFmp5Su45k2mqT8EdjE57o=",
         "owner": "sachahjkl",
         "repo": "sacha.house",
-        "rev": "ba5f67defacbc7fc731d59211584930e0b0956dd",
+        "rev": "598cb8ce8e12d3786b0a62cc268dc8b1719deeb7",
         "type": "github"
       },
       "original": {
