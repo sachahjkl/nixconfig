@@ -40,7 +40,6 @@
         group = runnerUser;
         home = "/var/lib/github-runner";
         createHome = true;
-        linger = true;
         subUidRanges = [
           {
             startUid = 100000;
