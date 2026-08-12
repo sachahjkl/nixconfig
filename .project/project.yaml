@@ -6,6 +6,6 @@ topics:
   - "nixos"
 homepage: ""
 source:
-  provider: gitlab
+  provider: github
   namespace: "sachahjkl"
   path: "sachahjkl/nixconfig"

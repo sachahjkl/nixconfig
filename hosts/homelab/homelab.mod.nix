@@ -55,11 +55,11 @@ lib.systems.nixosSystem "homelab" {
             htmx-go = "https://github.com/sachahjkl/htmx-go";
             js-canvas-experiment = "https://github.com/sachahjkl/js_canvas_experiment";
             kelio-rewrite = "https://github.com/sachahjkl/kelio-rewrite";
-            nuitdelinfojb = "https://github.com/sachahjkl/nuitdelinfojb.gitlab.io";
-            old-site = "https://github.com/sachahjkl/old.sachahjkl.gitlab.io";
+            nuitdelinfojb = "https://github.com/sachahjkl/nuitdelinfojb.github.io";
+            old-site = "https://github.com/sachahjkl/old.sachahjkl.github.io";
             sacha-house = "https://github.com/sachahjkl/sacha.house";
-            sachahjkl-site = "https://github.com/sachahjkl/sachahjkl.gitlab.io";
-            sqrt-eth-site = "https://github.com/sachahjkl/sqrt-eth.gitlab.io";
+            sachahjkl-site = "https://github.com/sachahjkl/sachahjkl.github.io";
+            sqrt-eth-site = "https://github.com/sachahjkl/sqrt-eth.github.io";
             wthhyb = "https://github.com/sachahjkl/wthhyb.sacha.house";
           };
         };
