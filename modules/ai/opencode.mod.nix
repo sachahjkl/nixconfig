@@ -46,29 +46,42 @@
     in {
       autoupdate = false;
       share = "disabled";
-      instructions = [
-        "${pkgs.writeText "opencode-version-control.md" ''
-          - Use `jj` for version control.
-        ''}"
-        "${self + /modules/ai/instructions.md}"
-      ];
-      permission = {
-        bash =
-          builtins.listToAttrs (map (command: {
-              name = command;
-              value = "allow";
-            })
-            readOnlyJjCommands)
-          // {
-            "git*" = "allow";
-          };
-        external_directory = {
-          "/home/sacha/Projects/**" = "allow";
-        };
-        lsp = "allow";
-        webfetch = "allow";
-        websearch = "allow";
-      };
+      permissions =
+        [
+          {
+            action = "shell";
+            resource = "*";
+            effect = "ask";
+          }
+        ]
+        ++ map (command: {
+          action = "shell";
+          resource = command;
+          effect = "allow";
+        })
+        readOnlyJjCommands
+        ++ [
+          {
+            action = "shell";
+            resource = "git*";
+            effect = "allow";
+          }
+          {
+            action = "external_directory";
+            resource = "/home/sacha/Projects/*";
+            effect = "allow";
+          }
+          {
+            action = "webfetch";
+            resource = "*";
+            effect = "allow";
+          }
+          {
+            action = "websearch";
+            resource = "*";
+            effect = "allow";
+          }
+        ];
       watcher.ignore = [
         ".direnv/**"
         ".git/**"
@@ -81,6 +94,13 @@
         extensions = [".nix"];
       };
     };
+
+    mkOpenCodeAgents = pkgs:
+      pkgs.writeText "AGENTS.md" ''
+        - Use `jj` for version control.
+
+        ${builtins.readFile (self + /modules/ai/instructions.md)}
+      '';
 
     mkOpenCodeConfig = {
       pkgs,
@@ -96,8 +116,16 @@
       );
   };
 
-  perSystem = {pkgs, ...}: {
-    packages.opencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
+  perSystem = {pkgs, ...}: let
+    opencode2 = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
+  in {
+    packages.opencode = pkgs.symlinkJoin {
+      name = "opencode";
+      paths = [opencode2];
+      postBuild = ''
+        ln -sf ${lib.getExe opencode2} $out/bin/opencode
+      '';
+    };
   };
 
   flake.nixosModules.opencode = {
@@ -115,8 +143,9 @@
       inherit pkgs;
       inherit (cfg) settings;
     };
+    opencodeAgents = self.lib.opencode.mkOpenCodeAgents pkgs;
 
-    upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode;
+    upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
     mcpNixos = inputs.mcp-nixos.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos;
     exaKeyPath = lib.attrByPath ["sops" "secrets" "ai/exa-api-key" "path"] "/run/secrets/ai/exa-api-key" config;
 
@@ -140,7 +169,7 @@
       };
 
       server = {
-        enable = mkEnableOption "OpenCode headless server";
+        enable = mkEnableOption "OpenCode headless API server";
 
         hostname = mkOption {
           type = types.str;
@@ -164,7 +193,7 @@
       homelabServerUrl = mkOption {
         type = types.nullOr types.str;
         default = null;
-        description = "URL of a remote OpenCode server to attach to via a shell function.";
+        description = "URL of a remote OpenCode server to connect to via a shell function.";
       };
 
       settings = mkOption {
@@ -186,11 +215,19 @@
         ".local/share/opencode"
       ];
 
+      hjem.users.${config.userName} = mkIf hasHjemUsers {
+        files.".config/opencode/AGENTS.md".source = opencodeAgents;
+
+        rum.programs.fish.functions.homelab-code = mkIf (cfg.homelabServerUrl != null) ''
+          opencode --server ${cfg.homelabServerUrl} $argv
+        '';
+      };
+
       environment.systemPackages =
         [wrappedOpenCode]
         ++ lib.optional (cfg.homelabServerUrl != null) (
           pkgs.writeShellScriptBin "opencode-homelab" ''
-            exec ${lib.getExe wrappedOpenCode} attach ${cfg.homelabServerUrl} "$@"
+            exec ${lib.getExe wrappedOpenCode} --server ${cfg.homelabServerUrl} "$@"
           ''
         );
 
@@ -217,9 +254,6 @@
 
       networking.firewall.allowedTCPPorts = mkIf (cfg.server.enable && cfg.server.openFirewall) [cfg.server.port];
 
-      hjem.users.${config.userName}.rum.programs.fish.functions.homelab-code = lib.mkIf (hasHjemUsers && cfg.homelabServerUrl != null) ''
-        opencode attach ${cfg.homelabServerUrl} $argv
-      '';
     };
   };
 }
