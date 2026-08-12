@@ -101,6 +101,11 @@ _: {
                     mountOptions = ["compress=zstd" "noatime"];
                   };
 
+                  "@data-github-runner" = {
+                    mountpoint = "/var/lib/github-runner";
+                    mountOptions = ["compress=zstd:1" "noatime"];
+                  };
+
                   "@data-media" = {
                     mountpoint = "/data/Media";
                     mountOptions = ["compress=zstd:1" "noatime"];

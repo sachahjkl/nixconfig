@@ -2,7 +2,6 @@
   flake.nixosModules.githubRunner = {
     config,
     lib,
-    options,
     pkgs,
     ...
   }: let
@@ -14,7 +13,6 @@
       cgroup_manager = "cgroupfs"
       events_logger = "file"
     '';
-    hasPersistDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
   in {
     imports = [self.nixosModules.sops];
 
@@ -29,108 +27,102 @@
       };
     };
 
-    config = lib.mkIf cfg.enable (lib.mkMerge [
-      {
-        assertions = [
+    config = lib.mkIf cfg.enable {
+      assertions = [
+        {
+          assertion = cfg.repositories != {};
+          message = "homelab.services.githubRunner.repositories must not be empty when the runner is enabled.";
+        }
+      ];
+
+      users.users.${runnerUser} = {
+        isSystemUser = true;
+        group = runnerUser;
+        home = "/var/lib/github-runner";
+        createHome = true;
+        linger = true;
+        subUidRanges = [
           {
-            assertion = cfg.repositories != {};
-            message = "homelab.services.githubRunner.repositories must not be empty when the runner is enabled.";
+            startUid = 100000;
+            count = 65536;
           }
         ];
+        subGidRanges = [
+          {
+            startGid = 100000;
+            count = 65536;
+          }
+        ];
+      };
+      users.groups.${runnerUser} = {};
 
-        users.users.${runnerUser} = {
-          isSystemUser = true;
-          group = runnerUser;
-          home = "/var/lib/github-runner";
-          createHome = true;
-          linger = true;
-          subUidRanges = [
-            {
-              startUid = 100000;
-              count = 65536;
-            }
-          ];
-          subGidRanges = [
-            {
-              startGid = 100000;
-              count = 65536;
-            }
-          ];
-        };
-        users.groups.${runnerUser} = {};
+      virtualisation.podman = {
+        enable = true;
+        dockerCompat = false;
+      };
 
-        virtualisation.podman = {
+      programs.nix-ld.enable = true;
+
+      sops.secrets.${secretName} = {
+        sopsFile = self + /secrets/homelab.yaml;
+        owner = runnerUser;
+        group = runnerUser;
+        mode = "0400";
+      };
+
+      services.github-runners =
+        lib.mapAttrs (repositoryName: url: {
           enable = true;
-          dockerCompat = false;
-        };
-
-        programs.nix-ld.enable = true;
-
-        sops.secrets.${secretName} = {
-          sopsFile = self + /secrets/homelab.yaml;
-          owner = runnerUser;
+          name = "homelab-${repositoryName}";
+          inherit url;
+          tokenFile = config.sops.secrets.${secretName}.path;
+          tokenType = "access";
+          user = runnerUser;
           group = runnerUser;
-          mode = "0400";
-        };
-
-        services.github-runners =
-          lib.mapAttrs (repositoryName: url: {
-            enable = true;
-            name = "homelab-${repositoryName}";
-            inherit url;
-            tokenFile = config.sops.secrets.${secretName}.path;
-            tokenType = "access";
-            user = runnerUser;
-            group = runnerUser;
-            extraPackages = [
-              config.virtualisation.podman.package
-              pkgs.cachix
+          extraPackages = [
+            config.virtualisation.podman.package
+            pkgs.cachix
+          ];
+          extraEnvironment = {
+            CONTAINERS_CONF_OVERRIDE = runnerContainersConf;
+            HOME = "%S/github-runner/${repositoryName}";
+            TMPDIR = "%S/github-runner/${repositoryName}";
+            XDG_CACHE_HOME = "%S/github-runner/${repositoryName}/.cache";
+            XDG_DATA_HOME = "%S/github-runner/${repositoryName}/.local/share";
+            XDG_RUNTIME_DIR = "%t/github-runner/${repositoryName}";
+          };
+          extraLabels = [
+            "nixos"
+            "nix"
+            "homelab"
+          ];
+          serviceOverrides = {
+            CapabilityBoundingSet = lib.mkForce "~";
+            NoNewPrivileges = lib.mkForce false;
+            PrivateDevices = lib.mkForce false;
+            PrivateMounts = lib.mkForce false;
+            PrivateTmp = lib.mkForce false;
+            PrivateUsers = lib.mkForce false;
+            ProtectClock = lib.mkForce false;
+            ProtectControlGroups = lib.mkForce false;
+            ProtectHome = lib.mkForce false;
+            ProtectHostname = lib.mkForce false;
+            ProtectKernelLogs = lib.mkForce false;
+            ProtectKernelModules = lib.mkForce false;
+            ProtectKernelTunables = lib.mkForce false;
+            ProtectProc = lib.mkForce "default";
+            ReadWritePaths = [
+              "/tmp"
+              "/var/tmp"
             ];
-            extraEnvironment = {
-              CONTAINERS_CONF_OVERRIDE = runnerContainersConf;
-              HOME = "%S/github-runner/${repositoryName}";
-              TMPDIR = "%S/github-runner/${repositoryName}";
-              XDG_CACHE_HOME = "%S/github-runner/${repositoryName}/.cache";
-              XDG_DATA_HOME = "%S/github-runner/${repositoryName}/.local/share";
-              XDG_RUNTIME_DIR = "%t/github-runner/${repositoryName}";
-            };
-            extraLabels = [
-              "nixos"
-              "nix"
-              "homelab"
-            ];
-            serviceOverrides = {
-              CapabilityBoundingSet = lib.mkForce "~";
-              NoNewPrivileges = lib.mkForce false;
-              PrivateDevices = lib.mkForce false;
-              PrivateMounts = lib.mkForce false;
-              PrivateTmp = lib.mkForce false;
-              PrivateUsers = lib.mkForce false;
-              ProtectClock = lib.mkForce false;
-              ProtectControlGroups = lib.mkForce false;
-              ProtectHome = lib.mkForce false;
-              ProtectHostname = lib.mkForce false;
-              ProtectKernelLogs = lib.mkForce false;
-              ProtectKernelModules = lib.mkForce false;
-              ProtectKernelTunables = lib.mkForce false;
-              ProtectProc = lib.mkForce "default";
-              ReadWritePaths = [
-                "/tmp"
-                "/var/tmp"
-              ];
-              Restart = lib.mkForce "on-failure";
-              RestartSec = 5;
-              RestrictNamespaces = lib.mkForce false;
-              RestrictSUIDSGID = lib.mkForce false;
-              SystemCallFilter = lib.mkForce [];
-            };
-          })
-          cfg.repositories;
-      }
-
-      (lib.optionalAttrs hasPersistDirs {
-        persist.system.directories = ["/var/lib/github-runner"];
-      })
-    ]);
+            Restart = lib.mkForce "on-failure";
+            RestartSec = 5;
+            RestrictNamespaces = lib.mkForce false;
+            RestrictSUIDSGID = lib.mkForce false;
+            SystemCallFilter = lib.mkForce [];
+          };
+        })
+        cfg.repositories;
+    };
   };
 }
