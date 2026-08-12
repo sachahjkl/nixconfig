@@ -41,6 +41,7 @@
         lanblaster = {
           inherit (cfg) package host port;
         };
+        systemd.service.serviceConfig.PrivateUsers = lib.mkForce false;
       };
 
       homelab.proxy.hosts."lanblaster.sacha.house" = {
