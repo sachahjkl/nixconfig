@@ -34,7 +34,6 @@ _: {
         script = ''
           set -euo pipefail
           export RESTIC_PASSWORD_FILE=${escapeShellArg cfg.backup.resticPasswordFile}
-          export RESTIC_REPOSITORY=s3:s3.eu-paris.megas4.com/homelab-backups/restic-repo
 
           restic backup \
             /etc \
