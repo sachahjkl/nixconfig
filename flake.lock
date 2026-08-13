@@ -29,11 +29,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1786632243,
-        "narHash": "sha256-uhAn0fq4bpcrC4QxNa+7tMbDHLcYW0MxUZ6G1uQ4R6c=",
+        "lastModified": 1786633247,
+        "narHash": "sha256-WekA6rSa/UJiptDMcNXjVjFS9rZbmavr5SzcaXeuhiA=",
         "owner": "sachahjkl",
         "repo": "albumator",
-        "rev": "d28745b309e5b10f14df29e790dab3069590ff9b",
+        "rev": "7f6312c0f6f64df959a9f96097e8f1ea1a308a72",
         "type": "github"
       },
       "original": {
@@ -985,11 +985,11 @@
         "nixpkgs-secretspec": "nixpkgs-secretspec"
       },
       "locked": {
-        "lastModified": 1786632243,
-        "narHash": "sha256-IX5rfh8k5T7X3H0fzDTRUjCJFdIOC7hb6yKgyuMeKsY=",
+        "lastModified": 1786633247,
+        "narHash": "sha256-+pu4TlenXLnfOTX2Z2S9BEaYeydQDFXkWtDQCpucLRg=",
         "owner": "sachahjkl",
         "repo": "sacha.house",
-        "rev": "f45aef1aa8a81389447f177263f99f69c5d0fd0b",
+        "rev": "9337e8942ddf6226fb57ee996e86ed217c2a589e",
         "type": "github"
       },
       "original": {
