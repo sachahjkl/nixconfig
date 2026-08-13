@@ -149,14 +149,39 @@
     mcpNixos = inputs.mcp-nixos.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos;
     exaKeyPath = lib.attrByPath ["sops" "secrets" "ai/exa-api-key" "path"] "/run/secrets/ai/exa-api-key" config;
 
-    wrappedOpenCode = pkgs.writeShellScriptBin "opencode" ''
-      export OPENCODE_CONFIG=${opencodeConfig}
-      export OPENCODE_ENABLE_EXA=1
-      if [ -r ${exaKeyPath} ]; then
-        export EXA_API_KEY="$(cat ${exaKeyPath})"
-      fi
-      export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
-      exec ${lib.getExe upstreamOpencode} "$@"
+    mkOpenCodeWrapper = name:
+      pkgs.writeShellScriptBin name ''
+        export OPENCODE_CONFIG=${opencodeConfig}
+        export OPENCODE_ENABLE_EXA=1
+        if [ -r ${exaKeyPath} ]; then
+          export EXA_API_KEY="$(cat ${exaKeyPath})"
+        fi
+        export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
+        exec ${lib.getExe upstreamOpencode} "$@"
+      '';
+
+    wrappedOpenCode = pkgs.symlinkJoin {
+      name = "opencode-wrapped";
+      paths = [
+        (mkOpenCodeWrapper "opencode")
+        (mkOpenCodeWrapper "opencode2")
+      ];
+      meta.mainProgram = "opencode";
+    };
+
+    opencodeCompletions = pkgs.runCommand "opencode-completions" {} ''
+      mkdir -p $out/share/fish/vendor_completions.d
+      mkdir -p $out/share/bash-completion/completions
+      mkdir -p $out/share/zsh/site-functions
+      export HOME=$TMPDIR
+
+      ${lib.getExe upstreamOpencode} --completions fish > $out/share/fish/vendor_completions.d/opencode2.fish
+      ${lib.getExe upstreamOpencode} --completions bash > $out/share/bash-completion/completions/opencode2
+      ${lib.getExe upstreamOpencode} --completions zsh > $out/share/zsh/site-functions/_opencode2
+
+      sed 's/opencode2/opencode/g' $out/share/fish/vendor_completions.d/opencode2.fish > $out/share/fish/vendor_completions.d/opencode.fish
+      sed 's/opencode2/opencode/g' $out/share/bash-completion/completions/opencode2 > $out/share/bash-completion/completions/opencode
+      sed 's/opencode2/opencode/g' $out/share/zsh/site-functions/_opencode2 > $out/share/zsh/site-functions/_opencode
     '';
   in {
     imports = [self.nixosModules.sops];
@@ -224,7 +249,10 @@
       };
 
       environment.systemPackages =
-        [wrappedOpenCode]
+        [
+          wrappedOpenCode
+          opencodeCompletions
+        ]
         ++ lib.optional (cfg.homelabServerUrl != null) (
           pkgs.writeShellScriptBin "opencode-homelab" ''
             exec ${lib.getExe wrappedOpenCode} --server ${cfg.homelabServerUrl} "$@"
