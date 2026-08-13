@@ -42,6 +42,8 @@ _: {
             /data/Secrets \
             /data/Services \
             /data/Docker/appdata \
+            /data/Docker/data/Secrets \
+            /data/Docker/storage/volumes \
             /data/Home \
             --exclude=".cache" \
             --exclude=".npm" \
@@ -52,7 +54,6 @@ _: {
             --exclude=".git" \
             --exclude="tmp" \
             --exclude=".local/share/Trash" \
-            --exclude="storage" \
             --exclude="appdata.bak"
 
           restic forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune
