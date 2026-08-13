@@ -35,9 +35,10 @@ _: {
           set -euo pipefail
           export RESTIC_PASSWORD_FILE=${escapeShellArg cfg.backup.resticPasswordFile}
 
+          restic unlock
           restic backup \
-            /etc \
             /root \
+            /persist/var/lib/sops-nix \
             /data/Secrets \
             /data/Services \
             /data/Docker/appdata \
@@ -54,7 +55,7 @@ _: {
             --exclude="storage" \
             --exclude="appdata.bak"
 
-          restic forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune || true
+          restic forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune
         '';
       };
 
