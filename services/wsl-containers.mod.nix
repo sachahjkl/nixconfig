@@ -1,33 +1,39 @@
 _: {
   flake.nixosModules.wslContainers = {
+    config,
     pkgs,
     ...
   }: {
     config = {
-      virtualisation.docker = {
+      virtualisation.podman = {
         enable = true;
-        autoPrune = {
-          enable = true;
-          dates = "weekly";
-          flags = ["--all" "--volumes"];
-        };
-        daemon.settings = {
-          live-restore = false;
-          log-driver = "json-file";
-          log-opts = {
-            max-file = "3";
-            max-size = "50m";
-          };
-          storage-driver = "overlay2";
-        };
+        dockerCompat = true;
+        defaultNetwork.settings.dns_enabled = true;
       };
 
       environment.systemPackages = with pkgs; [
-        docker-compose
+        podman-compose
       ];
 
-      # Docker 29.x with iptables-nft needs `nft` in its PATH to manage rules.
-      systemd.services.docker.path = [pkgs.nftables];
+      users.users.${config.userName}.linger = true;
+
+      systemd.user.services.podman-prune = {
+        description = "Prune rootless Podman resources";
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.podman}/bin/podman system prune --force --all --volumes";
+        };
+      };
+
+      systemd.user.timers.podman-prune = {
+        description = "Weekly rootless Podman prune";
+        wantedBy = ["timers.target"];
+        timerConfig = {
+          OnCalendar = "weekly";
+          Persistent = true;
+          RandomizedDelaySec = "30m";
+        };
+      };
     };
   };
 }

@@ -36,10 +36,13 @@
       interop.register = true;
     };
 
+    systemd.tmpfiles.rules = [
+      "z /etc/ssh/ssh_host_ed25519_key 0600 root root -"
+    ];
+
     userName = "nixos";
     fullName = "NixOS";
     homeDirectory = "/home/nixos";
-    extraUserGroups = ["docker"];
 
     ai = {
       enable = true;
