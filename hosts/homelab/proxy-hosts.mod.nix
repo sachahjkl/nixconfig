@@ -54,12 +54,6 @@ _: {
           dockerPort = 3000;
         };
 
-        "nginx.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 81;
-          websockets = true;
-        };
-
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
@@ -72,12 +66,6 @@ _: {
           dockerContainer = "sae.aubetoile";
           dockerPort = 8080;
           dns.enable = false;
-        };
-
-        "admin.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 8000;
-          websockets = true;
         };
 
         "dns.sacha.house" = {
@@ -102,7 +90,7 @@ _: {
         };
 
         "homelab.sacha.house" = {
-          dockerContainer = "dashy";
+          dockerContainer = "Dashy";
           dockerPort = 8080;
           websockets = true;
           dns = {
@@ -118,28 +106,22 @@ _: {
         };
 
         "pixels.aubetoile.dev" = {
-          dockerContainer = "pixels-web";
+          dockerContainer = "pixelsaubetoiledev-pixels_web-1";
           dockerPort = 80;
           websockets = true;
           dns.enable = false;
         };
 
         "api.pixels.aubetoile.dev" = {
-          dockerContainer = "pixels-api";
+          dockerContainer = "pixelsaubetoiledev-pixels_api-1";
           dockerPort = 8080;
           websockets = true;
           dns.enable = false;
         };
 
         "ai.sacha.house" = {
-          dockerContainer = "opencode";
-          dockerPort = 4096;
-          websockets = true;
-        };
-
-        "wetty.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 44888;
+          upstreamPort = 4096;
           websockets = true;
         };
 
@@ -160,31 +142,10 @@ _: {
           };
         };
 
-        "tmp.aubetoile.dev" = {
-          dockerContainer = "aubetoile";
-          dockerPort = 80;
-          websockets = true;
-          dns.enable = false;
-        };
-
         "portainer.homelab.sacha.house" = {
           dockerContainer = "portainer";
           dockerPort = 9000;
           websockets = true;
-        };
-
-        "scratch.sacha.house" = {
-          dockerContainer = "ai-web-php";
-          dockerPort = 80;
-          websockets = true;
-        };
-
-        "hermes.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9119;
-          websockets = true;
-          # TODO: re-add basic auth once the file is moved to a path without spaces
-          # basicAuthFile = "/data/Docker/appdata/Nginx Proxy Manager/data/access/1";
         };
 
         "files.sacha.house" = {
