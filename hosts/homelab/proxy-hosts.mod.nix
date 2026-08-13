@@ -103,6 +103,7 @@ _: {
         "php.homelab.sacha.house" = {
           dockerContainer = "acheteteper";
           dockerPort = 8000;
+          websockets = true;
         };
 
         "pixels.aubetoile.dev" = {
