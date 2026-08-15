@@ -5,8 +5,8 @@
     pkgs,
     ...
   }: let
-    unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-    inherit (unstablePkgs) umu-launcher-unwrapped;
+    mv = inputs.multiverse.multiverse.${pkgs.stdenv.hostPlatform.system};
+    inherit (mv.tip) umu-launcher-unwrapped;
     umuLauncher = pkgs.umu-launcher.override {
       inherit umu-launcher-unwrapped;
     };

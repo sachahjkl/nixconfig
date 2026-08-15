@@ -1,4 +1,4 @@
-_: {
+{inputs, ...}: {
   flake.nixosModules.kdeCore = {
     config,
     lib,
@@ -20,6 +20,8 @@ _: {
         'var desktops = desktops(); for (var i = 0; i < desktops.length; ++i) { var desktop = desktops[i]; desktop.wallpaperPlugin = "org.kde.image"; desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"]; desktop.writeConfig("Image", "${wallpaperUri}"); }' >/dev/null
     '';
   in {
+    home-manager.sharedModules = [inputs.plasma-manager.homeModules.plasma-manager];
+
     services = {
       displayManager.sddm = {
         enable = true;

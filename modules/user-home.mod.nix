@@ -41,7 +41,6 @@
         useGlobalPkgs = true;
         useUserPackages = true;
         extraSpecialArgs = {inherit inputs self;};
-        sharedModules = [inputs.plasma-manager.homeModules.plasma-manager];
         users.${user} = {
           home = {
             username = user;

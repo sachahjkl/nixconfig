@@ -31,7 +31,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    multiverse.url = "github:fzakaria/nixpkgs-multiverse";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     deploy-rs = {
@@ -69,8 +69,15 @@
       inputs.home-manager.follows = "home-manager";
     };
 
-    wrappers.url = "github:Lassulus/wrappers";
-    wrapper-modules.url = "github:BirdeeHub/nix-wrapper-modules";
+    wrappers = {
+      url = "github:Lassulus/wrappers";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    wrapper-modules = {
+      url = "github:BirdeeHub/nix-wrapper-modules";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nix-index-database = {
       url = "github:Mic92/nix-index-database";
@@ -108,13 +115,19 @@
 
     lanblaster.url = "github:sachahjkl/lanblaster.sacha.house";
 
-    albumator.url = "github:sachahjkl/albumator";
+    albumator = {
+      url = "github:sachahjkl/albumator";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     clockin = {
       url = "github:sachahjkl/clockin.sacha.house";
     };
 
-    sacha-house.url = "github:sachahjkl/sacha.house";
+    sacha-house = {
+      url = "github:sachahjkl/sacha.house";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs:
