@@ -81,6 +81,11 @@
             resource = "*";
             effect = "allow";
           }
+          {
+            action = "skill";
+            resource = "francais-simple";
+            effect = "allow";
+          }
         ];
       watcher.ignore = [
         ".direnv/**"
@@ -184,7 +189,10 @@
       sed 's/opencode2/opencode/g' $out/share/zsh/site-functions/_opencode2 > $out/share/zsh/site-functions/_opencode
     '';
   in {
-    imports = [self.nixosModules.sops];
+    imports = [
+      self.nixosModules.sops
+      self.nixosModules.skills
+    ];
 
     options.opencode = {
       enable = mkOption {

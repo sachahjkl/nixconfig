@@ -13,6 +13,7 @@
       self.nixosModules.handy
       self.nixosModules.herdr
       self.nixosModules.omp
+      self.nixosModules.skills
     ];
 
     options.ai = {

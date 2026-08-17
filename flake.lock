@@ -364,6 +364,23 @@
         "type": "github"
       }
     },
+    "francais-simple": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1786960131,
+        "narHash": "sha256-OozXs2+nXj9BUYEVt+MBk0aLLP4RbC3G1LcZ3PQ52Ik=",
+        "owner": "sachahjkl",
+        "repo": "FrancaisSimple",
+        "rev": "1138180a2364ed4303609056a95807f74485b7ad",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sachahjkl",
+        "repo": "FrancaisSimple",
+        "rev": "1138180a2364ed4303609056a95807f74485b7ad",
+        "type": "github"
+      }
+    },
     "hermes-agent": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -873,6 +890,7 @@
         "deploy-rs": "deploy-rs",
         "disko": "disko",
         "flake-parts": "flake-parts",
+        "francais-simple": "francais-simple",
         "hermes-agent": "hermes-agent",
         "hjem": "hjem",
         "hjem-rum": "hjem-rum",
