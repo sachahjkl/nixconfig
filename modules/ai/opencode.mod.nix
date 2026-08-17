@@ -46,6 +46,7 @@
     in {
       autoupdate = false;
       share = "disabled";
+      skills = ["${inputs.francais-simple}/skills"];
       permissions =
         [
           {
@@ -289,7 +290,6 @@
       };
 
       networking.firewall.allowedTCPPorts = mkIf (cfg.server.enable && cfg.server.openFirewall) [cfg.server.port];
-
     };
   };
 }

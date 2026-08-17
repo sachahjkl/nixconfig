@@ -31,11 +31,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786694081,
-        "narHash": "sha256-bSn4nFIxrD7YcaVjElZD9gys21KvaBYjEtdczM78nGY=",
+        "lastModified": 1786970886,
+        "narHash": "sha256-gjz7OMjnE8j3ZqohNNlXQmlZmZ5I3tYAReJZQuSawpM=",
         "owner": "sachahjkl",
         "repo": "albumator",
-        "rev": "3afe1caf212be0e6cec13678183c86d8794753de",
+        "rev": "5732b37188faef5a04dce07a701f66b4273685c9",
         "type": "github"
       },
       "original": {
