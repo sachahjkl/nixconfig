@@ -135,7 +135,7 @@ _: {
 
         "froment.software" = {
           dockerContainer = "froment-software";
-          dockerPort = 80;
+          dockerPort = 3000;
           dns = {
             type = "A";
             value = "82.66.185.90";
