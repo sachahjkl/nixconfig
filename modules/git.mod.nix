@@ -106,6 +106,7 @@
 
       signing = {
         backend = "ssh";
+        backends.ssh.allowed-signers = "~/.ssh/allowed_signers";
         behavior = "drop";
         key = cfg.signingKey;
       };

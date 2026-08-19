@@ -1,5 +1,7 @@
 _: {
   flake.nixosModules.homelabProxyHosts = {
+    services.nginx.defaultListenAddresses = ["192.168.50.22"];
+
     homelab.proxy = {
       enable = true;
       acmeEmail = "sacha@sacha.house";
