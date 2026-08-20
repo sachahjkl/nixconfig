@@ -44,11 +44,6 @@ _: {
                     mountpoint = "/nix";
                     mountOptions = ["subvol=nix" "compress=zstd" "noatime"];
                   };
-
-                  "/tmp" = {
-                    mountpoint = "/tmp";
-                    mountOptions = ["subvol=tmp" "compress=zstd" "noatime"];
-                  };
                 };
               };
             };
@@ -113,6 +108,11 @@ _: {
 
                   "@data-media" = {
                     mountpoint = "/data/Media";
+                    mountOptions = ["compress=zstd:1" "noatime"];
+                  };
+
+                  "@data-tmp" = {
+                    mountpoint = "/tmp";
                     mountOptions = ["compress=zstd:1" "noatime"];
                   };
 
