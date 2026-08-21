@@ -103,8 +103,6 @@
 
     mkOpenCodeAgents = pkgs:
       pkgs.writeText "AGENTS.md" ''
-        - Use `jj` for version control.
-
         ${builtins.readFile (self + /modules/ai/instructions.md)}
       '';
 
