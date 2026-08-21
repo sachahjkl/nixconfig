@@ -152,7 +152,7 @@
     opencodeAgents = self.lib.opencode.mkOpenCodeAgents pkgs;
 
     upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
-    mcpNixos = inputs.mcp-nixos.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos;
+    mcpNixos = pkgs.mcp-nixos;
     exaKeyPath = lib.attrByPath ["sops" "secrets" "ai/exa-api-key" "path"] "/run/secrets/ai/exa-api-key" config;
 
     mkOpenCodeWrapper = name:

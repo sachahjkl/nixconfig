@@ -8,7 +8,7 @@
       opencode = pkgs.mkShell {
         packages = [
           self'.packages.opencode
-          inputs.mcp-nixos.packages.${pkgs.stdenv.hostPlatform.system}.mcp-nixos
+          pkgs.mcp-nixos
           pkgs.git
         ];
       };
