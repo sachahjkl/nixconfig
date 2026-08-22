@@ -186,7 +186,6 @@
 
     mkOpenCodeWrapper = name:
       pkgs.writeShellScriptBin name ''
-        export OPENCODE_CONFIG=${opencodeConfig}
         export OPENCODE_ENABLE_EXA=1
         if [ -r ${exaKeyPath} ]; then
           export EXA_API_KEY="$(cat ${exaKeyPath})"
@@ -285,8 +284,11 @@
       ];
 
       hjem.users.${config.userName} = mkIf hasHjemUsers {
-        files.".config/opencode/AGENTS.md".source = opencodeAgents;
-        files.".config/opencode/cli.json".source = opencodeCliConfig;
+        files = {
+          ".config/opencode/AGENTS.md".source = opencodeAgents;
+          ".config/opencode/cli.json".source = opencodeCliConfig;
+          ".config/opencode/opencode.json".source = opencodeConfig;
+        };
 
         rum.programs.fish.functions.homelab-code = mkIf (cfg.homelabServerUrl != null) ''
           opencode --server ${cfg.homelabServerUrl} $argv
