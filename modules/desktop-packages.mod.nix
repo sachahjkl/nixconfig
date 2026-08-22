@@ -23,7 +23,6 @@ _: {
       ++ (with pkgs; [
         alsa-utils
         audacity
-        bcompare
         equibop
         efibootmgr
         file-roller

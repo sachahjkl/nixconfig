@@ -57,6 +57,7 @@ _: {
         portalPackage = pkgs.xdg-desktop-portal-hyprland;
         systemd.setPath.enable = true;
       };
+      programs.xwayland.defaultFontPath = "";
 
       systemd.user.services = {
         hyprpolkitagent = {
