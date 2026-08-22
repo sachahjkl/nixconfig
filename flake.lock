@@ -739,6 +739,26 @@
         "type": "github"
       }
     },
+    "opencode-backlog": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787432110,
+        "narHash": "sha256-CNP57msqKZnHcx/qDl+nfoMm7WD/ow8EGrbUol/xpWA=",
+        "owner": "sachahjkl",
+        "repo": "opencode-backlog",
+        "rev": "71200280cc6ae99d968778aab77e0b4df1fd114b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sachahjkl",
+        "repo": "opencode-backlog",
+        "type": "github"
+      }
+    },
     "plasma-manager": {
       "inputs": {
         "home-manager": [
@@ -848,6 +868,7 @@
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_5",
+        "opencode-backlog": "opencode-backlog",
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
         "sacha-house": "sacha-house",

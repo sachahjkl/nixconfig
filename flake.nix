@@ -108,6 +108,11 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    opencode-backlog = {
+      url = "github:sachahjkl/opencode-backlog";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     francais-simple = {
       url = "github:sachahjkl/FrancaisSimple/1138180a2364ed4303609056a95807f74485b7ad";
       flake = false;

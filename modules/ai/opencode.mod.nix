@@ -6,6 +6,7 @@
 }: {
   flake.lib.opencode = {
     defaultSettings = pkgs: let
+      backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
       readOnlyJjCommands = [
         "jj bookmark list*"
         "jj config get*"
@@ -45,6 +46,7 @@
       ];
     in {
       autoupdate = false;
+      plugins = ["${backlogPackage}/lib/opencode-backlog/dist/index.js"];
       share = "disabled";
       skills = ["${inputs.francais-simple}/skills"];
       permissions =
@@ -101,6 +103,23 @@
       };
     };
 
+    defaultCliSettings = pkgs: let
+      backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    in {
+      animations = true;
+      diffs.wrap = "word";
+      plugins = ["${backlogPackage}/lib/opencode-backlog/dist/tui.js"];
+      session = {
+        scrollbar = false;
+        sidebar = "auto";
+        thinking = "hide";
+      };
+      theme = {
+        mode = "system";
+        name = "opencode";
+      };
+    };
+
     mkOpenCodeAgents = pkgs:
       pkgs.writeText "AGENTS.md" ''
         ${builtins.readFile (self + /modules/ai/instructions.md)}
@@ -117,6 +136,14 @@
           }
           // lib.recursiveUpdate (self.lib.opencode.defaultSettings pkgs) settings
         )
+      );
+
+    mkOpenCodeCliConfig = {
+      pkgs,
+      settings ? {},
+    }:
+      pkgs.writeText "cli.json" (
+        builtins.toJSON (lib.recursiveUpdate (self.lib.opencode.defaultCliSettings pkgs) settings)
       );
   };
 
@@ -148,6 +175,10 @@
       inherit (cfg) settings;
     };
     opencodeAgents = self.lib.opencode.mkOpenCodeAgents pkgs;
+    opencodeCliConfig = self.lib.opencode.mkOpenCodeCliConfig {
+      inherit pkgs;
+      settings = cfg.cliSettings;
+    };
 
     upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
     mcpNixos = pkgs.mcp-nixos;
@@ -233,6 +264,12 @@
         default = {};
         description = "Settings merged into the generated OpenCode configuration.";
       };
+
+      cliSettings = mkOption {
+        type = types.attrs;
+        default = {};
+        description = "Settings merged into the generated OpenCode TUI configuration.";
+      };
     };
 
     config = mkIf cfg.enable {
@@ -249,6 +286,7 @@
 
       hjem.users.${config.userName} = mkIf hasHjemUsers {
         files.".config/opencode/AGENTS.md".source = opencodeAgents;
+        files.".config/opencode/cli.json".source = opencodeCliConfig;
 
         rum.programs.fish.functions.homelab-code = mkIf (cfg.homelabServerUrl != null) ''
           opencode --server ${cfg.homelabServerUrl} $argv
