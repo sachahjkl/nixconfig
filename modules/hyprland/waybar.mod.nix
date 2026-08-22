@@ -6,6 +6,7 @@
     ...
   }: let
     u = cp: builtins.fromJSON ("\"\\u" + cp + "\"");
+    nerd = suffix: builtins.fromJSON ("\"\\uDB80\\uDC" + suffix + "\"");
     inherit (config) userName;
     rofiPkg = self.lib.mkRofi {
       inherit pkgs;
@@ -150,7 +151,7 @@
           format-charging = "${u "F1E6"} {capacity}%";
           format-plugged = "${u "F1E6"} {capacity}%";
           format-alt = "{time} {icon}";
-          format-icons = [(u "F008E") (u "F007A") (u "F007B") (u "F007C") (u "F007D") (u "F007E") (u "F007F") (u "F0080") (u "F0081") (u "F0082") (u "F0079")];
+          format-icons = map nerd ["8E" "7A" "7B" "7C" "7D" "7E" "7F" "80" "81" "82" "79"];
         };
         wireplumber = {
           max-volume = 150;
