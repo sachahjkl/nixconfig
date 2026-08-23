@@ -123,6 +123,17 @@
     mkOpenCodeAgents = pkgs:
       pkgs.writeText "AGENTS.md" ''
         ${builtins.readFile (self + /modules/ai/instructions.md)}
+
+        ## Backlog
+
+        Use the `backlog` tools to manage task stacks. Do not edit `BACKLOG.json` directly.
+
+        - Run `backlog_list` before work to inspect the stack and obtain task IDs.
+        - Run `backlog_add` to add a task.
+        - Run `backlog_update` to change a task title or notes.
+        - Run `backlog_move` to change a task state or position.
+        - Run `backlog_remove` only when a task must be permanently removed.
+        - Move active tasks to `doing`. Move completed tasks to `done`.
       '';
 
     mkOpenCodeConfig = {
