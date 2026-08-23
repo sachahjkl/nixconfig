@@ -41,8 +41,8 @@ lib.systems.nixosSystem "homelab" {
       services = {
         observability = {
           enable = true;
-          grafanaDomain = "grafana.homelab.sacha.house";
-          otlpDomain = "otlp.homelab.sacha.house";
+          grafanaDomain = "grafana.sacha.house";
+          otlpDomain = "otlp.sacha.house";
         };
 
         githubRunner = {

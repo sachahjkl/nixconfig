@@ -202,13 +202,13 @@ _: {
 
       grafanaDomain = mkOption {
         type = types.str;
-        default = "grafana.homelab.sacha.house";
+        default = "grafana.sacha.house";
         description = "Public domain for Grafana.";
       };
 
       otlpDomain = mkOption {
         type = types.str;
-        default = "otlp.homelab.sacha.house";
+        default = "otlp.sacha.house";
         description = "Public domain for OTLP/HTTP ingestion.";
       };
 

@@ -222,8 +222,8 @@ Les domaines se configurent dans `hosts/homelab/homelab.mod.nix` :
 ```nix
 homelab.services.observability = {
   enable = true;
-  grafanaDomain = "grafana.homelab.sacha.house";
-  otlpDomain = "otlp.homelab.sacha.house";
+  grafanaDomain = "grafana.sacha.house";
+  otlpDomain = "otlp.sacha.house";
 };
 ```
 
@@ -240,7 +240,7 @@ Configurez Froment avec ces variables :
 ```text
 OTEL_TRACES_EXPORTER=otlp
 OTEL_LOGS_EXPORTER=otlp
-OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.homelab.sacha.house
+OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.sacha.house
 OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic%20<identifiants-base64>
 DEPLOYMENT_ENVIRONMENT=production
 ```

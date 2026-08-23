@@ -289,6 +289,7 @@ _: {
           after = ["docker.service" "network-online.target"];
           before = ["nginx.service"];
           wantedBy = ["multi-user.target"];
+          restartTriggers = [dockerSpecFile];
           path = with pkgs; [bash coreutils docker gnugrep gnused python3 systemd];
           serviceConfig = {
             Type = "oneshot";
