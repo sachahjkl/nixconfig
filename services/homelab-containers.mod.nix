@@ -1,10 +1,26 @@
 _: {
   flake.nixosModules.homelabContainers = {
     config,
+    lib,
     pkgs,
     ...
   }: let
     dataRoot = config.homelab.dataRoot;
+    registries = config.virtualisation.containers.registries;
+    registriesConfig = (pkgs.formats.toml {}).generate "registries.conf" {
+      "unqualified-search-registries" = registries.search;
+      registry =
+        map (location: {
+          inherit location;
+          insecure = true;
+        })
+        registries.insecure
+        ++ map (location: {
+          inherit location;
+          blocked = true;
+        })
+        registries.block;
+    };
   in {
     config = {
       persist.system.directories = [
@@ -35,6 +51,8 @@ _: {
         dockerCompat = false;
         defaultNetwork.settings.dns_enabled = true;
       };
+
+      environment.etc."containers/registries.conf".source = lib.mkForce registriesConfig;
 
       environment.systemPackages = with pkgs; [
         docker-compose
