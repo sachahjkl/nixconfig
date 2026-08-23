@@ -4,6 +4,7 @@
       self.nixosModules.server
       self.nixosModules.homelabLayout
       self.nixosModules.homelabContainers
+      self.nixosModules.homelabObservability
       self.nixosModules.homelabShares
       self.nixosModules.homelabBackup
       self.nixosModules.homelabSops

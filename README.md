@@ -203,6 +203,60 @@ jobs:
       - run: nix flake check
 ```
 
+## Observabilité
+
+Le module `homelabObservability` déploie les services suivants dans Docker :
+
+- OpenTelemetry Collector reçoit les traces, les journaux et les métriques OTLP.
+- Loki conserve les journaux pendant 30 jours.
+- Tempo conserve les traces pendant 14 jours.
+- Prometheus conserve les métriques pendant 30 jours, avec une limite de 20 Go.
+- Grafana fournit les sources Prometheus, Loki et Tempo préconfigurées.
+
+Les données résident dans `/data/Docker/appdata/observability`.
+
+Le service Restic sauvegarde déjà ce répertoire par son parent `/data/Docker/appdata`.
+
+Les domaines se configurent dans `hosts/homelab/homelab.mod.nix` :
+
+```nix
+homelab.services.observability = {
+  enable = true;
+  grafanaDomain = "grafana.homelab.sacha.house";
+  otlpDomain = "otlp.homelab.sacha.house";
+};
+```
+
+Utilisez `admin` comme identifiant Grafana.
+
+Déchiffrez le mot de passe Grafana avec cette commande :
+
+```bash
+sops decrypt --extract '["observability"]["grafana-environment"]' secrets/homelab.yaml
+```
+
+Configurez Froment avec ces variables :
+
+```text
+OTEL_TRACES_EXPORTER=otlp
+OTEL_LOGS_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp.homelab.sacha.house
+OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic%20<identifiants-base64>
+DEPLOYMENT_ENVIRONMENT=production
+```
+
+Générez les identifiants Base64 sans écrire le mot de passe sur le disque :
+
+```bash
+OTLP_PASSWORD="$(sops decrypt --extract '["observability"]["otlp-password"]' secrets/homelab.yaml)"
+printf 'froment:%s' "$OTLP_PASSWORD" | base64 -w0
+unset OTLP_PASSWORD
+```
+
+Le proxy accepte OTLP/HTTP avec protobuf sur `/v1/traces`, `/v1/logs` et `/v1/metrics`.
+
+Appliquez la configuration avec la procédure de reconstruction habituelle.
+
 ## Rebuild
 
 Preferred:

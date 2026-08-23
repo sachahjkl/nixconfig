@@ -43,6 +43,20 @@
           group = "root";
           mode = "0400";
         };
+
+        "observability/grafana-environment" = {
+          owner = "root";
+          group = "root";
+          mode = "0400";
+          restartUnits = ["docker-grafana.service"];
+        };
+
+        "observability/otlp-htpasswd" = {
+          owner = "root";
+          group = "nginx";
+          mode = "0440";
+          restartUnits = ["nginx.service"];
+        };
       };
 
       homelab.backup = {

@@ -1,5 +1,7 @@
 _: {
-  flake.nixosModules.homelabProxyHosts = {
+  flake.nixosModules.homelabProxyHosts = {config, ...}: let
+    observability = config.homelab.services.observability;
+  in {
     services.nginx.defaultListenAddresses = ["192.168.50.22"];
 
     homelab.proxy = {
@@ -17,6 +19,19 @@ _: {
         ];
       };
       hosts = {
+        ${observability.grafanaDomain} = {
+          dockerContainer = "grafana";
+          dockerPort = 3000;
+          websockets = true;
+        };
+
+        ${observability.otlpDomain} = {
+          dockerContainer = "otel-collector";
+          dockerPort = 4318;
+          basicAuthFile = observability.otlpBasicAuthFile;
+          extraConfig = "client_max_body_size 16m;";
+        };
+
         "secret.homelab.sacha.house" = {
           dockerContainer = "vaultwarden";
           dockerPort = 80;

@@ -51,7 +51,7 @@ _: {
         inherit (hostCfg) basicAuthFile;
         # NixOS already emits `http2 on;` for SSL vhosts; adding it again is a
         # duplicate and breaks nginx config validation.
-        extraConfig = "";
+        inherit (hostCfg) extraConfig;
         locations."/" = {
           inherit proxyPass;
           proxyWebsockets = hostCfg.websockets;
@@ -177,6 +177,12 @@ _: {
             basicAuthFile = mkOption {
               type = types.nullOr types.str;
               default = null;
+            };
+
+            extraConfig = mkOption {
+              type = types.lines;
+              default = "";
+              description = "Additional nginx virtual host configuration.";
             };
 
             dns = {
