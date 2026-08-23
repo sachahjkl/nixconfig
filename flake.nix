@@ -34,6 +34,11 @@
     multiverse.url = "github:fzakaria/nixpkgs-multiverse";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     deploy-rs = {
       url = "github:serokell/deploy-rs";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -113,9 +118,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    francais-simple = {
-      url = "github:sachahjkl/FrancaisSimple/1138180a2364ed4303609056a95807f74485b7ad";
-      flake = false;
+    skills = {
+      url = "github:sachahjkl/skills";
+      inputs = {
+        flake-parts.follows = "flake-parts";
+        git-hooks.follows = "git-hooks";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
 
     lanblaster.url = "github:sachahjkl/lanblaster.sacha.house";

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "15bbc478-e5ed-4e13-bf03-7cf58fc75530",
+      "title": "Créer et déployer la collection de skills",
+      "notes": "Créer le dépôt public sachahjkl/skills, intégrer francais-simple et câbler automatiquement ses skills dans nixconfig.",
+      "status": "done"
+    },
+    {
+      "id": "538716af-43c7-4ed5-a2ed-166d542c1427",
+      "title": "Ajouter les contrôles pre-commit Nix",
+      "notes": "Comparer les flakes de sacha.house et froment.software, documenter la règle commune, puis configurer deadnix, statix et le formatage dans nixconfig.",
+      "status": "done"
+    }
+  ]
+}

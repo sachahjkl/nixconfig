@@ -45,3 +45,36 @@ Before delivery, remove ambiguity, filler, synonym rotation, hidden conditions, 
 - Use existing project dependencies before writing an implementation or adding packages.
 - Check dependency documentation and types before deciding that a dependency lacks a capability.
 - Make architectural decisions for the long term. Do not accept temporary solutions that require later replacement.
+
+## Project Nix Setup
+
+- At the start of work in each project, inspect its Nix flake and development checks.
+- Load the `nix-project` skill for detailed implementation and verification guidance.
+- If the flake is absent or incomplete, add a backlog task and complete it during the current work.
+- Expose applicable builds, tests, linters, formatters, and container images through `checks`.
+- Configure appropriate `cachix/git-hooks.nix` hooks for the project languages and file formats.
+- Expose the pre-commit check through `checks` and install its hooks from the default development shell.
+
+Use this minimal pattern and adapt the hooks and checks to the project:
+
+```nix
+inputs.git-hooks = {
+  url = "github:cachix/git-hooks.nix";
+  inputs.nixpkgs.follows = "nixpkgs";
+};
+
+preCommitCheck = inputs.git-hooks.lib.${system}.run {
+  src = ./.;
+  hooks = {
+    alejandra.enable = true;
+    deadnix.enable = true;
+    statix.enable = true;
+  };
+};
+
+checks.pre-commit = preCommitCheck;
+devShells.default = pkgs.mkShell {
+  packages = preCommitCheck.enabledPackages;
+  inherit (preCommitCheck) shellHook;
+};
+```

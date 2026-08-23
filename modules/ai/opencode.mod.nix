@@ -48,7 +48,7 @@
       autoupdate = false;
       plugins = ["${backlogPackage}/lib/opencode-backlog/dist/index.js"];
       share = "disabled";
-      skills = ["${inputs.francais-simple}/skills"];
+      skills = ["${inputs.skills}"];
       permissions =
         [
           {
@@ -86,7 +86,7 @@
           }
           {
             action = "skill";
-            resource = "francais-simple";
+            resource = "*";
             effect = "allow";
           }
         ];

@@ -82,6 +82,8 @@ deadnix .
 statix check .
 ```
 
+Enter `nix develop` once after cloning to install the repository pre-commit hooks.
+
 ## Best Practices
 
 - Prefer small structural changes.
