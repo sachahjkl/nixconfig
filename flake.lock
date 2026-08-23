@@ -818,11 +818,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787490068,
-        "narHash": "sha256-Fr51A20ESldqkbE94ISy4fY5msbMG2s8UVrd3IiydxY=",
+        "lastModified": 1787492451,
+        "narHash": "sha256-O2tctiFCu9CedIVNpywzRVQje6kTZHXfScoa/uFNWrw=",
         "owner": "sachahjkl",
         "repo": "opencode-backlog",
-        "rev": "ddb8da37a9668898fe57d91daa56eb5e88b18514",
+        "rev": "90edb8b155f74dcbb5258535eedbedbaa093ec54",
         "type": "github"
       },
       "original": {
