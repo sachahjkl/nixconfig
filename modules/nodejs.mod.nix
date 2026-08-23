@@ -12,13 +12,18 @@
     hasUserName = lib.hasAttrByPath ["userName"] options;
     npmTokenPath = "/run/secrets/npm-current-token";
     wrappedNpm = pkgs.writeShellScriptBin "npm" ''
-      export NPM_TOKEN=""
+      umask 077
+      npmrc="$(mktemp)"
+      trap 'rm -f "$npmrc"' EXIT
+      ${lib.optionalString hasHomeDirectory ''
+        printf '%s\n' 'prefix=${config.homeDirectory}/.local' > "$npmrc"
+      ''}
+
       if [ -r ${lib.escapeShellArg npmTokenPath} ]; then
-        NPM_TOKEN="$(cat ${lib.escapeShellArg npmTokenPath})"
-        export NPM_TOKEN
+        printf '%s=%s\n' '//registry.npmjs.org/:_authToken' "$(cat ${lib.escapeShellArg npmTokenPath})" >> "$npmrc"
       fi
 
-      exec ${lib.getExe' pkgs.nodejs "npm"} "$@"
+      NPM_CONFIG_USERCONFIG="$npmrc" ${lib.getExe' pkgs.nodejs "npm"} "$@"
     '';
   in {
     config = lib.mkMerge [
@@ -32,7 +37,6 @@
       (lib.optionalAttrs (hasHjemUsers && hasHomeDirectory && hasUserName) {
         hjem.users.${config.userName}.files.".npmrc".text = ''
           prefix=${config.homeDirectory}/.local
-          //registry.npmjs.org/:_authToken=''${NPM_TOKEN}
         '';
       })
 
