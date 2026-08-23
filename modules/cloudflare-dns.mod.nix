@@ -12,38 +12,47 @@
     hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
 
-    dnsEntries = lib.flatten (lib.mapAttrsToList
-      (domain: hostCfg: let
-        dnsCfg = hostCfg.dns;
-        recordType =
-          if dnsCfg.type == null
-          then cfg.defaultType
-          else dnsCfg.type;
-        proxied =
-          if dnsCfg.proxied == null
-          then cfg.defaultProxied
-          else dnsCfg.proxied;
-        ttl =
-          if dnsCfg.ttl == null
-          then cfg.defaultTTL
-          else dnsCfg.ttl;
-        target =
-          if dnsCfg.target == null
-          then cfg.defaultTarget
-          else dnsCfg.target;
-      in
-        lib.optional dnsCfg.enable {
-          inherit domain proxied ttl;
-          type = recordType;
-          value =
-            if recordType == "A"
-            then
-              if dnsCfg.value == null
-              then cfg.defaultValue
-              else dnsCfg.value
-            else target;
+    dnsEntries =
+      (lib.mapAttrsToList (domain: target: {
+          inherit domain;
+          type = "CNAME";
+          value = target;
+          proxied = cfg.defaultProxied;
+          ttl = cfg.defaultTTL;
         })
-      (lib.attrByPath ["homelab" "proxy" "hosts"] {} config));
+        cfg.cnames)
+      ++ lib.flatten (lib.mapAttrsToList
+        (domain: hostCfg: let
+          dnsCfg = hostCfg.dns;
+          recordType =
+            if dnsCfg.type == null
+            then cfg.defaultType
+            else dnsCfg.type;
+          proxied =
+            if dnsCfg.proxied == null
+            then cfg.defaultProxied
+            else dnsCfg.proxied;
+          ttl =
+            if dnsCfg.ttl == null
+            then cfg.defaultTTL
+            else dnsCfg.ttl;
+          target =
+            if dnsCfg.target == null
+            then cfg.defaultTarget
+            else dnsCfg.target;
+        in
+          lib.optional dnsCfg.enable {
+            inherit domain proxied ttl;
+            type = recordType;
+            value =
+              if recordType == "A"
+              then
+                if dnsCfg.value == null
+                then cfg.defaultValue
+                else dnsCfg.value
+              else target;
+          })
+        (lib.attrByPath ["homelab" "proxy" "hosts"] {} config));
 
     dnsConfig = pkgs.writeText "cloudflare-dns-config.json" (builtins.toJSON {
       inherit (cfg) defaultTarget managedComment tokenPath zoneNames;

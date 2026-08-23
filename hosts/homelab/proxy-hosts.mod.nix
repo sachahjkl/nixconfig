@@ -13,6 +13,10 @@ _: {
         defaultValue = "82.66.185.90";
         defaultProxied = false;
         defaultTarget = "homelab.sacha.house";
+        cnames = {
+          "www.froment.software" = "froment.software";
+          "www.sacha.house" = "sacha.house";
+        };
         zoneNames = [
           "sacha.house"
           "froment.software"

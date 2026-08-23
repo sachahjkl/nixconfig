@@ -105,6 +105,11 @@ _: {
           default = 1;
         };
 
+        cnames = mkOption {
+          type = types.attrsOf types.str;
+          default = {};
+        };
+
         zoneNames = mkOption {
           type = types.listOf types.str;
           default = [];

@@ -1,6 +1,29 @@
 {
-  "version": 1,
+  "version": 2,
+  "categories": [
+    {
+      "id": "todo",
+      "title": "Todo",
+      "color": "subdued"
+    },
+    {
+      "id": "doing",
+      "title": "Doing",
+      "color": "warning"
+    },
+    {
+      "id": "done",
+      "title": "Done",
+      "color": "success"
+    }
+  ],
   "items": [
+    {
+      "id": "9096b40e-af94-47e2-b145-a9dcfdc0b4f1",
+      "title": "Ajouter les CNAME www des domaines",
+      "notes": "Déclarer www.froment.software vers froment.software et www.sacha.house vers sacha.house.",
+      "status": "done"
+    },
     {
       "id": "15bbc478-e5ed-4e13-bf03-7cf58fc75530",
       "title": "Créer et déployer la collection de skills",
