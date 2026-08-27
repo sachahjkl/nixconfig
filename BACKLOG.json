@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "b5e9b4c3-b5f0-4cdd-a986-928925f30ee8",
+      "title": "Restaurer autoUpgrade sur homelab",
+      "notes": "Conserver la mise à niveau quotidienne existante malgré la nouvelle CI de construction.",
+      "status": "done"
+    },
+    {
       "id": "9e4c99a5-2ee4-4e7d-baa3-c2f36b92593e",
       "title": "Faire de homelab un builder-cache",
       "notes": "Construire le système homelab en CI, conserver la sortie, exposer le store comme cache et garder l’activation manuelle.",

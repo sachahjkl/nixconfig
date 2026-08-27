@@ -4,7 +4,7 @@
   ...
 }:
 lib.systems.nixosSystem "homelab" {
-  module = {...}: {
+  module = {config, ...}: {
     imports = [
       self.nixosModules.disko
       self.diskoConfigurations.homelab
@@ -98,6 +98,13 @@ lib.systems.nixosSystem "homelab" {
       enable = false;
       hostname = "0.0.0.0";
       port = 4096;
+    };
+
+    system.autoUpgrade = {
+      enable = true;
+      flake = "${config.nixConfigPath}#homelab";
+      dates = "daily";
+      randomizedDelaySec = "45min";
     };
   };
 }
