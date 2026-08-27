@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "95550deb-1e34-45fb-a877-c76cb825cb56",
+      "title": "Committer la mise à jour llm-agents",
+      "notes": "Inclure la révision locale de llm-agents.nix dans flake.lock.",
+      "status": "done"
+    },
+    {
       "id": "e602319f-1817-4eb8-bcfc-6853761d2886",
       "title": "Ajouter le tableau de bord du cache",
       "notes": "Servir une page d’état légère pour cache.homelab.sacha.house avec statistiques du store.",
