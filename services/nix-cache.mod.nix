@@ -8,6 +8,9 @@
       path = ./nix-cache/dashboard.html;
       name = "nix-cache-dashboard.html";
     };
+    dashboardFiles = pkgs.runCommand "nix-cache-dashboard" {} ''
+      install -Dm444 ${dashboardPage} $out/index.html
+    '';
     dashboardRoot = "/run/nix-cache-dashboard";
     secretName = "nix-cache/signing-key";
   in {
@@ -32,7 +35,10 @@
     };
 
     services.nginx.virtualHosts."cache.homelab.sacha.house".locations = {
-      "= /".alias = dashboardPage;
+      "= /" = {
+        root = dashboardFiles;
+        tryFiles = "/index.html =404";
+      };
       "= /status.json".alias = "${dashboardRoot}/status.json";
     };
 
