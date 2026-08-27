@@ -19,6 +19,24 @@
   ],
   "items": [
     {
+      "id": "535065fe-e9a0-493a-8ece-e736315ffe42",
+      "title": "Compléter les flakes générés par jav",
+      "notes": "Auditer jav, puis générer checks, hooks prek, shell de développement et CI adaptés aux projets.",
+      "status": "doing"
+    },
+    {
+      "id": "a569d3e5-83e1-4fac-b558-2eab3910245c",
+      "title": "Migrer les hooks vers prek",
+      "notes": "Inventorier les projets locaux, remplacer pre-commit Python par prek et définir un modèle héritable.",
+      "status": "done"
+    },
+    {
+      "id": "0f02b5a5-2092-4f17-8fa4-f554f35bb472",
+      "title": "Supprimer l’avertissement options.json",
+      "notes": "Désactiver le manuel Home Manager qui génère options.json avec un contexte de store supprimé.",
+      "status": "done"
+    },
+    {
       "id": "48cddaf9-34d6-412c-8590-f03c9e9bbcdd",
       "title": "Configurer le token GitHub pour Nix",
       "notes": "Générer une configuration Nix secrète avec SOPS et l’exposer par NIX_USER_CONF_FILES.",

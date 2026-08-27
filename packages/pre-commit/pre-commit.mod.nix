@@ -1,6 +1,7 @@
 {inputs, ...}: {
   perSystem = {pkgs, ...}: let
     preCommitCheck = inputs.git-hooks.lib.${pkgs.stdenv.hostPlatform.system}.run {
+      package = pkgs.prek;
       src = ../..;
       hooks = {
         alejandra.enable = true;

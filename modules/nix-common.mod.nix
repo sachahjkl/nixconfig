@@ -18,6 +18,7 @@
         nix-output-monitor
         nix-tree
         nixd
+        prek
         statix
       ];
 

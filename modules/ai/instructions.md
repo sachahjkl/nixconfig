@@ -53,17 +53,26 @@ Before delivery, remove ambiguity, filler, synonym rotation, hidden conditions, 
 - If the flake is absent or incomplete, add a backlog task and complete it during the current work.
 - Expose applicable builds, tests, linters, formatters, and container images through `checks`.
 - Configure appropriate `cachix/git-hooks.nix` hooks for the project languages and file formats.
+- Set `package = pkgs.prek`. Do not use the Python `pre-commit` runner.
 - Expose the pre-commit check through `checks` and install its hooks from the default development shell.
+- Use FlakeHub URLs for public flakes that publish suitable releases.
+- Use `0.2605` for Nixpkgs 26.05 projects. Use `0.1` only for Nixpkgs unstable projects.
+- Keep secondary Nixpkgs inputs following the main Nixpkgs input.
+- If hooks must survive garbage collection, keep `pkgs.prek` in a persistent profile or system closure.
 
 Use this minimal pattern and adapt the hooks and checks to the project:
 
 ```nix
-inputs.git-hooks = {
-  url = "github:cachix/git-hooks.nix";
-  inputs.nixpkgs.follows = "nixpkgs";
+inputs = {
+  nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2605";
+  git-hooks = {
+    url = "https://flakehub.com/f/cachix/git-hooks.nix/0.1";
+    inputs.nixpkgs.follows = "nixpkgs";
+  };
 };
 
 preCommitCheck = inputs.git-hooks.lib.${system}.run {
+  package = pkgs.prek;
   src = ./.;
   hooks = {
     alejandra.enable = true;

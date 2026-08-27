@@ -2,6 +2,7 @@ result
 result-*
 .direnv/
 .devenv/
+.pre-commit-config.yaml
 
 # Local Nix helper state
 .nix-profile
