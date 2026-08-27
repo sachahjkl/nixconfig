@@ -4,7 +4,10 @@
   nixConfig = {
     auto-optimise-store = true;
     builders-use-substitutes = true;
-    extra-experimental-features = ["flakes" "nix-command"];
+    extra-experimental-features = [
+      "flakes"
+      "nix-command"
+    ];
     extra-deprecated-features = [
       "broken-string-escape"
       "or-as-identifier"
@@ -24,7 +27,10 @@
     flake-registry = "";
     http-connections = 50;
     show-trace = true;
-    trusted-users = ["root" "@wheel"];
+    trusted-users = [
+      "root"
+      "@wheel"
+    ];
     use-xdg-base-directories = true;
     warn-dirty = false;
   };
@@ -134,6 +140,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    ai-api-proxy = {
+      url = "github:sachahjkl/ai-api-proxy";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     clockin = {
       url = "github:sachahjkl/clockin.sacha.house";
     };
@@ -160,18 +171,20 @@
           )
       );
     }
-    ({lib, ...}: let
-      inherit (lib.filesystem) listFilesRecursive;
-      inherit (lib.lists) filter;
-      inherit (lib.strings) hasSuffix;
-    in {
-      systems = ["x86_64-linux"];
+    (
+      {lib, ...}: let
+        inherit (lib.filesystem) listFilesRecursive;
+        inherit (lib.lists) filter;
+        inherit (lib.strings) hasSuffix;
+      in {
+        systems = ["x86_64-linux"];
 
-      imports =
-        [
-          inputs.wrapper-modules.flakeModules.wrappers
-          inputs.disko.flakeModules.default
-        ]
-        ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);
-    });
+        imports =
+          [
+            inputs.wrapper-modules.flakeModules.wrappers
+            inputs.disko.flakeModules.default
+          ]
+          ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);
+      }
+    );
 }

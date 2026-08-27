@@ -12,6 +12,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelab
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabProxyHosts
+      self.nixosModules.codexProxyService
       self.nixosModules.albumatorService
       self.nixosModules.clockinService
       self.nixosModules.lanblasterService
@@ -49,6 +50,7 @@ lib.systems.nixosSystem "homelab" {
           enable = true;
           repositories = {
             acheteteper = "https://github.com/sachahjkl/acheteteper";
+            ai-api-proxy = "https://github.com/sachahjkl/ai-api-proxy";
             albumator = "https://github.com/sachahjkl/albumator";
             chat = "https://github.com/sachahjkl/chat.sacha.house";
             client-serv-ipc = "https://github.com/sachahjkl/client_serv_ipc";
@@ -70,6 +72,7 @@ lib.systems.nixosSystem "homelab" {
           };
         };
         hermesDashboard.enable = false;
+        codexProxy.enable = true;
         sachaHouse.enable = true;
         filebrowser.enable = true;
         lanblaster.enable = true;
