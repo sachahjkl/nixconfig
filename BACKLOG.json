@@ -22,7 +22,7 @@
       "id": "535065fe-e9a0-493a-8ece-e736315ffe42",
       "title": "Compléter les flakes générés par jav",
       "notes": "Auditer jav, puis générer checks, hooks prek, shell de développement et CI adaptés aux projets.",
-      "status": "doing"
+      "status": "done"
     },
     {
       "id": "a569d3e5-83e1-4fac-b558-2eab3910245c",
