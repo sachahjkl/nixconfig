@@ -1,5 +1,9 @@
 {self, ...}: {
-  flake.nixosModules.workstation = {lib, ...}: {
+  flake.nixosModules.workstation = {
+    config,
+    lib,
+    ...
+  }: {
     imports = [
       self.nixosModules.baseUser
       self.nixosModules.appearance
@@ -48,6 +52,26 @@
     sharedSops.ageKeyFile = lib.mkDefault "/persist/var/lib/sops-nix/key.txt";
     sharedSops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
     network.tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
+
+    nix = {
+      buildMachines = [
+        {
+          hostName = "homelab";
+          maxJobs = 8;
+          protocol = "ssh-ng";
+          speedFactor = 2;
+          sshKey = "${config.homeDirectory}/.ssh/far-from-home";
+          sshUser = "sacha";
+          system = "x86_64-linux";
+          supportedFeatures = ["benchmark" "big-parallel" "kvm" "nixos-test"];
+        }
+      ];
+      distributedBuilds = true;
+      settings = {
+        substituters = lib.mkBefore ["http://homelab:5000"];
+        trusted-public-keys = lib.mkAfter ["homelab-cache-1:ZaUHSv8slKsAKc9kd0AGI8p1HUjUumfho7ShgUVlnUg="];
+      };
+    };
 
     opencode.homelabServerUrl = lib.mkDefault "http://homelab:4096";
 

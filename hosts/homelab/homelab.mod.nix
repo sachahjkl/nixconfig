@@ -4,7 +4,7 @@
   ...
 }:
 lib.systems.nixosSystem "homelab" {
-  module = {config, ...}: {
+  module = {...}: {
     imports = [
       self.nixosModules.disko
       self.diskoConfigurations.homelab
@@ -16,6 +16,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.albumatorService
       self.nixosModules.clockinService
       self.nixosModules.lanblasterService
+      self.nixosModules.nixCache
       self.nixosModules.ai
     ];
 
@@ -64,6 +65,7 @@ lib.systems.nixosSystem "homelab" {
             js-canvas-experiment = "https://github.com/sachahjkl/js_canvas_experiment";
             kelio-rewrite = "https://github.com/sachahjkl/kelio-rewrite";
             nuitdelinfojb = "https://github.com/sachahjkl/nuitdelinfojb.github.io";
+            nixconfig = "https://github.com/sachahjkl/nixconfig";
             old-site = "https://github.com/sachahjkl/old.sachahjkl.github.io";
             sacha-house = "https://github.com/sachahjkl/sacha.house";
             sachahjkl-site = "https://github.com/sachahjkl/sachahjkl.github.io";
@@ -96,13 +98,6 @@ lib.systems.nixosSystem "homelab" {
       enable = false;
       hostname = "0.0.0.0";
       port = 4096;
-    };
-
-    system.autoUpgrade = {
-      enable = true;
-      flake = "${config.nixConfigPath}#homelab";
-      dates = "daily";
-      randomizedDelaySec = "45min";
     };
   };
 }

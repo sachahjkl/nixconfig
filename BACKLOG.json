@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "9e4c99a5-2ee4-4e7d-baa3-c2f36b92593e",
+      "title": "Faire de homelab un builder-cache",
+      "notes": "Construire le système homelab en CI, conserver la sortie, exposer le store comme cache et garder l’activation manuelle.",
+      "status": "done"
+    },
+    {
       "id": "6a0fbe81-5576-4200-86e2-59ca1f95f229",
       "title": "Fusionner la configuration CLI OpenCode",
       "notes": "Ajouter les préférences TUI fournies dans le cli.json généré, sans modifier opencode.json.",

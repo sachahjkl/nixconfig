@@ -1,0 +1,7 @@
+self-hosted-runner:
+  labels:
+    - homelab
+    - nix
+    - nixos
+
+config-variables: null
