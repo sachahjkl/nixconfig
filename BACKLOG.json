@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "008d75be-5851-4bb0-99fa-e8abb3bb0aa2",
+      "title": "Corriger l’erreur 500 du dashboard",
+      "notes": "Servir le dashboard depuis une racine Nginx contenant index.html, puis valider les routes du cache.",
+      "status": "done"
+    },
+    {
       "id": "11fe2627-36e4-4ab9-bf10-198f86a93fba",
       "title": "Corriger les permissions du runner nixconfig",
       "notes": "Autoriser le compte dédié à traverser /var/lib/github-runner et valider le service après activation.",
