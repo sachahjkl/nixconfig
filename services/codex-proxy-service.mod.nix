@@ -36,13 +36,19 @@
         default = config.sops.secrets."codex-proxy/token".path;
         description = "File that contains the shared proxy token.";
       };
+
+      oauthCredentialFile = mkOption {
+        type = types.path;
+        default = config.sops.secrets."codex-proxy/oauth".path;
+        description = "File that contains the seed ChatGPT OAuth credential.";
+      };
     };
 
     config = mkIf cfg.enable {
       services.codex-proxy = {
         enable = true;
         listenAddress = "${cfg.host}:${toString cfg.port}";
-        inherit (cfg) proxyTokenFile;
+        inherit (cfg) oauthCredentialFile proxyTokenFile;
       };
 
       homelab.proxy.hosts."codex.sacha.house" = {
