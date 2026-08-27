@@ -27,12 +27,23 @@
       }
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName) {
+        environment.sessionVariables.NIX_USER_CONF_FILES = config.sops.templates."nix-github.conf".path;
+
         sops.secrets."github/gh-cli" = {
           sopsFile = builtins.path {
             path = self + /secrets/shared.yaml;
             name = "shared-secrets.yaml";
           };
           path = tokenPath;
+          owner = config.userName;
+          group = "users";
+          mode = "0400";
+        };
+
+        sops.templates."nix-github.conf" = {
+          content = ''
+            access-tokens = github.com=${config.sops.placeholder."github/gh-cli"}
+          '';
           owner = config.userName;
           group = "users";
           mode = "0400";

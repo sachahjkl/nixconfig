@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "48cddaf9-34d6-412c-8590-f03c9e9bbcdd",
+      "title": "Configurer le token GitHub pour Nix",
+      "notes": "Générer une configuration Nix secrète avec SOPS et l’exposer par NIX_USER_CONF_FILES.",
+      "status": "done"
+    },
+    {
       "id": "54b738e1-ea5d-49ca-9455-df0d3127cb7e",
       "title": "Corriger le flake Albumator",
       "notes": "Basculer le dépôt local vers GitHub, tirer main, remplacer pkgs.system et vérifier le flake.",
