@@ -106,14 +106,32 @@
     defaultCliSettings = pkgs: let
       backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
     in {
+      attention.enabled = true;
       animations = true;
-      diffs.wrap = "word";
-      plugins = ["${backlogPackage}/lib/opencode-backlog/dist/tui.js"];
-      session = {
-        scrollbar = false;
-        sidebar = "auto";
-        thinking = "hide";
+      debug = {
+        devtools = true;
+        turn_tokens = false;
       };
+      diffs = {
+        view = "split";
+        wrap = "word";
+      };
+      plugins = ["${backlogPackage}/lib/opencode-backlog/dist/tui.js"];
+      prompt.image_preview = true;
+      scroll.acceleration = true;
+      session = {
+        image_preview = true;
+        scrollbar = true;
+        sidebar = "auto";
+        thinking = "show";
+      };
+      tabs = {
+        enabled = true;
+        layout = "vertical";
+        scope = "global";
+        vertical = false;
+      };
+      terminal.copy = "manual";
       theme = {
         mode = "system";
         name = "opencode";

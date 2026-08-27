@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "6a0fbe81-5576-4200-86e2-59ca1f95f229",
+      "title": "Fusionner la configuration CLI OpenCode",
+      "notes": "Ajouter les préférences TUI fournies dans le cli.json généré, sans modifier opencode.json.",
+      "status": "done"
+    },
+    {
       "id": "535065fe-e9a0-493a-8ece-e736315ffe42",
       "title": "Compléter les flakes générés par jav",
       "notes": "Auditer jav, puis générer checks, hooks prek, shell de développement et CI adaptés aux projets.",
