@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "7bcf0fc9-914d-472a-acd4-d323c564d0d0",
+      "title": "Construire les closures de tous les hôtes",
+      "notes": "Étendre la CI nixconfig à toutes les configurations NixOS et rendre le cache homelab disponible dès l’évaluation du flake.",
+      "status": "done"
+    },
+    {
       "id": "b5e9b4c3-b5f0-4cdd-a986-928925f30ee8",
       "title": "Restaurer autoUpgrade sur homelab",
       "notes": "Conserver la mise à niveau quotidienne existante malgré la nouvelle CI de construction.",

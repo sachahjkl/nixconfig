@@ -30,6 +30,7 @@
           // {
             accept-flake-config = true;
             substituters = [
+              "http://homelab:5000"
               "https://cache.nixos.org"
               "https://hyprland.cachix.org"
               "https://cache.numtide.com"
@@ -38,6 +39,7 @@
               "https://install.determinate.systems"
             ];
             trusted-public-keys = [
+              "homelab-cache-1:ZaUHSv8slKsAKc9kd0AGI8p1HUjUumfho7ShgUVlnUg="
               "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
               "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
               "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="

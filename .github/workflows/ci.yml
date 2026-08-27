@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-homelab:
-    name: Build homelab system
+  build-systems:
+    name: Build all NixOS systems
     runs-on:
       - self-hosted
       - nixos
@@ -23,9 +23,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Build system
+      - name: Build systems
         run: |
           mkdir -p "$HOME/gcroots"
-          nix build \
-            "path:$PWD#nixosConfigurations.homelab.config.system.build.toplevel" \
-            --out-link "$HOME/gcroots/homelab-system"
+          nix eval --raw "path:$PWD#nixosConfigurations" \
+            --apply 'configs: builtins.concatStringsSep "\n" (builtins.attrNames configs) + "\n"' |
+            while IFS= read -r host; do
+              nix build \
+                "path:$PWD#nixosConfigurations.$host.config.system.build.toplevel" \
+                --out-link "$HOME/gcroots/$host-system"
+            done

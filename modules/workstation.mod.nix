@@ -67,10 +67,6 @@
         }
       ];
       distributedBuilds = true;
-      settings = {
-        substituters = lib.mkBefore ["http://homelab:5000"];
-        trusted-public-keys = lib.mkAfter ["homelab-cache-1:ZaUHSv8slKsAKc9kd0AGI8p1HUjUumfho7ShgUVlnUg="];
-      };
     };
 
     opencode.homelabServerUrl = lib.mkDefault "http://homelab:4096";
