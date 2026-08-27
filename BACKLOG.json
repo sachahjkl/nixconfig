@@ -19,6 +19,18 @@
   ],
   "items": [
     {
+      "id": "e602319f-1817-4eb8-bcfc-6853761d2886",
+      "title": "Ajouter le tableau de bord du cache",
+      "notes": "Servir une page d’état légère pour cache.homelab.sacha.house avec statistiques du store.",
+      "status": "done"
+    },
+    {
+      "id": "2734bc05-2071-4b2f-9eed-88548fd530a0",
+      "title": "Corriger le build NVIDIA en CI",
+      "notes": "Résoudre l’incompatibilité entre nvidia-open 595.71.05 et Linux 7.2 pour house-desktop.",
+      "status": "done"
+    },
+    {
       "id": "80fef23a-5473-4f81-b52b-a11eaf81097d",
       "title": "Publier le cache par Nginx",
       "notes": "Exposer nix-serve sous cache.homelab.sacha.house avec TLS, sans ouvrir directement le port 5000.",

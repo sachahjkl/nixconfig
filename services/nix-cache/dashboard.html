@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Homelab Nix Cache</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: ui-monospace, "Cascadia Code", "SFMono-Regular", monospace;
+        background: #10140f;
+        color: #e8eedf;
+      }
+
+      body {
+        box-sizing: border-box;
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        padding: clamp(1.5rem, 5vw, 5rem);
+        place-items: center;
+      }
+
+      main {
+        width: min(52rem, 100%);
+      }
+
+      header {
+        border-bottom: 1px solid #52604a;
+        margin-bottom: 2rem;
+        padding-bottom: 1.25rem;
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        color: #b8f397;
+        font-size: clamp(1.8rem, 5vw, 3.5rem);
+        font-weight: 500;
+        letter-spacing: -0.06em;
+      }
+
+      p {
+        color: #aeb8a5;
+        line-height: 1.6;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+
+      .status::before {
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: 50%;
+        background: #b8f397;
+        box-shadow: 0 0 1rem #b8f397;
+        content: "";
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        border: 1px solid #384132;
+        background: #384132;
+      }
+
+      article {
+        min-height: 7rem;
+        padding: 1.25rem;
+        background: #171c15;
+      }
+
+      article span {
+        display: block;
+        margin-bottom: 0.8rem;
+        color: #7f8b76;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+      }
+
+      article strong {
+        color: #f4f7ef;
+        font-size: 1.35rem;
+        font-weight: 500;
+      }
+
+      code {
+        overflow-wrap: anywhere;
+        color: #d7c787;
+      }
+
+      footer {
+        margin-top: 1.5rem;
+        font-size: 0.8rem;
+      }
+
+      a {
+        color: #b8f397;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Homelab Nix Cache</h1>
+        <p class="status" id="status">Loading status</p>
+      </header>
+
+      <section class="grid">
+        <article>
+          <span>Store used</span>
+          <strong id="used">-</strong>
+        </article>
+        <article>
+          <span>Store available</span>
+          <strong id="available">-</strong>
+        </article>
+        <article>
+          <span>Filesystem use</span>
+          <strong id="percent">-</strong>
+        </article>
+        <article>
+          <span>Last update</span>
+          <strong id="updated">-</strong>
+        </article>
+      </section>
+
+      <p>Substituter: <code>https://cache.homelab.sacha.house</code></p>
+      <p>Public key: <code>homelab-cache-1:ZaUHSv8slKsAKc9kd0AGI8p1HUjUumfho7ShgUVlnUg=</code></p>
+
+      <footer>
+        <a href="/nix-cache-info">nix-cache-info</a>
+      </footer>
+    </main>
+
+    <script>
+      const formatBytes = (bytes) =>
+        new Intl.NumberFormat(undefined, {
+          style: "unit",
+          unit: "gigabyte",
+          maximumFractionDigits: 1,
+        }).format(bytes / 1_000_000_000);
+
+      fetch("/status.json", { cache: "no-store" })
+        .then((response) => response.json())
+        .then((data) => {
+          document.querySelector("#status").textContent = `Cache ${data.service}`;
+          document.querySelector("#used").textContent = formatBytes(data.usedBytes);
+          document.querySelector("#available").textContent = formatBytes(data.availableBytes);
+          document.querySelector("#percent").textContent = data.usedPercent;
+          document.querySelector("#updated").textContent = new Date(data.updatedAt).toLocaleString();
+        })
+        .catch(() => {
+          document.querySelector("#status").textContent = "Status unavailable";
+        });
+    </script>
+  </body>
+</html>
