@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "54b738e1-ea5d-49ca-9455-df0d3127cb7e",
+      "title": "Corriger le flake Albumator",
+      "notes": "Basculer le dépôt local vers GitHub, tirer main, remplacer pkgs.system et vérifier le flake.",
+      "status": "done"
+    },
+    {
       "id": "bd8f8d96-f235-4d15-8ba8-efd6019b9771",
       "title": "Nettoyer la configuration système",
       "notes": "Supprimer les tâches Nix redondantes, désactiver la documentation générée, simplifier Fish et regrouper les outils Nix.",
