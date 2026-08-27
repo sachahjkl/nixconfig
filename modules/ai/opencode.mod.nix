@@ -193,14 +193,9 @@
 
     upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
     mcpNixos = pkgs.mcp-nixos;
-    exaKeyPath = lib.attrByPath ["sops" "secrets" "ai/exa-api-key" "path"] "/run/secrets/ai/exa-api-key" config;
 
     mkOpenCodeWrapper = name:
       pkgs.writeShellScriptBin name ''
-        export OPENCODE_ENABLE_EXA=1
-        if [ -r ${exaKeyPath} ]; then
-          export EXA_API_KEY="$(cat ${exaKeyPath})"
-        fi
         export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
         exec ${lib.getExe upstreamOpencode} "$@"
       '';
@@ -283,12 +278,6 @@
     };
 
     config = mkIf cfg.enable {
-      sops.secrets."ai/exa-api-key" = mkIf (config.sops.defaultSopsFile != null) {
-        sopsFile = self + /secrets/shared.yaml;
-        owner = config.userName;
-        mode = "0400";
-      };
-
       persist.user.directories = [
         ".config/opencode"
         ".local/share/opencode"

@@ -19,7 +19,10 @@
 
       defaultSopsFile = mkOption {
         type = types.nullOr types.path;
-        default = self + /secrets/homelab.yaml;
+        default = builtins.path {
+          path = self + /secrets/homelab.yaml;
+          name = "homelab-secrets.yaml";
+        };
         description = "Encrypted SOPS file used by the homelab host.";
       };
 
@@ -35,7 +38,10 @@
         enable = true;
         inherit (cfg) defaultSopsFile ageKeyFile;
         passwordHashSecretName = "shared/password-hash";
-        passwordHashSopsFile = self + /secrets/shared.yaml;
+        passwordHashSopsFile = builtins.path {
+          path = self + /secrets/shared.yaml;
+          name = "shared-secrets.yaml";
+        };
       };
 
       sops.secrets = {

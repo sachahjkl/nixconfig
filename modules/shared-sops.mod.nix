@@ -19,7 +19,10 @@
 
       defaultSopsFile = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
-        default = self + /secrets/shared.yaml;
+        default = builtins.path {
+          path = self + /secrets/shared.yaml;
+          name = "shared-secrets.yaml";
+        };
         description = "Encrypted SOPS file used by this host.";
       };
 

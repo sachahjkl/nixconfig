@@ -32,9 +32,18 @@
 
       (lib.mkIf (cfg.enable && hasHjemUsers) {
         hjem.users.${config.userName}.files = {
-          ".claude/CLAUDE.md".source = self + /modules/ai/instructions.md;
-          ".config/codex/AGENTS.md".source = self + /modules/ai/instructions.md;
-          ".gemini/GEMINI.md".source = self + /modules/ai/instructions.md;
+          ".claude/CLAUDE.md".source = builtins.path {
+            path = self + /modules/ai/instructions.md;
+            name = "ai-instructions.md";
+          };
+          ".config/codex/AGENTS.md".source = builtins.path {
+            path = self + /modules/ai/instructions.md;
+            name = "ai-instructions.md";
+          };
+          ".gemini/GEMINI.md".source = builtins.path {
+            path = self + /modules/ai/instructions.md;
+            name = "ai-instructions.md";
+          };
         };
       })
     ];

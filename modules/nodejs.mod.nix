@@ -42,7 +42,10 @@
 
       (lib.mkIf (hasSharedSops && config.sharedSops.enable && hasUserName) {
         sops.secrets."npm/current-token-november-2026" = {
-          sopsFile = self + /secrets/shared.yaml;
+          sopsFile = builtins.path {
+            path = self + /secrets/shared.yaml;
+            name = "shared-secrets.yaml";
+          };
           path = npmTokenPath;
           owner = config.userName;
           group = "users";

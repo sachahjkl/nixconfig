@@ -128,7 +128,10 @@
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName && hasHomeDirectory) {
         sops.secrets."ssh/far-from-home/private" = {
-          sopsFile = self + /secrets/shared.yaml;
+          sopsFile = builtins.path {
+            path = self + /secrets/shared.yaml;
+            name = "shared-secrets.yaml";
+          };
           path = "${config.homeDirectory}/.ssh/far-from-home";
           owner = config.userName;
           group = "users";

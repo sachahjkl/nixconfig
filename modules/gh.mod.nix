@@ -28,7 +28,10 @@
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName) {
         sops.secrets."github/gh-cli" = {
-          sopsFile = self + /secrets/shared.yaml;
+          sopsFile = builtins.path {
+            path = self + /secrets/shared.yaml;
+            name = "shared-secrets.yaml";
+          };
           path = tokenPath;
           owner = config.userName;
           group = "users";

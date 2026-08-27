@@ -78,7 +78,10 @@ in {
 
     (lib.optionalAttrs (hasSopsSecrets && hasUserName) {
       sops.secrets."ai/moshi-pairing-token" = {
-        sopsFile = self + /secrets/shared.yaml;
+        sopsFile = builtins.path {
+          path = self + /secrets/shared.yaml;
+          name = "shared-secrets.yaml";
+        };
         path = pairingTokenPath;
         owner = config.userName;
         group = "users";

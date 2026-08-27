@@ -1,18 +1,9 @@
-{
-  inputs,
-  lib,
-  ...
-}: {
+{inputs, ...}: {
   flake.nixosModules.nix = {
     config,
     pkgs,
     ...
-  }: let
-    lixPkgs =
-      if config.useLix == "no"
-      then null
-      else pkgs.lixPackageSets.${config.useLix};
-  in {
+  }: {
     imports = [
       inputs.nix-index-database.nixosModules.nix-index
     ];
@@ -27,9 +18,9 @@
       cachix
       deadnix
       manix
-      (lib.nix.selectLixPackage lixPkgs nil "nil")
+      nil
       nix-inspect
-      (lib.nix.selectLixPackage lixPkgs nix-init "nix-init")
+      nix-init
       nix-melt
       nix-output-monitor
       nix-prefetch

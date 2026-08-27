@@ -359,7 +359,10 @@
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName) {
         sops.secrets."cloudflare/dns" = {
-          sopsFile = self + /secrets/shared.yaml;
+          sopsFile = builtins.path {
+            path = self + /secrets/shared.yaml;
+            name = "shared-secrets.yaml";
+          };
           path = cfg.tokenPath;
           owner = config.userName;
           group = "users";

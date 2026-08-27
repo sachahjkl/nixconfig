@@ -19,6 +19,18 @@
   ],
   "items": [
     {
+      "id": "5237b469-244b-4691-8146-8a5cdcf93dd6",
+      "title": "Supprimer Noctalia",
+      "notes": "Supprimer le paquet et les fonctions Noctalia, puis vérifier le flake.",
+      "status": "done"
+    },
+    {
+      "id": "2b353606-f255-4f6c-9f48-cb7a0014f5b1",
+      "title": "Migrer vers Determinate Nix",
+      "notes": "Remplacer Lix sur tous les hôtes, conserver les réglages Nix utiles, auditer les causes de cache miss, puis vérifier le flake.",
+      "status": "done"
+    },
+    {
       "id": "9096b40e-af94-47e2-b145-a9dcfdc0b4f1",
       "title": "Ajouter les CNAME www des domaines",
       "notes": "Déclarer www.froment.software vers froment.software et www.sacha.house vers sacha.house.",

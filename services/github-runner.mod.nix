@@ -63,7 +63,10 @@
       programs.nix-ld.enable = true;
 
       sops.secrets.${secretName} = {
-        sopsFile = self + /secrets/homelab.yaml;
+        sopsFile = builtins.path {
+          path = self + /secrets/homelab.yaml;
+          name = "homelab-secrets.yaml";
+        };
         owner = runnerUser;
         group = runnerUser;
         mode = "0400";

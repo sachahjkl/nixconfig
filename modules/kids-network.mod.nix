@@ -76,7 +76,10 @@
         networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
 
         sops = {
-          defaultSopsFile = self + /secrets/shared.yaml;
+          defaultSopsFile = builtins.path {
+            path = self + /secrets/shared.yaml;
+            name = "shared-secrets.yaml";
+          };
           defaultSopsFormat = "yaml";
           age = {
             keyFile = "/var/lib/sops-nix/key.txt";
