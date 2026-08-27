@@ -43,6 +43,7 @@
             isSystemUser = true;
             group = runnerUser;
             home = "/var/lib/github-runner";
+            homeMode = "0750";
             createHome = true;
             subUidRanges = [
               {
