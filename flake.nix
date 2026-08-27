@@ -9,7 +9,7 @@
       "nix-command"
     ];
     extra-substituters = [
-      "http://homelab:5000"
+      "https://cache.homelab.sacha.house"
       "https://hyprland.cachix.org"
       "https://cache.numtide.com"
       "https://nix-community.cachix.org"

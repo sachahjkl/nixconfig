@@ -30,7 +30,7 @@
           // {
             accept-flake-config = true;
             substituters = [
-              "http://homelab:5000"
+              "https://cache.homelab.sacha.house"
               "https://cache.nixos.org"
               "https://hyprland.cachix.org"
               "https://cache.numtide.com"

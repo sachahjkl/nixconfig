@@ -20,9 +20,9 @@
 
     services.nix-serve = {
       enable = true;
+      bindAddress = "127.0.0.1";
       package = pkgs.nix-serve-ng;
       port = 5000;
-      openFirewall = true;
       secretKeyFile = config.sops.secrets.${secretName}.path;
     };
   };

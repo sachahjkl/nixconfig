@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "80fef23a-5473-4f81-b52b-a11eaf81097d",
+      "title": "Publier le cache par Nginx",
+      "notes": "Exposer nix-serve sous cache.homelab.sacha.house avec TLS, sans ouvrir directement le port 5000.",
+      "status": "done"
+    },
+    {
       "id": "7bcf0fc9-914d-472a-acd4-d323c564d0d0",
       "title": "Construire les closures de tous les hôtes",
       "notes": "Étendre la CI nixconfig à toutes les configurations NixOS et rendre le cache homelab disponible dès l’évaluation du flake.",

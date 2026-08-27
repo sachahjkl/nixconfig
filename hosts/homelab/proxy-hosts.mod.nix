@@ -42,6 +42,11 @@ _: {
           websockets = true;
         };
 
+        "cache.homelab.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 5000;
+        };
+
         "htmx.sacha.house" = {
           dockerContainer = "htmxgo";
           dockerPort = 7883;
