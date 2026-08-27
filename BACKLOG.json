@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "11fe2627-36e4-4ab9-bf10-198f86a93fba",
+      "title": "Corriger les permissions du runner nixconfig",
+      "notes": "Autoriser le compte dédié à traverser /var/lib/github-runner et valider le service après activation.",
+      "status": "done"
+    },
+    {
       "id": "0c3d9e03-e217-4c3c-9dcb-9c8d3feb8bb7",
       "title": "Supprimer les avertissements Nix de la CI",
       "notes": "Empêcher le runner non privilégié de transmettre les réglages nixConfig déjà configurés sur homelab.",
