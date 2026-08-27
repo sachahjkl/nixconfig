@@ -62,7 +62,7 @@
             isNormalUser = true;
             description = config.fullName;
             extraGroups = ["wheel"] ++ config.extraUserGroups;
-            shell = selfPkgs.userShell;
+            shell = selfPkgs.fish;
           }
           // lib.optionalAttrs (config.passwordHashFile != null) {
             hashedPasswordFile = toString config.passwordHashFile;

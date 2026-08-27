@@ -1,17 +1,27 @@
 {inputs, ...}: {
-  flake.nixosModules.nixCommon = {
+  flake.nixosModules.nixCommon = {pkgs, ...}: {
     imports = [inputs.determinate.nixosModules.default];
 
     config = {
+      documentation = {
+        man.cache.enable = false;
+        nixos.enable = false;
+      };
+
+      environment.systemPackages = with pkgs; [
+        alejandra
+        deadnix
+        manix
+        nil
+        nix-inspect
+        nix-init
+        nix-output-monitor
+        nix-tree
+        nixd
+        statix
+      ];
+
       nix = {
-        gc = {
-          automatic = true;
-          dates = "weekly";
-          options = "--delete-older-than 14d";
-        };
-
-        optimise.automatic = true;
-
         registry.nixpkgs.flake = inputs.nixpkgs;
 
         settings =

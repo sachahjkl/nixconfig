@@ -1,17 +1,23 @@
 {
   inputs,
   lib,
+  self,
   ...
 }: {
   flake.nixosModules.fish = {
     config,
     pkgs,
     ...
-  }: {
+  }: let
+    fishPackage = self.packages.${pkgs.stdenv.hostPlatform.system}.fish;
+  in {
     persist.user.directories = [".local/share/fish"];
 
     programs.fish = {
       enable = true;
+      # Carapace provides completions without rebuilding one derivation per system package.
+      generateCompletions = false;
+      package = fishPackage;
       shellAliases = {
         ls = "eza";
         vim = "nvim";

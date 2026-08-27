@@ -14,20 +14,9 @@
     };
 
     environment.systemPackages = with pkgs; [
-      alejandra
       cachix
-      deadnix
-      manix
-      nil
-      nix-inspect
-      nix-init
       nix-melt
-      nix-output-monitor
       nix-prefetch
-      nix-tree
-      nixd
-      nixpkgs-fmt
-      statix
     ];
 
     hjem.users.${config.userName}.rum.programs.direnv = {

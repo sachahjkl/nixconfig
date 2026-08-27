@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "bd8f8d96-f235-4d15-8ba8-efd6019b9771",
+      "title": "Nettoyer la configuration système",
+      "notes": "Supprimer les tâches Nix redondantes, désactiver la documentation générée, simplifier Fish et regrouper les outils Nix.",
+      "status": "done"
+    },
+    {
       "id": "5237b469-244b-4691-8146-8a5cdcf93dd6",
       "title": "Supprimer Noctalia",
       "notes": "Supprimer le paquet et les fonctions Noctalia, puis vérifier le flake.",

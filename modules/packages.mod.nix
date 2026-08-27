@@ -28,9 +28,6 @@
       };
 
       environment.systemPackages = with pkgs; [
-        # Shell
-        selfPkgs.userShell
-
         # Security
         age
         sops
@@ -88,7 +85,6 @@
         plocate
         procps
         psmisc
-        pstree
         pv
         usbutils
 
