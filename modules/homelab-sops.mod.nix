@@ -4,7 +4,14 @@
     lib,
     ...
   }: let
-    inherit (lib) mkEnableOption mkIf mkOption mkDefault types;
+    inherit
+      (lib)
+      mkEnableOption
+      mkIf
+      mkOption
+      mkDefault
+      types
+      ;
     cfg = config.homelab.sops;
   in {
     options.homelab.sops = {
@@ -56,6 +63,13 @@
           group = "nginx";
           mode = "0440";
           restartUnits = ["nginx.service"];
+        };
+
+        "codex-proxy/token" = {
+          owner = "root";
+          group = "root";
+          mode = "0400";
+          restartUnits = ["codex-proxy.service"];
         };
       };
 
