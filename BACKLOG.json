@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "0c3d9e03-e217-4c3c-9dcb-9c8d3feb8bb7",
+      "title": "Supprimer les avertissements Nix de la CI",
+      "notes": "Empêcher le runner non privilégié de transmettre les réglages nixConfig déjà configurés sur homelab.",
+      "status": "done"
+    },
+    {
       "id": "95550deb-1e34-45fb-a877-c76cb825cb56",
       "title": "Committer la mise à jour llm-agents",
       "notes": "Inclure la révision locale de llm-agents.nix dans flake.lock.",

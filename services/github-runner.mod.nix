@@ -7,6 +7,7 @@
   }: let
     cfg = config.homelab.services.githubRunner;
     runnerUser = "github-runner";
+    trustedRunnerUser = "github-runner-nixconfig";
     secretName = "github/actions-runner";
     runnerContainersConf = pkgs.writeText "github-runner-containers.conf" ''
       [engine]
@@ -35,25 +36,35 @@
         }
       ];
 
-      users.users.${runnerUser} = {
-        isSystemUser = true;
-        group = runnerUser;
-        home = "/var/lib/github-runner";
-        createHome = true;
-        subUidRanges = [
-          {
-            startUid = 100000;
-            count = 65536;
-          }
-        ];
-        subGidRanges = [
-          {
-            startGid = 100000;
-            count = 65536;
-          }
-        ];
+      users = {
+        groups.${runnerUser} = {};
+        users = {
+          ${runnerUser} = {
+            isSystemUser = true;
+            group = runnerUser;
+            home = "/var/lib/github-runner";
+            createHome = true;
+            subUidRanges = [
+              {
+                startUid = 100000;
+                count = 65536;
+              }
+            ];
+            subGidRanges = [
+              {
+                startGid = 100000;
+                count = 65536;
+              }
+            ];
+          };
+          ${trustedRunnerUser} = {
+            isSystemUser = true;
+            group = runnerUser;
+          };
+        };
       };
-      users.groups.${runnerUser} = {};
+
+      nix.settings.trusted-users = [trustedRunnerUser];
 
       virtualisation.podman = {
         enable = true;
@@ -69,17 +80,22 @@
         };
         owner = runnerUser;
         group = runnerUser;
-        mode = "0400";
+        mode = "0440";
       };
 
       services.github-runners =
-        lib.mapAttrs (repositoryName: url: {
+        lib.mapAttrs (repositoryName: url: let
+          serviceUser =
+            if repositoryName == "nixconfig"
+            then trustedRunnerUser
+            else runnerUser;
+        in {
           enable = true;
           name = "homelab-${repositoryName}";
           inherit url;
           tokenFile = config.sops.secrets.${secretName}.path;
           tokenType = "access";
-          user = runnerUser;
+          user = serviceUser;
           group = runnerUser;
           extraPackages = [
             config.virtualisation.podman.package
