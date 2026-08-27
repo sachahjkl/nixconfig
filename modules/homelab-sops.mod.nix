@@ -71,6 +71,13 @@
           mode = "0400";
           restartUnits = ["codex-proxy.service"];
         };
+
+        "codex-proxy/oauth" = {
+          owner = "root";
+          group = "root";
+          mode = "0400";
+          restartUnits = ["codex-proxy.service"];
+        };
       };
 
       homelab.backup = {
