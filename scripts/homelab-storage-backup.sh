@@ -166,7 +166,7 @@ done
 sync
 btrfs scrub start -B "$external_mount"
 btrfs device stats -c "$external_mount"
-sha256sum "$manifest" >"$migration_root/manifest.sha256"
+(cd "$migration_root" && sha256sum manifest.tsv >manifest.sha256)
 printf 'Completed: %s\n' "$(date --iso-8601=seconds)" >"$migration_root/COMPLETE"
 sync
 
