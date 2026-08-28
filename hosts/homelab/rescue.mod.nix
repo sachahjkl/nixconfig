@@ -55,6 +55,40 @@ lib.systems.nixosSystem "homelab-rescue" {
     users.users.root.openssh.authorizedKeys.keys = self.keys-admin;
     services.getty.autologinUser = "root";
 
+    systemd.services.homelab-storage-restore = {
+      description = "Restore the homelab storage layout";
+      wantedBy = ["multi-user.target"];
+      after = ["network-online.target"];
+      wants = ["network-online.target"];
+      unitConfig.ConditionPathExists = "/root/ARM-HOMELAB-STORAGE-MIGRATION";
+      path = with pkgs; [
+        btrfs-progs
+        coreutils
+        findutils
+        git
+        gnugrep
+        gnused
+        gptfdisk
+        nix
+        nixos-install-tools
+        parted
+        systemd
+        util-linux
+      ];
+      serviceConfig = {
+        Type = "oneshot";
+        TimeoutStartSec = "infinity";
+        StandardOutput = "journal+console";
+        StandardError = "journal+console";
+      };
+      script = ''
+        mv /root/ARM-HOMELAB-STORAGE-MIGRATION /root/STORAGE-MIGRATION-RUNNING
+        /root/nixconfig/scripts/homelab-storage-restore.sh --yes
+        mv /root/STORAGE-MIGRATION-RUNNING /root/STORAGE-MIGRATION-COMPLETE
+        systemctl reboot
+      '';
+    };
+
     nix.settings.experimental-features = ["flakes" "nix-command"];
 
     environment.systemPackages = with pkgs; [

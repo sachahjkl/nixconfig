@@ -118,10 +118,12 @@ if mountpoint -q "$target" || mountpoint -q "$storage_mount"; then
 fi
 
 echo "This operation will erase partitions 2, 3, and 4 on $internal_disk."
-read -r -p 'Type ERASE-NVME to continue: ' confirmation
-if [[ $confirmation != ERASE-NVME ]]; then
-  echo "Cancelled."
-  exit 1
+if [[ ${1:-} != --yes ]]; then
+  read -r -p 'Type ERASE-NVME to continue: ' confirmation
+  if [[ $confirmation != ERASE-NVME ]]; then
+    echo "Cancelled."
+    exit 1
+  fi
 fi
 
 sgdisk --delete=4 --delete=3 --delete=2 "$internal_disk"

@@ -33,11 +33,9 @@ nix build "path:$repo#nixosConfigurations.homelab-rescue.config.system.build.top
 
 mkdir -p "$external_mount" "$target"
 mount -o subvolid=5,noatime "$external_device" "$external_mount"
-if [[ -e $external_mount/@nixos-rescue ]]; then
-  echo "The rescue subvolume already exists." >&2
-  exit 1
+if [[ ! -e $external_mount/@nixos-rescue ]]; then
+  btrfs subvolume create "$external_mount/@nixos-rescue"
 fi
-btrfs subvolume create "$external_mount/@nixos-rescue"
 mount -o subvol=@nixos-rescue,compress=zstd,noatime "$external_device" "$target"
 mkdir -p "$target/boot"
 mount "$internal_esp" "$target/boot"
