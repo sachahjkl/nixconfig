@@ -81,6 +81,7 @@
 
       systemd.tmpfiles.rules = [
         "d ${cfg.dataDir} 0755 sacha-house sacha-house -"
+        "Z ${cfg.dataDir} - sacha-house sacha-house -"
       ];
 
       homelab.proxy.hosts."sacha.house" = {

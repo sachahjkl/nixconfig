@@ -60,7 +60,7 @@ while IFS=$'\t' read -r group name source_uuid received_uuid; do
     exit 1
   fi
   actual_received_uuid=$(btrfs subvolume show "$snapshot" | awk '$1 == "Received" && $2 == "UUID:" {print $3}')
-  readonly=$(btrfs property get -ts "$snapshot" ro | awk '{print $2}')
+  readonly=$(btrfs property get -ts "$snapshot" ro | sed -n 's/^ro=//p')
   if [[ $source_uuid != "$received_uuid" || $actual_received_uuid != "$received_uuid" || $readonly != true ]]; then
     echo "Invalid received subvolume: $group/$name" >&2
     exit 1
@@ -126,7 +126,11 @@ if [[ ${1:-} != --yes ]]; then
   fi
 fi
 
-sgdisk --delete=4 --delete=3 --delete=2 "$internal_disk"
+for number in 4 3 2; do
+  if [[ -b ${internal_disk_real}p$number ]]; then
+    sgdisk --delete="$number" "$internal_disk"
+  fi
+done
 sgdisk --new=2:0:0 --typecode=2:8300 --change-name=2:homelab "$internal_disk"
 partprobe "$internal_disk"
 udevadm settle
@@ -140,7 +144,7 @@ while IFS=$'\t' read -r group name _; do
     continue
   fi
   btrfs send "$migration_root/$group/$name" | btrfs receive "$storage_mount"
-  btrfs property set -ts "$storage_mount/$name" ro false
+  btrfs property set -f -ts "$storage_mount/$name" ro false
 done <"$manifest"
 
 btrfs subvolume create "$storage_mount/@swap"

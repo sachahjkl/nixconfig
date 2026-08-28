@@ -62,6 +62,7 @@ lib.systems.nixosSystem "homelab-rescue" {
       wants = ["network-online.target"];
       unitConfig.ConditionPathExists = "/root/ARM-HOMELAB-STORAGE-MIGRATION";
       path = with pkgs; [
+        bash
         btrfs-progs
         coreutils
         findutils
