@@ -84,7 +84,7 @@ lib.systems.nixosSystem "homelab-rescue" {
       };
       script = ''
         mv /root/ARM-HOMELAB-STORAGE-MIGRATION /root/STORAGE-MIGRATION-RUNNING
-        /root/nixconfig/scripts/homelab-storage-restore.sh --yes
+        /root/nixconfig/hosts/homelab/rescue/restore.sh --yes
         mv /root/STORAGE-MIGRATION-RUNNING /root/STORAGE-MIGRATION-COMPLETE
         systemctl reboot
       '';

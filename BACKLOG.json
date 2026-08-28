@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "bbad6896-1dec-44b2-ba12-5eb05657fb03",
+      "title": "Regrouper les fichiers du secours homelab",
+      "notes": "Déplacer le module et les scripts de migration dans hosts/homelab/rescue, puis mettre à jour leurs références.",
+      "status": "done"
+    },
+    {
       "id": "5dc62877-ad9e-4830-9361-07cc7899e495",
       "title": "Fusionner le stockage homelab en Btrfs",
       "notes": "Créer un NixOS de secours sur le SSD externe, sauvegarder les sous-volumes, puis remplacer les partitions système et data par un Btrfs partagé.",
