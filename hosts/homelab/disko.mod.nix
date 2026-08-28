@@ -20,20 +20,13 @@ _: {
               };
             };
 
-            swap = {
-              label = "swap";
-              name = "swap";
-              size = "8G";
-              content.type = "swap";
-            };
-
-            root = {
-              label = "nixos-root";
-              name = "nixos-root";
-              size = "96G";
+            storage = {
+              label = "homelab";
+              name = "homelab";
+              size = "100%";
               content = {
                 type = "btrfs";
-                extraArgs = ["-f"];
+                extraArgs = ["-f" "-L" "homelab"];
                 subvolumes = {
                   "/persist" = {
                     mountpoint = "/persist";
@@ -44,18 +37,13 @@ _: {
                     mountpoint = "/nix";
                     mountOptions = ["subvol=nix" "compress=zstd" "noatime"];
                   };
-                };
-              };
-            };
 
-            data = {
-              label = "data";
-              name = "data";
-              size = "100%";
-              content = {
-                type = "btrfs";
-                extraArgs = ["-f" "-L" "data"];
-                subvolumes = {
+                  "@swap" = {
+                    mountpoint = "/.swap";
+                    mountOptions = ["noatime"];
+                    swap.swapfile.size = "16G";
+                  };
+
                   "@data" = {
                     mountpoint = "/data";
                     mountOptions = ["compress=zstd" "noatime" "space_cache=v2"];

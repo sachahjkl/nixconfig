@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "5dc62877-ad9e-4830-9361-07cc7899e495",
+      "title": "Fusionner le stockage homelab en Btrfs",
+      "notes": "Créer un NixOS de secours sur le SSD externe, sauvegarder les sous-volumes, puis remplacer les partitions système et data par un Btrfs partagé.",
+      "status": "doing"
+    },
+    {
       "id": "008d75be-5851-4bb0-99fa-e8abb3bb0aa2",
       "title": "Corriger l’erreur 500 du dashboard",
       "notes": "Servir le dashboard depuis une racine Nginx contenant index.html, puis valider les routes du cache.",
