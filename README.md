@@ -1,3 +1,5 @@
+[English](README.md) | [Français](README.fr.md)
+
 # nixconfig
 
 Sacha's NixOS flake.
@@ -203,21 +205,21 @@ jobs:
       - run: nix flake check
 ```
 
-## Observabilité
+## Observability
 
-Le module `homelabObservability` déploie les services suivants dans Docker :
+The `homelabObservability` module deploys the following services in Docker:
 
-- OpenTelemetry Collector reçoit les traces, les journaux et les métriques OTLP.
-- Loki conserve les journaux pendant 30 jours.
-- Tempo conserve les traces pendant 14 jours.
-- Prometheus conserve les métriques pendant 30 jours, avec une limite de 20 Go.
-- Grafana fournit les sources Prometheus, Loki et Tempo préconfigurées.
+- OpenTelemetry Collector receives OTLP traces, logs, and metrics.
+- Loki retains logs for 30 days.
+- Tempo retains traces for 14 days.
+- Prometheus retains metrics for 30 days, with a 20 GB limit.
+- Grafana provides preconfigured Prometheus, Loki, and Tempo data sources.
 
-Les données résident dans `/data/Docker/appdata/observability`.
+The data resides in `/data/Docker/appdata/observability`.
 
-Le service Restic sauvegarde déjà ce répertoire par son parent `/data/Docker/appdata`.
+The Restic service already backs up this directory through its parent, `/data/Docker/appdata`.
 
-Les domaines se configurent dans `hosts/homelab/homelab.mod.nix` :
+Configure the domains in `hosts/homelab/homelab.mod.nix`:
 
 ```nix
 homelab.services.observability = {
@@ -227,15 +229,15 @@ homelab.services.observability = {
 };
 ```
 
-Utilisez `admin` comme identifiant Grafana.
+Use `admin` as the Grafana username.
 
-Déchiffrez le mot de passe Grafana avec cette commande :
+Decrypt the Grafana password with this command:
 
 ```bash
 sops decrypt --extract '["observability"]["grafana-environment"]' secrets/homelab.yaml
 ```
 
-Configurez Froment avec ces variables :
+Configure Froment with these variables:
 
 ```text
 OTEL_TRACES_EXPORTER=otlp
@@ -245,7 +247,7 @@ OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic%20<identifiants-base64>
 DEPLOYMENT_ENVIRONMENT=production
 ```
 
-Générez les identifiants Base64 sans écrire le mot de passe sur le disque :
+Generate the Base64 credentials without writing the password to disk:
 
 ```bash
 OTLP_PASSWORD="$(sops decrypt --extract '["observability"]["otlp-password"]' secrets/homelab.yaml)"
@@ -253,9 +255,9 @@ printf 'froment:%s' "$OTLP_PASSWORD" | base64 -w0
 unset OTLP_PASSWORD
 ```
 
-Le proxy accepte OTLP/HTTP avec protobuf sur `/v1/traces`, `/v1/logs` et `/v1/metrics`.
+The proxy accepts OTLP/HTTP with protobuf on `/v1/traces`, `/v1/logs`, and `/v1/metrics`.
 
-Appliquez la configuration avec la procédure de reconstruction habituelle.
+Apply the configuration with the usual rebuild procedure.
 
 ## Rebuild
 
