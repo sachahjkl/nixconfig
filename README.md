@@ -1,5 +1,3 @@
-[English](README.md) | [Français](README.fr.md)
-
 # nixconfig
 
 Sacha's NixOS flake.
