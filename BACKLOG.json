@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "3fb52211-8fe5-4101-ac6f-0991a1fd8668",
+      "title": "Upgrade Moshi Hook to 0.3.15",
+      "notes": "Update the packaged release and hashes for all supported platforms, then run Nix checks.",
+      "status": "done"
+    },
+    {
       "id": "bbad6896-1dec-44b2-ba12-5eb05657fb03",
       "title": "Regrouper les fichiers du secours homelab",
       "notes": "Déplacer le module et les scripts de migration dans hosts/homelab/rescue, puis mettre à jour leurs références.",
