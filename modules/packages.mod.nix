@@ -52,11 +52,17 @@
         zip
 
         # Shell and editor helpers
+        broot
         btop
-        carapace
+        chafa
+        direnv
         eza
         fd
+        hexyl
         jq
+        selfPkgs.lf
+        pcre2
+        procs
         ripgrep
         ufetch
         zellij

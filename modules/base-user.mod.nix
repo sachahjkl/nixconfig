@@ -1,12 +1,9 @@
 {self, ...}: {
   flake.nixosModules.baseUser = {
     config,
-    pkgs,
     lib,
     ...
-  }: let
-    selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
-  in {
+  }: {
     imports = [self.nixosModules.secrets];
 
     options = {
@@ -62,7 +59,6 @@
             isNormalUser = true;
             description = config.fullName;
             extraGroups = ["wheel"] ++ config.extraUserGroups;
-            shell = selfPkgs.fish;
           }
           // lib.optionalAttrs (config.passwordHashFile != null) {
             hashedPasswordFile = toString config.passwordHashFile;

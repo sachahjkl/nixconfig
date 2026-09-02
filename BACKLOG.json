@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "607274f5-4f38-4c43-95e9-13777cddf057",
+      "title": "Consolidate Fish shell configuration",
+      "notes": "Remove nested Fish wrappers, make one Fish module own login-shell configuration and integrations, and use it on servers, workstations, and WSL.",
+      "status": "done"
+    },
+    {
       "id": "3fb52211-8fe5-4101-ac6f-0991a1fd8668",
       "title": "Upgrade Moshi Hook to 0.3.15",
       "notes": "Update the packaged release and hashes for all supported platforms, then run Nix checks.",

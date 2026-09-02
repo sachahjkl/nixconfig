@@ -4,6 +4,7 @@
       self.nixosModules.baseUser
       self.nixosModules.external-preservation
       self.nixosModules.editor
+      self.nixosModules.fish
       self.nixosModules.hjem
       self.nixosModules.home-manager
       self.nixosModules.kernelHardening
