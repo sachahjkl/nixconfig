@@ -1,5 +1,12 @@
-{lib, ...}: {
-  flake.nixosModules.baseSystem = {pkgs, ...}: {
+{
+  lib,
+  self,
+  ...
+}: {
+  flake.nixosModules.baseSystem = {pkgs, ...}: let
+    palette = self.lib.terminalThemes.kittyDefault;
+    withoutHash = color: builtins.substring 1 6 color;
+  in {
     config = {
       boot = {
         loader = {
@@ -87,6 +94,24 @@
         font = "ter-v32b";
         keyMap = "fr";
         packages = [pkgs.terminus_font];
+        colors = map withoutHash [
+          palette.black
+          palette.red
+          palette.green
+          palette.yellow
+          palette.blue
+          palette.purple
+          palette.cyan
+          palette.white
+          palette.brightBlack
+          palette.brightRed
+          palette.brightGreen
+          palette.brightYellow
+          palette.brightBlue
+          palette.brightPurple
+          palette.brightCyan
+          palette.brightWhite
+        ];
       };
 
       hardware.enableRedistributableFirmware = true;

@@ -25,10 +25,12 @@ lib.systems.nixosSystem "house-laptop" {
     hyprland = {
       numLock.defaultState = false;
       laptopMode.enable = true;
-      display = {
-        output = "eDP-1";
-        scale = 1.25;
-      };
+      display.monitors = [
+        {
+          output = "eDP-1";
+          scale = 1.25;
+        }
+      ];
     };
 
     boot.kernelParams = [

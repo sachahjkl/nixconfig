@@ -8,7 +8,7 @@ _: {
     hyprCfg =
       lib.attrByPath ["hyprland"]
       {
-        display.scale = 1.875;
+        display.monitors = [{scale = 1.875;}];
         laptopMode = {
           enable = false;
           lockTimeoutSeconds = 300;
@@ -17,7 +17,7 @@ _: {
         };
       }
       config;
-    scaleValue = hyprCfg.display.scale;
+    scaleValue = (builtins.head hyprCfg.display.monitors).scale;
     desktopReferenceScale = 1.875;
     lockUiScale = scaleValue / desktopReferenceScale;
     scalePx = value: builtins.floor ((value * lockUiScale) + 0.5);

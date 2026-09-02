@@ -12,6 +12,18 @@
       theme = config.theme.rofiTheme;
     };
     powerMenuLauncher = config.powerMenu.package;
+    monitorConfig =
+      lib.concatMapStringsSep "\n" (monitor: ''
+        hl.monitor({
+            output   = ${builtins.toJSON monitor.output},
+            mode     = ${builtins.toJSON monitor.mode},
+            position = ${builtins.toJSON monitor.position},
+            scale    = ${toString monitor.scale},
+            cm       = "auto",
+            supports_hdr = -1,
+        })
+      '')
+      hyprCfg.display.monitors;
   in {
     options.hyprland = {
       laptopMode = {
@@ -55,22 +67,29 @@
       };
 
       display = {
-        output = lib.mkOption {
-          type = lib.types.str;
-          default = "";
-          description = "Hyprland monitor output name for the primary monitor rule. Empty applies to the default monitor.";
-        };
-
-        mode = lib.mkOption {
-          type = lib.types.str;
-          default = "preferred";
-          description = "Hyprland monitor mode for the primary monitor rule.";
-        };
-
-        scale = lib.mkOption {
-          type = lib.types.number;
-          default = 1.875;
-          description = "Hyprland scale factor for the primary monitor rule.";
+        monitors = lib.mkOption {
+          type = lib.types.nonEmptyListOf (lib.types.submodule {
+            options = {
+              output = lib.mkOption {
+                type = lib.types.str;
+                default = "";
+              };
+              mode = lib.mkOption {
+                type = lib.types.str;
+                default = "preferred";
+              };
+              position = lib.mkOption {
+                type = lib.types.str;
+                default = "auto";
+              };
+              scale = lib.mkOption {
+                type = lib.types.number;
+                default = 1.875;
+              };
+            };
+          });
+          default = [{}];
+          description = "Declarative Hyprland monitor rules.";
         };
       };
 
@@ -104,14 +123,7 @@
 
             local satty_args = "--copy-command wl-copy -o \"$HOME/Pictures/Screenshots/%Y%m%d_%H%M%S.png\" --actions-on-enter save-to-clipboard,save-to-file,exit --actions-on-right-click save-to-clipboard,save-to-file,exit --floating-hack --no-window-decoration --fullscreen current-screen"
 
-            hl.monitor({
-                output   = ${builtins.toJSON hyprCfg.display.output},
-                mode     = ${builtins.toJSON hyprCfg.display.mode},
-                position = "auto",
-                scale    = ${toString hyprCfg.display.scale},
-                cm       = "auto",
-                supports_hdr = -1,
-            })
+            ${monitorConfig}
 
             hl.on("hyprland.start", function()
                 hl.exec_cmd("uwsm app -- nm-applet")

@@ -33,7 +33,23 @@ lib.systems.nixosSystem "house-desktop" {
       defaultSession = "hyprland-uwsm";
     };
 
-    hyprland.numLock.defaultState = true;
+    hyprland = {
+      numLock.defaultState = true;
+      display.monitors = [
+        {
+          output = "DP-2";
+          mode = "2560x1440@180";
+          position = "0x0";
+          scale = 1.25;
+        }
+        {
+          output = "HDMI-A-1";
+          mode = "preferred";
+          position = "2048x0";
+          scale = 1.875;
+        }
+      ];
+    };
 
     services.xserver.videoDrivers = ["nvidia"];
 

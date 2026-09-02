@@ -14,6 +14,7 @@
       self.nixosModules.hunk
       self.nixosModules.meshcentral
       self.nixosModules.nodejs
+      self.nixosModules.tmux
     ];
 
     config = {
@@ -24,7 +25,6 @@
           package = selfPkgs.nh;
           flake = config.nixConfigPath;
         };
-        tmux.enable = true;
       };
 
       environment.systemPackages = with pkgs; [
@@ -57,6 +57,7 @@
         chafa
         direnv
         eza
+        fastfetch
         fd
         hexyl
         jq

@@ -19,6 +19,18 @@
   ],
   "items": [
     {
+      "id": "8915742b-81c0-4c1d-8479-aeee297ae540",
+      "title": "Corriger écran 4K et Num Lock",
+      "notes": "Diagnostiquer l’écran 4K noir, utiliser le mode EDID préféré pour éviter l’échec initial HDMI, et supprimer entièrement le réglage Num Lock demandé.",
+      "status": "done"
+    },
+    {
+      "id": "d6f98516-f38b-4937-b9b7-d68166fdbaf8",
+      "title": "Configurer Fastfetch et les écrans",
+      "notes": "Ajouter Fastfetch, déclarer le QHD à gauche et le 4K à droite dans Hyprland, puis activer Num Lock avant le déverrouillage FIDO2.",
+      "status": "done"
+    },
+    {
       "id": "607274f5-4f38-4c43-95e9-13777cddf057",
       "title": "Consolidate Fish shell configuration",
       "notes": "Remove nested Fish wrappers, make one Fish module own login-shell configuration and integrations, and use it on servers, workstations, and WSL.",
