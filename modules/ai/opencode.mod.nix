@@ -47,6 +47,10 @@
     in {
       autoupdate = false;
       plugins = ["${backlogPackage}/lib/opencode-backlog/dist/index.js"];
+      providers.simulacra = {
+        settings.apiKey = "unused";
+        headers.Proxy-Authorization = "Bearer {env:SIMULACRA_TOKEN}";
+      };
       share = "disabled";
       skills = ["${inputs.skills}"];
       permissions =
@@ -211,10 +215,15 @@
 
     upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
     mcpNixos = pkgs.mcp-nixos;
+    simulacraTokenPath = lib.attrByPath ["sops" "secrets" "ai/simulacra-token" "path"] "/run/secrets/ai/simulacra-token" config;
 
     mkOpenCodeWrapper = name:
       pkgs.writeShellScriptBin name ''
         export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
+        export OPENCODE_MODELS_URL="https://codex.sacha.house"
+        if [ -r ${simulacraTokenPath} ]; then
+          export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
+        fi
         exec ${lib.getExe upstreamOpencode} "$@"
       '';
 
@@ -296,6 +305,17 @@
     };
 
     config = mkIf cfg.enable {
+      sops.secrets = mkIf (config.sops.defaultSopsFile != null) {
+        "ai/simulacra-token" = {
+          sopsFile = builtins.path {
+            path = self + /secrets/shared.yaml;
+            name = "shared-secrets.yaml";
+          };
+          owner = config.userName;
+          mode = "0400";
+        };
+      };
+
       persist.user.directories = [
         ".config/opencode"
         ".local/share/opencode"
