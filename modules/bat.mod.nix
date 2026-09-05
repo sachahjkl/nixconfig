@@ -1,46 +1,36 @@
 _: {
   flake.nixosModules.bat = {
-    config,
     lib,
-    options,
     pkgs,
     ...
   }: let
-    hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
-    hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
-    hasUserName = lib.hasAttrByPath ["userName"] options;
     manPager = pkgs.writeShellScriptBin "man-pager" ''
-      ${lib.getExe pkgs.unixtools.col} -bx | ${lib.getExe pkgs.bat} --language man --plain --color always | ${lib.getExe pkgs.less}
+      set -o pipefail
+      ${lib.getExe pkgs.unixtools.col} -bx | ${lib.getExe pkgs.bat} --paging=never --language man --plain --color always | ${lib.getExe pkgs.less}
     '';
-    normalUsers = lib.mapAttrsToList (name: _: name) (lib.filterAttrs (_: user: user.isNormalUser or false) config.users.users);
   in {
-    config = lib.mkMerge [
-      {
-        programs.bat.enable = true;
+    programs.bat = {
+      enable = true;
+      settings = {
+        paging = "auto";
+        pager = lib.getExe pkgs.less;
+      };
+    };
 
-        environment.sessionVariables = {
-          LESS = "--quit-if-one-screen --quit-on-intr --ignore-case --incsearch --LONG-PROMPT --no-edit-warn --chop-long-lines --HILITE-UNREAD --tilde --RAW-CONTROL-CHARS";
-          MANPAGER = lib.getExe manPager;
-          MANROFFOPT = "-c";
-          PAGER = lib.getExe pkgs.less;
-        };
+    programs.less.enable = true;
 
-        system.activationScripts.batCache = lib.stringAfter ["users"] ''
-          for user in ${lib.escapeShellArgs normalUsers}; do
-            ${pkgs.util-linux}/bin/runuser --user "$user" -- ${lib.getExe pkgs.bat} cache --build
-          done
-        '';
-      }
+    # Keep aliases in interactive shells. Scripts still use coreutils cat.
+    environment.shellAliases = {
+      cat = lib.getExe pkgs.bat;
+      page = "${lib.getExe pkgs.bat} --paging=always";
+    };
 
-      (lib.optionalAttrs hasPersistDirs {
-        persist.user.directories = [".cache/bat"];
-      })
-
-      (lib.optionalAttrs (hasHjemUsers && hasUserName) {
-        hjem.users.${config.userName}.xdg.config.files."bat/config".text = ''
-          --paging=never
-        '';
-      })
-    ];
+    environment.sessionVariables = {
+      LESS = "--quit-if-one-screen --quit-on-intr --ignore-case --incsearch --LONG-PROMPT --no-edit-warn --chop-long-lines --HILITE-UNREAD --tilde --RAW-CONTROL-CHARS";
+      MANPAGER = lib.getExe manPager;
+      MANROFFOPT = "-c";
+      PAGER = lib.getExe pkgs.less;
+      JJ_PAGER = lib.getExe pkgs.less;
+    };
   };
 }
