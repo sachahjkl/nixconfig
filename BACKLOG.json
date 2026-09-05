@@ -19,6 +19,18 @@
   ],
   "items": [
     {
+      "id": "5cc5caa7-08c9-46b5-87fb-9658742bcec6",
+      "title": "Mettre à jour les dépendances Nix",
+      "notes": "Inputs, Disko, Moshi Hook, Handy et images d’observabilité mis à jour. Tempo reste en 2.10.8 car Tempo 3 exige une migration irréversible. Contrôles réussis. Commit et activation homelab demandés.",
+      "status": "done"
+    },
+    {
+      "id": "ccef3136-ef80-4cc6-9f31-493e998f18d2",
+      "title": "Mettre à jour et activer nixconfig",
+      "notes": "Tirer origin/master, activer la configuration de l’hôte courant, puis documenter le fonctionnement du trousseau SSH.",
+      "status": "done"
+    },
+    {
       "id": "8915742b-81c0-4c1d-8479-aeee297ae540",
       "title": "Corriger écran 4K et Num Lock",
       "notes": "Diagnostiquer l’écran 4K noir, utiliser le mode EDID préféré pour éviter l’échec initial HDMI, et supprimer entièrement le réglage Num Lock demandé.",

@@ -248,7 +248,7 @@ _: {
         backend = "docker";
         containers = {
           loki = {
-            image = "grafana/loki:3.7.6";
+            image = "grafana/loki:3.7.7";
             cmd = ["-config.file=/etc/loki/config.yaml"];
             volumes = [
               "${lokiConfig}:/etc/loki/config.yaml:ro"
@@ -268,7 +268,7 @@ _: {
           };
 
           otel-collector = {
-            image = "otel/opentelemetry-collector-contrib:0.159.0";
+            image = "otel/opentelemetry-collector-contrib:0.160.0";
             cmd = ["--config=/etc/otelcol/config.yaml"];
             volumes = ["${collectorConfig}:/etc/otelcol/config.yaml:ro"];
             networks = [network];
@@ -292,7 +292,7 @@ _: {
           };
 
           grafana = {
-            image = "grafana/grafana:13.2.0";
+            image = "grafana/grafana:13.2.1";
             environment = {
               GF_SERVER_DOMAIN = cfg.grafanaDomain;
               GF_SERVER_ROOT_URL = "https://${cfg.grafanaDomain}";
