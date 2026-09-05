@@ -40,9 +40,16 @@ _: {
                   exit 1
                 fi
 
-                auth_file="''${XDG_DATA_HOME:-$HOME/.local/share}/opencode/auth.json"
-                credential=$(mktemp)
-                trap 'rm -f "$credential"' EXIT
+        auth_file="''${XDG_DATA_HOME:-$HOME/.local/share}/opencode/auth.json"
+        credential=$(mktemp)
+        deployment_root=""
+        cleanup() {
+          rm -f "$credential"
+          if [ -n "$deployment_root" ]; then
+            git -C "$root" worktree remove --force "$deployment_root"
+          fi
+        }
+        trap cleanup EXIT
                 chmod 600 "$credential"
 
                 if $login; then
@@ -59,10 +66,15 @@ _: {
                 sops set --value-file secrets/homelab.yaml '["codex-proxy"]["oauth"]' "$credential"
 
                 git add secrets/homelab.yaml
-                git commit -m "Renouveler le credential OAuth du proxy Codex"
-                git push origin HEAD
+        git commit -m "Renouveler le credential OAuth du proxy Codex"
+        git push origin HEAD
 
-                deploy .#homelab
+        deployment_root=$(mktemp -d)
+        rmdir "$deployment_root"
+        git worktree add --detach "$deployment_root" HEAD
+        (cd "$deployment_root" && deploy .#homelab)
+        git worktree remove "$deployment_root"
+        deployment_root=""
                 ssh -o BatchMode=yes deploy@homelab sudo -n sh -se <<'REMOTE'
                   systemctl stop codex-proxy.service
                   rm -f /var/lib/codex-proxy/oauth.json
