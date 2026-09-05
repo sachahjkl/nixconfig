@@ -108,8 +108,8 @@ _: {
         grpc.endpoint = "0.0.0.0:4317";
         http.endpoint = "0.0.0.0:4318";
       };
-      ingester.max_block_duration = "5m";
-      compactor.compaction.block_retention = cfg.tracesRetention;
+      live_store.max_block_duration = "5m";
+      backend_scheduler.provider.compaction.compaction.block_retention = cfg.tracesRetention;
       storage.trace = {
         backend = "local";
         wal.path = "/var/tempo/wal";
@@ -258,7 +258,7 @@ _: {
           };
 
           tempo = {
-            image = "grafana/tempo:2.10.8";
+            image = "grafana/tempo:3.0.3";
             cmd = ["-config.file=/etc/tempo/config.yaml"];
             volumes = [
               "${tempoConfig}:/etc/tempo/config.yaml:ro"

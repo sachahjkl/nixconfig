@@ -19,6 +19,12 @@
   ],
   "items": [
     {
+      "id": "95ebda4d-ad07-4cb5-aa37-7ac6829426b4",
+      "title": "Migrer Tempo vers la version 3",
+      "notes": "Migrer le déploiement monolithique vers Tempo 3.0.3 avec live-store et backend scheduler. Sauvegarde reflink créée avant activation. Configuration et contrôles Nix validés.",
+      "status": "done"
+    },
+    {
       "id": "5cc5caa7-08c9-46b5-87fb-9658742bcec6",
       "title": "Mettre à jour les dépendances Nix",
       "notes": "Inputs, Disko, Moshi Hook, Handy et images d’observabilité mis à jour. Tempo reste en 2.10.8 car Tempo 3 exige une migration irréversible. Contrôles réussis. Commit et activation homelab demandés.",
