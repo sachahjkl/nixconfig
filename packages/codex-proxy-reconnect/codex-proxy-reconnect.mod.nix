@@ -42,15 +42,16 @@ _: {
 
         auth_file="''${XDG_DATA_HOME:-$HOME/.local/share}/opencode/auth.json"
         credential=$(mktemp)
+        encoded_credential=$(mktemp)
         deployment_root=""
         cleanup() {
-          rm -f "$credential"
+          rm -f "$credential" "$encoded_credential"
           if [ -n "$deployment_root" ]; then
             git -C "$root" worktree remove --force "$deployment_root"
           fi
         }
         trap cleanup EXIT
-                chmod 600 "$credential"
+        chmod 600 "$credential" "$encoded_credential"
 
                 if $login; then
                   opencode2 auth login OpenAI --method chatgpt-headless
@@ -61,9 +62,10 @@ _: {
                   | select([.access, .refresh, .accountId] | all(type == "string" and length > 0))
                   | select(.expires | type == "number" and . > 0)
                   | {access, refresh, expires, account_id: .accountId}
-                ' "$auth_file" > "$credential"
+        ' "$auth_file" > "$credential"
+        jq -Rs . < "$credential" > "$encoded_credential"
 
-                sops set --value-file secrets/homelab.yaml '["codex-proxy"]["oauth"]' "$credential"
+        sops set --value-file secrets/homelab.yaml '["codex-proxy"]["oauth"]' "$encoded_credential"
 
                 git add secrets/homelab.yaml
         git commit -m "Renouveler le credential OAuth du proxy Codex"
