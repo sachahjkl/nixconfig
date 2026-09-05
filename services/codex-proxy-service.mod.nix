@@ -48,6 +48,7 @@
       services.codex-proxy = {
         enable = true;
         listenAddress = "${cfg.host}:${toString cfg.port}";
+        publicUrl = "https://codex.sacha.house";
         inherit (cfg) oauthCredentialFile proxyTokenFile;
       };
 
