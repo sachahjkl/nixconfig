@@ -32,11 +32,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788464925,
-        "narHash": "sha256-hLnqPWwycLJkSMaX/u9liJ0xnUnK56VrgfQuu1B4pdQ=",
+        "lastModified": 1788601479,
+        "narHash": "sha256-vVY4g0Iid8WeuTmr4rtCgXnHyQDsAd1oDkUQMudidIs=",
         "owner": "sachahjkl",
         "repo": "ai-api-proxy",
-        "rev": "d21fda2ec9190407eef61ded93dda0c9e289ff1b",
+        "rev": "f02cc0122c0b0257e3c74e1fa9e0b0556bfc7f1f",
         "type": "github"
       },
       "original": {
