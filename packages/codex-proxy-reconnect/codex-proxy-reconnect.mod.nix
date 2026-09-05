@@ -13,6 +13,7 @@ _: {
         pkgs.jq
         pkgs.openssh
         pkgs.sops
+        pkgs.sqlite
         self'.packages.deploy-rs
         self'.packages.opencode
       ];
@@ -40,29 +41,32 @@ _: {
                   exit 1
                 fi
 
-        auth_file="''${XDG_DATA_HOME:-$HOME/.local/share}/opencode/auth.json"
+        database="''${XDG_DATA_HOME:-$HOME/.local/share}/opencode/opencode.db"
+        raw_credential=$(mktemp)
         credential=$(mktemp)
         encoded_credential=$(mktemp)
         deployment_root=""
         cleanup() {
-          rm -f "$credential" "$encoded_credential"
+          rm -f "$raw_credential" "$credential" "$encoded_credential"
           if [ -n "$deployment_root" ]; then
             git -C "$root" worktree remove --force "$deployment_root"
           fi
         }
         trap cleanup EXIT
-        chmod 600 "$credential" "$encoded_credential"
+        chmod 600 "$raw_credential" "$credential" "$encoded_credential"
 
                 if $login; then
                   opencode2 auth login OpenAI --method chatgpt-headless
                 fi
-                jq -ce '
-                  .openai
-                  | select(.type == "oauth")
-                  | select([.access, .refresh, .accountId] | all(type == "string" and length > 0))
-                  | select(.expires | type == "number" and . > 0)
-                  | {access, refresh, expires, account_id: .accountId}
-        ' "$auth_file" > "$credential"
+        sqlite3 -noheader "$database" \
+          "select value from credential where integration_id = 'openai' and active = 1 order by time_updated desc limit 1" \
+          > "$raw_credential"
+        jq -ce '
+          select(.type == "oauth")
+          | select([.access, .refresh, .metadata.accountID] | all(type == "string" and length > 0))
+          | select(.expires | type == "number" and . > 0)
+          | {access, refresh, expires, account_id: .metadata.accountID}
+        ' "$raw_credential" > "$credential"
         jq -Rs . < "$credential" > "$encoded_credential"
 
         sops set --value-file secrets/homelab.yaml '["codex-proxy"]["oauth"]' "$encoded_credential"
@@ -87,7 +91,7 @@ _: {
                     -H "Proxy-Authorization: Bearer $token" \
                     http://127.0.0.1:8083/readyz >/dev/null
         REMOTE
-                opencode2 auth logout OpenAI
+        opencode2 auth logout openai
                 printf 'The Codex proxy uses the new OAuth credential.\n'
       '';
     };
