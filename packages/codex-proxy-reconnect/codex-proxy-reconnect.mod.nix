@@ -35,8 +35,8 @@ _: {
                   printf 'Run this command from the nixconfig repository.\n' >&2
                   exit 1
                 fi
-                if [ -n "$(git status --porcelain)" ]; then
-                  printf 'The nixconfig worktree must be clean.\n' >&2
+        if ! git diff --quiet -- secrets/homelab.yaml || ! git diff --cached --quiet; then
+          printf 'The SOPS file and Git index must be clean.\n' >&2
                   exit 1
                 fi
 
