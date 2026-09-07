@@ -32,6 +32,7 @@
           set fish_greeting
           fish_vi_key_bindings
 
+          set --global --export CARAPACE_EXCLUDES nix
           ${lib.getExe pkgs.carapace} _carapace fish | source
         '';
         functions.lf = ''
