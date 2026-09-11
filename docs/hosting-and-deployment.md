@@ -138,6 +138,24 @@ Sign the digest with keyless Cosign and GitHub OIDC.
 
 Verify the signature before production deployment.
 
+## Git strategy
+
+Use trunk-based development with one default branch.
+
+Create short-lived branches for changes.
+
+Run checks for each branch and pull request.
+
+After a change reaches the default branch, build one immutable image and deploy it to staging.
+
+After staging validation, require approval and promote the same digest to production.
+
+Do not use persistent `develop` or `staging` branches as deployment environments.
+
+Use `APP_ENV=development` for local development.
+
+Create a GitHub `development` environment only when a persistent remote development deployment exists.
+
 ## Network model
 
 The Nomad API listens only on the host Tailscale address.
