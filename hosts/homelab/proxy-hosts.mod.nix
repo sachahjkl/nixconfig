@@ -73,8 +73,8 @@ _: {
         };
 
         "button.sacha.house" = {
-          dockerContainer = "button_sacha_house";
-          dockerPort = 3000;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9042;
         };
 
         "staging.button.sacha.house" = {
