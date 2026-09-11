@@ -111,6 +111,11 @@ _: {
           robotsNoIndex = true;
         };
 
+        "sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9072;
+        };
+
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
