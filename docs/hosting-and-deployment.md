@@ -456,6 +456,33 @@ After each production deployment, verify:
 - expected external integrations work;
 - monitoring receives logs and traces.
 
+## Legacy service cutover
+
+Use a controlled cutover when an existing service owns production data.
+
+Do not let the new service start with an empty production database.
+
+Add a startup guard that requires existing data before the first production deployment.
+
+Use this sequence:
+
+1. Create the production Nomad volume.
+2. Stop writes to the legacy service.
+3. Create an application-consistent backup from the legacy database.
+4. Verify database integrity and foreign keys.
+5. Copy the verified backup into the Nomad volume.
+6. Preserve file ownership and mode.
+7. Submit the production Nomad job.
+8. Verify the private Nomad health check.
+9. Switch the public ingress route to Nomad.
+10. Verify the public health endpoint and application behavior.
+11. Disable the legacy service and its automatic updater.
+12. Keep the legacy backup until the retention policy permits deletion.
+
+Keep the legacy service stopped after the data copy.
+
+If verification fails, route ingress back to the stopped legacy service and restore its database.
+
 ## Rollback
 
 For application-only failures, run the previous Nomad job version.
