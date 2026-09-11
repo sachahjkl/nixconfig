@@ -133,6 +133,11 @@ _: {
           robotsNoIndex = true;
         };
 
+        "albumator.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9092;
+        };
+
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
