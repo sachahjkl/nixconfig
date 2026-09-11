@@ -105,6 +105,14 @@ _: {
           dockerPort = 80;
         };
 
+        "staging.wthhyb.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9021;
+          extraConfig = ''
+            add_header X-Robots-Tag "noindex, nofollow" always;
+          '';
+        };
+
         "chat.sacha.house" = {
           dockerContainer = "chat_sacha_house";
           dockerPort = 3030;
