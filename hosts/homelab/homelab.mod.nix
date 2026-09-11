@@ -15,7 +15,6 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.codexProxyService
       self.nixosModules.albumatorService
       self.nixosModules.clockinService
-      self.nixosModules.lanblasterService
       self.nixosModules.nixCache
       self.nixosModules.ai
     ];
@@ -70,14 +69,12 @@ lib.systems.nixosSystem "homelab" {
             sacha-house = "https://github.com/sachahjkl/sacha.house";
             sachahjkl-site = "https://github.com/sachahjkl/sachahjkl.github.io";
             sqrt-eth-site = "https://github.com/sachahjkl/sqrt-eth.github.io";
-            wthhyb = "https://github.com/sachahjkl/wthhyb.sacha.house";
           };
         };
         hermesDashboard.enable = false;
         codexProxy.enable = true;
         sachaHouse.enable = true;
         filebrowser.enable = true;
-        lanblaster.enable = true;
         albumator = {
           enable = true;
           port = 3001;

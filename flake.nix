@@ -134,8 +134,6 @@
       };
     };
 
-    lanblaster.url = "github:sachahjkl/lanblaster.sacha.house";
-
     albumator = {
       url = "github:sachahjkl/albumator";
       inputs.nixpkgs.follows = "nixpkgs";
