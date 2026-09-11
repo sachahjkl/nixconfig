@@ -436,6 +436,10 @@ Make the `publish` job depend on the successful `check` job.
 
 Use `nix-community.cachix.org` because the standard caches do not contain Nomad 1.11.3.
 
+Configure this substituter through `install-nix-action` before the first Nix command.
+
+Configure its trusted public key through the same action.
+
 Set `max-jobs = 2` and pass `--max-jobs 2` to Nix build and check commands.
 
 Do not include Playwright or browser tests in Nix flake checks.
