@@ -1,17 +1,7 @@
-{self, ...}: {
+_: {
   flake.nixosModules.homelabProxyHosts = {config, ...}: let
     observability = config.homelab.services.observability;
   in {
-    sops.secrets."froment/staging-basic-auth" = {
-      sopsFile = builtins.path {
-        path = self + /secrets/homelab.yaml;
-        name = "homelab-secrets.yaml";
-      };
-      owner = "nginx";
-      group = "nginx";
-      mode = "0400";
-    };
-
     services.nginx.defaultListenAddresses = ["192.168.50.22"];
 
     homelab.proxy = {
@@ -182,7 +172,6 @@
         "staging.froment.software" = {
           upstreamHost = "127.0.0.1";
           upstreamPort = 9011;
-          basicAuthFile = config.sops.secrets."froment/staging-basic-auth".path;
           extraConfig = ''
             add_header X-Robots-Tag "noindex, nofollow" always;
           '';
