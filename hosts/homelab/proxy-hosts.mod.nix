@@ -170,8 +170,8 @@ _: {
         };
 
         "chat.sacha.house" = {
-          dockerContainer = "chat_sacha_house";
-          dockerPort = 3030;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9102;
         };
 
         "staging.chat.sacha.house" = {
