@@ -116,6 +116,12 @@ _: {
           upstreamPort = 9072;
         };
 
+        "staging.clockin.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9081;
+          robotsNoIndex = true;
+        };
+
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
