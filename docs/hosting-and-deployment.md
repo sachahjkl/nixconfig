@@ -189,6 +189,12 @@ Example Tailscale grant:
 
 Restrict the federated identity to the expected GitHub organization and repositories.
 
+Match the subject format that GitHub sends to Tailscale.
+
+If GitHub includes immutable IDs, use a pattern such as `repo:OWNER@OWNER_ID/*:environment:*`.
+
+Use the Tailscale credential diagnostic to read the received subject after a failed exchange.
+
 Use separate identities when applications need different network access.
 
 ## Nomad security
