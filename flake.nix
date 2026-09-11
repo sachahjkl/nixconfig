@@ -143,10 +143,6 @@
       url = "github:sachahjkl/ai-api-proxy";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    clockin = {
-      url = "github:sachahjkl/clockin.sacha.house";
-    };
   };
 
   outputs = inputs:

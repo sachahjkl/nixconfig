@@ -14,7 +14,6 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelabProxyHosts
       self.nixosModules.codexProxyService
       self.nixosModules.albumatorService
-      self.nixosModules.clockinService
       self.nixosModules.nixCache
       self.nixosModules.ai
     ];
@@ -59,11 +58,6 @@ lib.systems.nixosSystem "homelab" {
           enable = true;
           port = 3001;
           dataDir = "/data/Services/albumator";
-        };
-        clockin = {
-          enable = true;
-          port = 3002;
-          databaseDir = "/data/Services/clockin";
         };
         nomad = {
           enable = true;
