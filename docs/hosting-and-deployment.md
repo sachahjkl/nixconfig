@@ -416,9 +416,19 @@ restart {
 
 ## CI pipeline
 
-Run pull-request checks on GitHub-hosted runners.
+Run all application checks, builds, and artifact publication on GitHub-hosted runners.
 
-Do not execute untrusted pull-request code on a privileged homelab runner.
+Do not install a GitHub Actions runner on an application target.
+
+Use Tailscale only for deployment jobs that submit work to the private Nomad API.
+
+The application deployment path must build no source code on the target.
+
+The homelab keeps one separate runner for the `nixconfig` repository only.
+
+That runner checks NixOS infrastructure and populates the homelab Nix cache.
+
+Do not register application repositories on that runner.
 
 The accepted-commit pipeline performs these tasks:
 

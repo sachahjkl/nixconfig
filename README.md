@@ -154,9 +154,13 @@ sudo nixos-rebuild switch --flake /home/sacha/Projects/nixconfig#homelab
 
 ## GitHub Actions Runner
 
-The homelab module provides disabled GitHub Actions runners under `homelab.services.githubRunner`.
+The homelab module provides a GitHub Actions runner under `homelab.services.githubRunner`.
 
-GitHub does not support account-wide runners for personal accounts. The module registers one runner instance for each configured repository.
+Reserve this runner for the `nixconfig` repository.
+
+It checks NixOS infrastructure and populates the homelab Nix cache.
+
+Run all application CI and artifact publication on GitHub-hosted runners.
 
 Create a dedicated fine-grained PAT with runner access to all configured repositories. Add it as `github.actions-runner` in `secrets/homelab.yaml`:
 
@@ -164,34 +168,35 @@ Create a dedicated fine-grained PAT with runner access to all configured reposit
 nix shell nixpkgs#sops -c sops secrets/homelab.yaml
 ```
 
-Enable the runners on `homelab` after the repository URLs and encrypted PAT exist:
+Enable the runner on `homelab` after the encrypted PAT exists:
 
 ```nix
 homelab.services.githubRunner = {
   enable = true;
   repositories = {
-    git-migrate = "https://github.com/owner/git-migrate";
     nixconfig = "https://github.com/owner/nixconfig";
   };
 };
 ```
 
-Each service runs as the `github-runner` system user. It uses journald and provides the default `self-hosted`, `linux`, and `x64` labels.
+The service runs as the `github-runner-nixconfig` system user.
+
+It uses journald and provides the default `self-hosted`, `linux`, and `x64` labels.
 
 The module also adds `nixos`, `nix`, and `homelab`. Workflows can select it with `runs-on: [self-hosted, nixos]`.
 
 After deployment, verify the service and Nix access:
 
 ```bash
-systemctl status github-runner-git-migrate
-journalctl -u github-runner-git-migrate
-sudo -u github-runner nix --version
+systemctl status github-runner-nixconfig
+journalctl -u github-runner-nixconfig
+sudo -u github-runner-nixconfig nix --version
 ```
 
 Use a manual workflow in the registered repository to test job assignment:
 
 ```yaml
-name: Homelab runner test
+name: Nixconfig runner test
 on:
   workflow_dispatch:
 jobs:

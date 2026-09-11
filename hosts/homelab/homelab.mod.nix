@@ -49,26 +49,7 @@ lib.systems.nixosSystem "homelab" {
         githubRunner = {
           enable = true;
           repositories = {
-            acheteteper = "https://github.com/sachahjkl/acheteteper";
-            ai-api-proxy = "https://github.com/sachahjkl/ai-api-proxy";
-            albumator = "https://github.com/sachahjkl/albumator";
-            chat = "https://github.com/sachahjkl/chat.sacha.house";
-            client-serv-ipc = "https://github.com/sachahjkl/client_serv_ipc";
-            cool = "https://github.com/sachahjkl/cool.sacha.house";
-            dut-a2-expcom-disscog = "https://github.com/sachahjkl/dut_a2_expcom_disscog";
-            dut-a2-mpa-auvergne = "https://github.com/sachahjkl/dut_a2_mpa_auvergne";
-            dut-a2-pwebc-carte = "https://github.com/sachahjkl/dut_a2_pwebc_carte";
-            froment-software = "https://github.com/sachahjkl/froment.software";
-            grind-brother-grind = "https://github.com/sachahjkl/grind-brother-grind";
-            htmx-go = "https://github.com/sachahjkl/htmx-go";
-            js-canvas-experiment = "https://github.com/sachahjkl/js_canvas_experiment";
-            kelio-rewrite = "https://github.com/sachahjkl/kelio-rewrite";
-            nuitdelinfojb = "https://github.com/sachahjkl/nuitdelinfojb.github.io";
             nixconfig = "https://github.com/sachahjkl/nixconfig";
-            old-site = "https://github.com/sachahjkl/old.sachahjkl.github.io";
-            sacha-house = "https://github.com/sachahjkl/sacha.house";
-            sachahjkl-site = "https://github.com/sachahjkl/sachahjkl.github.io";
-            sqrt-eth-site = "https://github.com/sachahjkl/sqrt-eth.github.io";
           };
         };
         hermesDashboard.enable = false;
