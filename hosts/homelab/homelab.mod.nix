@@ -13,7 +13,6 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabProxyHosts
       self.nixosModules.codexProxyService
-      self.nixosModules.albumatorService
       self.nixosModules.nixCache
       self.nixosModules.ai
     ];
@@ -54,11 +53,6 @@ lib.systems.nixosSystem "homelab" {
         hermesDashboard.enable = false;
         codexProxy.enable = true;
         filebrowser.enable = true;
-        albumator = {
-          enable = true;
-          port = 3001;
-          dataDir = "/data/Services/albumator";
-        };
         nomad = {
           enable = true;
           address = "100.106.51.80";
