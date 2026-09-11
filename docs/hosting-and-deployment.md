@@ -19,23 +19,16 @@ The platform uses these components:
 
 The deployment path is:
 
-```text
-source commit
-    │
-    ▼
-GitHub Actions checks
-    │
-    ▼
-OCI image in GHCR
-    │ immutable digest
-    ▼
-staging Nomad job
-    │ health checks and validation
-    ▼
-GitHub production approval
-    │ exact tested digest
-    ▼
-production Nomad job
+```mermaid
+flowchart LR
+  Commit[Accepted source commit] --> Checks[GitHub Actions checks]
+  Checks --> Image[OCI image in GHCR]
+  Image --> Evidence[SBOM, provenance, signature]
+  Evidence --> Digest[Immutable digest]
+  Digest --> Staging[Staging Nomad job]
+  Staging --> Approval[Production approval]
+  Approval --> Verification[Evidence verification]
+  Verification --> Production[Production Nomad job]
 ```
 
 ## Responsibility boundaries
@@ -137,6 +130,21 @@ Generate build provenance during publication.
 Sign the digest with keyless Cosign and GitHub OIDC.
 
 Verify the signature before production deployment.
+
+Attach the SBOM attestation to the image digest.
+
+Verify these properties before production deployment:
+
+- the image repository;
+- the complete digest;
+- the expected workflow identity;
+- the GitHub OIDC issuer;
+- the SBOM attestation type;
+- the provenance repository and commit.
+
+Do not trust a signature that matches only an organization-wide identity pattern.
+
+Pin third-party workflow actions to complete commit hashes.
 
 ## Git strategy
 
@@ -245,6 +253,12 @@ nomad/jobs/APPLICATION-staging
 nomad/jobs/APPLICATION-production
 ```
 
+If environments use separate namespaces, they can use the same job name and variable path.
+
+The namespace then forms part of the secret boundary.
+
+Secret values can match temporarily, but storage paths and access policies must remain separate.
+
 Render variables into task environment settings with a Nomad `template` block.
 
 Example:
@@ -314,6 +328,21 @@ Do not recreate a stateful volume during each deployment.
 Back up application data independently from Nomad state.
 
 Test restoration regularly.
+
+Define these backup properties for each application:
+
+- included files and databases;
+- backup frequency;
+- retention periods;
+- encryption key custody;
+- recovery point objective;
+- recovery time objective;
+- restoration test frequency;
+- restoration evidence location.
+
+A successful backup job does not prove that restoration works.
+
+Restore into an isolated path and run application-level integrity checks.
 
 ## Stateful deployment rules
 
@@ -414,6 +443,22 @@ The production pipeline performs these tasks:
 6. Submit the production job with the staging digest.
 7. Wait for the Nomad deployment result.
 8. Check the public production health endpoint.
+
+```mermaid
+sequenceDiagram
+  participant CI as GitHub Actions
+  participant GHCR as GHCR
+  participant TS as Tailscale
+  participant Nomad as Nomad API
+  participant App as Application
+  CI->>GHCR: Resolve and verify staging digest
+  CI->>TS: Exchange GitHub OIDC identity
+  TS-->>CI: Grant an ephemeral tailnet identity
+  CI->>Nomad: Submit the digest and job
+  Nomad->>App: Run backup, migration, and startup
+  App-->>Nomad: Report health
+  Nomad-->>CI: Report deployment success
+```
 
 Canceling an older staging workflow must not interrupt an active database migration.
 
@@ -550,6 +595,15 @@ To recover one hosting node:
 8. Restore missing jobs from their application repositories.
 
 Test this procedure before relying on it.
+
+Record each recovery exercise with these details:
+
+- backup identifier and creation time;
+- restored application and environment;
+- isolated restoration target;
+- integrity check results;
+- measured restoration duration;
+- missing steps and corrective changes.
 
 ## Observability
 
