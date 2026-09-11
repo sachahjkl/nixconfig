@@ -416,7 +416,7 @@ restart {
 
 ## CI pipeline
 
-Run all application checks, builds, and artifact publication on GitHub-hosted runners.
+Use only `ubuntu-latest` for application checks, builds, tests, and artifact publication.
 
 Do not install a GitHub Actions runner on an application target.
 
@@ -430,7 +430,19 @@ That runner checks NixOS infrastructure and populates the homelab Nix cache.
 
 Do not register application repositories on that runner.
 
-The accepted-commit pipeline performs these tasks:
+Run one `check` job for pull requests and accepted commits on `master`.
+
+Make the `publish` job depend on the successful `check` job.
+
+Use `nix-community.cachix.org` because the standard caches do not contain Nomad 1.11.3.
+
+Set `max-jobs = 2` and pass `--max-jobs 2` to Nix build and check commands.
+
+Do not include Playwright or browser tests in Nix flake checks.
+
+Run browser tests outside the application build and publication pipeline when they are required.
+
+The accepted `master` commit pipeline performs these tasks:
 
 1. Check the source and dependency lock files.
 2. Build the application and OCI image.
@@ -438,10 +450,11 @@ The accepted-commit pipeline performs these tasks:
 4. Publish the image to GHCR.
 5. Resolve the immutable digest from GHCR.
 6. Sign the digest.
-7. Join the Tailscale network.
-8. Submit the staging Nomad job.
-9. Wait for the Nomad deployment result.
-10. Check the public staging health endpoint.
+7. Install the Nomad client before joining Tailscale.
+8. Join Tailscale only in the deployment job.
+9. Submit the staging Nomad job.
+10. Wait for the Nomad deployment result.
+11. Check the public staging health endpoint.
 
 The production pipeline performs these tasks:
 
