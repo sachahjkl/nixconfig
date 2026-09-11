@@ -174,6 +174,12 @@ _: {
           dockerPort = 3030;
         };
 
+        "staging.chat.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9101;
+          robotsNoIndex = true;
+        };
+
         "debrid.homelab.sacha.house" = {
           dockerContainer = "rdtclient";
           dockerPort = 6500;
