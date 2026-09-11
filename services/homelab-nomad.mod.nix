@@ -84,6 +84,10 @@
             network_interface = cfg.interface;
             alloc_dir = "${dataRoot}/alloc";
             host_volumes_dir = "${dataRoot}/volumes";
+            host_network.loopback = {
+              cidr = "127.0.0.1/32";
+              reserved_ports = "9011-9012";
+            };
             options = {
               "driver.raw_exec.enable" = "0";
               "docker.volumes.enabled" = "true";

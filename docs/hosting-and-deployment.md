@@ -229,8 +229,8 @@ Example:
 template {
   data = <<EOH
 {{ with nomadVar "nomad/jobs/example-staging" }}
-DATABASE_PASSWORD={{ .DATABASE_PASSWORD.Value | toJSON }}
-API_TOKEN={{ .API_TOKEN.Value | toJSON }}
+DATABASE_PASSWORD={{ .DATABASE_PASSWORD | toJSON }}
+API_TOKEN={{ .API_TOKEN | toJSON }}
 {{ end }}
 EOH
 
