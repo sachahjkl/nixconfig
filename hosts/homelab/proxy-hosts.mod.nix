@@ -95,8 +95,8 @@ _: {
         };
 
         "marketing.sacha.house" = {
-          dockerContainer = "marketing_sacha_house";
-          dockerPort = 3000;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9062;
         };
 
         "staging.marketing.sacha.house" = {
