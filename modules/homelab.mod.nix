@@ -14,7 +14,7 @@
       self.nixosModules.sachaHouseService
       self.nixosModules.homelabFilebrowser
       self.nixosModules.githubRunner
-      self.nixosModules.fromentSoftware
+      self.nixosModules.homelabNomad
     ];
   };
 }
