@@ -77,6 +77,12 @@ _: {
           dockerPort = 3000;
         };
 
+        "staging.button.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9041;
+          robotsNoIndex = true;
+        };
+
         "react-training.sacha.house" = {
           dockerContainer = "react_sacha_house";
           dockerPort = 3000;
