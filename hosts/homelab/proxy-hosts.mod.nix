@@ -127,6 +127,12 @@ _: {
           upstreamPort = 9082;
         };
 
+        "staging.albumator.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9091;
+          robotsNoIndex = true;
+        };
+
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
