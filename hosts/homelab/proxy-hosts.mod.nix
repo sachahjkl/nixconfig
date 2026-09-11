@@ -160,8 +160,8 @@ _: {
         };
 
         "froment.software" = {
-          dockerContainer = "froment-software";
-          dockerPort = 3000;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9012;
           dns = {
             type = "A";
             value = "82.66.185.90";
