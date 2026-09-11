@@ -169,6 +169,15 @@ _: {
           };
         };
 
+        "staging.froment.software" = {
+          dockerContainer = "froment-software-staging";
+          dockerPort = 3000;
+          basicAuthFile = config.sops.secrets."froment/staging-basic-auth".path;
+          extraConfig = ''
+            add_header X-Robots-Tag "noindex, nofollow" always;
+          '';
+        };
+
         "portainer.homelab.sacha.house" = {
           dockerContainer = "portainer";
           dockerPort = 9000;

@@ -88,6 +88,7 @@ lib.systems.nixosSystem "homelab" {
           port = 3002;
           databaseDir = "/data/Services/clockin";
         };
+        fromentSoftware.enable = true;
       };
     };
 
