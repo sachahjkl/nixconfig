@@ -108,8 +108,8 @@ _: {
         };
 
         "wthhyb.sacha.house" = {
-          dockerContainer = "wthhyb";
-          dockerPort = 80;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9022;
         };
 
         "staging.wthhyb.sacha.house" = {
