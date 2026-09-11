@@ -15,6 +15,7 @@ _: {
       mkIf
       mkMerge
       mkOption
+      optionalString
       types
       ;
 
@@ -51,7 +52,12 @@ _: {
         inherit (hostCfg) basicAuthFile;
         # NixOS already emits `http2 on;` for SSL vhosts; adding it again is a
         # duplicate and breaks nginx config validation.
-        inherit (hostCfg) extraConfig;
+        extraConfig = concatLines [
+          hostCfg.extraConfig
+          (optionalString hostCfg.robotsNoIndex ''
+            add_header X-Robots-Tag "noindex, nofollow" always;
+          '')
+        ];
         locations."/" = {
           inherit proxyPass;
           proxyWebsockets = hostCfg.websockets;
@@ -188,6 +194,12 @@ _: {
               type = types.lines;
               default = "";
               description = "Additional nginx virtual host configuration.";
+            };
+
+            robotsNoIndex = mkOption {
+              type = types.bool;
+              default = false;
+              description = "Send an X-Robots-Tag header that blocks search indexing.";
             };
 
             dns = {

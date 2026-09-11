@@ -108,9 +108,7 @@ _: {
         "staging.wthhyb.sacha.house" = {
           upstreamHost = "127.0.0.1";
           upstreamPort = 9021;
-          extraConfig = ''
-            add_header X-Robots-Tag "noindex, nofollow" always;
-          '';
+          robotsNoIndex = true;
         };
 
         "chat.sacha.house" = {
@@ -180,9 +178,7 @@ _: {
         "staging.froment.software" = {
           upstreamHost = "127.0.0.1";
           upstreamPort = 9011;
-          extraConfig = ''
-            add_header X-Robots-Tag "noindex, nofollow" always;
-          '';
+          robotsNoIndex = true;
         };
 
         "portainer.homelab.sacha.house" = {
