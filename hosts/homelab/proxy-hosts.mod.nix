@@ -99,6 +99,12 @@ _: {
           dockerPort = 3000;
         };
 
+        "staging.marketing.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9061;
+          robotsNoIndex = true;
+        };
+
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
