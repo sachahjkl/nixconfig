@@ -54,7 +54,6 @@ lib.systems.nixosSystem "homelab" {
         };
         hermesDashboard.enable = false;
         codexProxy.enable = true;
-        sachaHouse.enable = true;
         filebrowser.enable = true;
         albumator = {
           enable = true;

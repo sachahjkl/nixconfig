@@ -11,7 +11,6 @@
       self.nixosModules.homelabProxy
       self.nixosModules.cloudflareDns
       self.nixosModules.hermesDashboard
-      self.nixosModules.sachaHouseService
       self.nixosModules.homelabFilebrowser
       self.nixosModules.githubRunner
       self.nixosModules.homelabNomad

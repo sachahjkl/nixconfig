@@ -147,11 +147,6 @@
     clockin = {
       url = "github:sachahjkl/clockin.sacha.house";
     };
-
-    sacha-house = {
-      url = "github:sachahjkl/sacha.house";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs:
