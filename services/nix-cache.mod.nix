@@ -17,10 +17,7 @@
     imports = [self.nixosModules.sops];
 
     sops.secrets.${secretName} = {
-      sopsFile = builtins.path {
-        path = self + /secrets/homelab.yaml;
-        name = "homelab-secrets.yaml";
-      };
+      sopsFile = self + /secrets/homelab.yaml;
       owner = "root";
       group = "root";
       mode = "0400";
