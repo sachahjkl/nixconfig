@@ -55,7 +55,7 @@ _: {
 
         "lanblaster.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 8013;
+          upstreamPort = 9032;
           websockets = true;
         };
 
