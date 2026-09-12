@@ -14,6 +14,18 @@
     options.homelab.services.nomad = {
       enable = lib.mkEnableOption "single-node Nomad hosting platform";
 
+      server = lib.mkEnableOption "Nomad server role";
+
+      client = lib.mkEnableOption "Nomad client role";
+
+      ingress = lib.mkEnableOption "Traefik ingress role";
+
+      nodeClass = lib.mkOption {
+        type = lib.types.str;
+        default = "general";
+        description = "Nomad node class used for capability-based job placement.";
+      };
+
       address = lib.mkOption {
         type = lib.types.str;
         description = "Stable private address used by Nomad servers, clients, and API consumers.";
@@ -35,7 +47,7 @@
             group = "root";
             mode = "0400";
           };
-          "nomad/traefik-token" = {
+          "nomad/traefik-token" = lib.mkIf cfg.ingress {
             sopsFile = self + /secrets/homelab.yaml;
             owner = "traefik";
             group = "traefik";
@@ -43,7 +55,7 @@
           };
         };
         templates = {
-          "traefik-nomad.env" = {
+          "traefik-nomad.env" = lib.mkIf cfg.ingress {
             owner = "traefik";
             group = "traefik";
             mode = "0400";
@@ -92,16 +104,17 @@
             serf = cfg.address;
           };
           server = {
-            enabled = true;
+            enabled = cfg.server;
             bootstrap_expect = 1;
           };
           client = {
-            enabled = true;
+            enabled = cfg.client;
             servers = ["${cfg.address}:4647"];
             network_interface = cfg.interface;
             alloc_dir = "${dataRoot}/alloc";
             cni_path = "${pkgs.cni-plugins}/bin";
             host_volumes_dir = "${dataRoot}/volumes";
+            meta.node_class = cfg.nodeClass;
             host_network.loopback = {
               cidr = "127.0.0.1/32";
             };
@@ -124,7 +137,7 @@
         };
       };
 
-      services.traefik = {
+      services.traefik = lib.mkIf cfg.ingress {
         enable = true;
         environmentFiles = [config.sops.templates."traefik-nomad.env".path];
         staticConfigOptions = {
@@ -146,7 +159,7 @@
           wants = ["tailscaled.service"];
           requires = ["docker.service"];
         };
-        traefik = {
+        traefik = lib.mkIf cfg.ingress {
           after = ["nomad.service"];
           requires = ["nomad.service"];
         };

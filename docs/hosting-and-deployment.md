@@ -53,6 +53,20 @@ Changing this layer requires `nixos-rebuild switch`.
 
 Normal application releases must not change this layer.
 
+### Node roles
+
+Declare host capabilities as Nomad node metadata.
+
+Constrain jobs by capability or node class. Never constrain a job by node identifier.
+
+Keep machine addresses and ingress listeners in NixOS host configuration.
+
+Use dynamic Nomad ports for application services.
+
+Local persistent volumes limit placement to nodes that provide those volumes.
+
+Use CSI storage when stateful workloads must move between nodes.
+
 ### Nomad
 
 Nomad owns the application lifecycle:
@@ -548,7 +562,9 @@ Declare the exact hostname in the service router rule.
 
 Set `exposedByDefault=false` in the Nomad provider.
 
-Give each deployment source a Nomad ACL token limited to its job prefix and namespace.
+Use a dedicated namespace when deployment sources must be isolated from each other.
+
+Treat all sources with write access to one namespace as one trust domain.
 
 Do not put node identifiers, ingress addresses, or public ports in application repositories.
 

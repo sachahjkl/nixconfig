@@ -55,6 +55,10 @@ lib.systems.nixosSystem "homelab" {
         filebrowser.enable = true;
         nomad = {
           enable = true;
+          server = true;
+          client = true;
+          ingress = true;
+          nodeClass = "general";
           address = "100.106.51.80";
         };
       };
