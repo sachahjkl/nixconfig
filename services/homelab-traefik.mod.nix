@@ -107,7 +107,7 @@
           before = ["traefik.service"];
           wantedBy = ["multi-user.target"];
           restartTriggers = [routeSpecFile];
-          path = with pkgs; [coreutils docker python3];
+          path = with pkgs; [docker python3];
           serviceConfig = {
             Type = "oneshot";
             UMask = "0027";
@@ -118,6 +118,7 @@
             export ROUTE_OUTPUT=/run/homelab-traefik/routes.yaml
 
             python3 - <<'PY'
+            import grp
             import json
             import os
             import subprocess
@@ -262,11 +263,10 @@
             with open(temporary, "w", encoding="utf-8") as file:
                 json.dump(routes, file, indent=2, sort_keys=True)
                 file.write("\n")
+            os.chown(temporary, 0, grp.getgrnam("traefik").gr_gid)
+            os.chmod(temporary, 0o640)
             os.replace(temporary, output)
             PY
-
-            chown root:traefik "$ROUTE_OUTPUT"
-            chmod 0640 "$ROUTE_OUTPUT"
           '';
         };
 
