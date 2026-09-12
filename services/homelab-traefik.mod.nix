@@ -54,8 +54,6 @@
         '';
       };
 
-      services.nginx.enable = false;
-
       services.traefik = {
         dynamicConfigFile = "/run/homelab-traefik/routes.yaml";
         environmentFiles = [config.sops.templates."traefik-cloudflare.env".path];
