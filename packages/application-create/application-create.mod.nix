@@ -25,6 +25,7 @@ _: {
           --repository REPOSITORY \
           --application APPLICATION \
           --environment NAME=DOMAIN \
+          --deployment-environment NAME \
           [--environment NAME=DOMAIN] ... \
           [--approval-environment NAME] ... \
           [--no-index-environment NAME] ... \
@@ -41,6 +42,7 @@ _: {
         declare -a approval_environments=()
         declare -a no_index_environments=()
         declare -A domains=()
+        deployment_environment=""
         volume_path=""
         visibility="public"
 
@@ -73,6 +75,10 @@ _: {
               approval_environments+=("$2")
               shift 2
               ;;
+            --deployment-environment)
+              deployment_environment="$2"
+              shift 2
+              ;;
             --no-index-environment)
               no_index_environments+=("$2")
               shift 2
@@ -97,7 +103,8 @@ _: {
           esac
         done
 
-        if [ -z "$repository" ] || [ -z "$application" ] || [ "''${#environment_names[@]}" -eq 0 ]; then
+        if [ -z "$repository" ] || [ -z "$application" ] || [ -z "$deployment_environment" ] \
+          || [ "''${#environment_names[@]}" -eq 0 ]; then
           usage >&2
           exit 1
         fi
@@ -132,6 +139,10 @@ _: {
             exit 1
           fi
         done
+        if [ -z "''${domains[$deployment_environment]+set}" ]; then
+          printf 'Deployment environment is not declared: %s\n' "$deployment_environment" >&2
+          exit 1
+        fi
         if [ -n "$volume_path" ]; then
           if ! grep -Eq '^/[A-Za-z0-9._/-]+$' <<<"$volume_path"; then
             printf 'Invalid volume path: %s\n' "$volume_path" >&2
@@ -169,8 +180,51 @@ _: {
         checkout="$(mktemp -d)"
         trap 'rm -rf "$checkout"' EXIT
         nix flake new \
-          -t github:sachahjkl/application-template/v1.0.0 \
+          -t github:sachahjkl/application-template/v1.1.0 \
           "$checkout"
+
+        cat >"$checkout/.github/workflows/ci.yml" <<EOF
+        name: CI
+
+        on:
+          push:
+            branches: [master]
+          pull_request:
+            branches: [master]
+          workflow_dispatch:
+
+        jobs:
+          platform:
+            permissions:
+              attestations: write
+              contents: read
+              id-token: write
+              packages: write
+            uses: sachahjkl/deployment-actions/.github/workflows/application-ci.yml@v4.0.0
+            with:
+              deployment-environment: $deployment_environment
+        EOF
+        rm "$checkout/.github/workflows/deploy-production.yml"
+        for target_environment in "''${approval_environments[@]}"; do
+          cat >"$checkout/.github/workflows/promote-$target_environment.yml" <<EOF
+        name: Promote $target_environment
+
+        on:
+          workflow_dispatch:
+
+        jobs:
+          promotion:
+            permissions:
+              attestations: read
+              contents: read
+              id-token: write
+              packages: read
+            uses: sachahjkl/deployment-actions/.github/workflows/application-promotion.yml@v4.0.0
+            with:
+              source-environment: $deployment_environment
+              target-environment: $target_environment
+        EOF
+        done
 
         for environment in "''${environment_names[@]}"; do
           environment_config='{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}'

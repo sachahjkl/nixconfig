@@ -543,6 +543,7 @@ nix run .#applicationCreate -- \
   --application example \
   --environment staging=staging.example.sacha.house \
   --environment production=example.sacha.house \
+  --deployment-environment staging \
   --no-index-environment staging \
   --approval-environment production
 ```
