@@ -48,8 +48,8 @@ _: {
         };
 
         "htmx.sacha.house" = {
-          dockerContainer = "htmxgo";
-          dockerPort = 7883;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9122;
           websockets = true;
         };
 
