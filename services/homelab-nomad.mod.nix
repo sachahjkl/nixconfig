@@ -27,19 +27,38 @@
     };
 
     config = lib.mkIf cfg.enable {
-      sops.secrets."nomad/gossip-key" = {
-        sopsFile = self + /secrets/homelab.yaml;
-        owner = "root";
-        group = "root";
-        mode = "0400";
-      };
-
-      sops.templates."nomad-secrets.json" = {
-        owner = "root";
-        group = "root";
-        mode = "0400";
-        content = builtins.toJSON {
-          server.encrypt = config.sops.placeholder."nomad/gossip-key";
+      sops = {
+        secrets = {
+          "nomad/gossip-key" = {
+            sopsFile = self + /secrets/homelab.yaml;
+            owner = "root";
+            group = "root";
+            mode = "0400";
+          };
+          "nomad/traefik-token" = {
+            sopsFile = self + /secrets/homelab.yaml;
+            owner = "traefik";
+            group = "traefik";
+            mode = "0400";
+          };
+        };
+        templates = {
+          "traefik-nomad.env" = {
+            owner = "traefik";
+            group = "traefik";
+            mode = "0400";
+            content = ''
+              NOMAD_TOKEN=${config.sops.placeholder."nomad/traefik-token"}
+            '';
+          };
+          "nomad-secrets.json" = {
+            owner = "root";
+            group = "root";
+            mode = "0400";
+            content = builtins.toJSON {
+              server.encrypt = config.sops.placeholder."nomad/gossip-key";
+            };
+          };
         };
       };
 
@@ -105,10 +124,33 @@
         };
       };
 
-      systemd.services.nomad = {
-        after = ["tailscaled.service" "docker.service"];
-        wants = ["tailscaled.service"];
-        requires = ["docker.service"];
+      services.traefik = {
+        enable = true;
+        environmentFiles = [config.sops.templates."traefik-nomad.env".path];
+        staticConfigOptions = {
+          entryPoints.nomad.address = "127.0.0.1:9140";
+          providers.nomad = {
+            namespaces = ["staging" "production"];
+            exposedByDefault = false;
+            watch = true;
+            endpoint = {
+              address = "http://${cfg.address}:4646";
+              token = "$NOMAD_TOKEN";
+            };
+          };
+        };
+      };
+
+      systemd.services = {
+        nomad = {
+          after = ["tailscaled.service" "docker.service"];
+          wants = ["tailscaled.service"];
+          requires = ["docker.service"];
+        };
+        traefik = {
+          after = ["nomad.service"];
+          requires = ["nomad.service"];
+        };
       };
 
       networking.firewall.interfaces.${cfg.interface} = {
