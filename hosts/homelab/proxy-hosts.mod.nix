@@ -9,16 +9,19 @@ _: {
       defaultDomainRedirect = "sacha.house";
       dns = {
         aRecords."froment.software" = "82.66.185.90";
-        acmeZoneNames = ["sacha.house"];
+        acmeZoneNames = [
+          "froment.software"
+          "sacha.house"
+        ];
         defaultType = "CNAME";
         defaultValue = "82.66.185.90";
         defaultProxied = false;
         defaultTarget = "homelab.sacha.house";
         cnames = {
           "*.homelab.sacha.house" = "homelab.sacha.house";
+          "*.froment.software" = "froment.software";
           "*.sacha.house" = "homelab.sacha.house";
           "sacha.house" = "homelab.sacha.house";
-          "staging.froment.software" = "homelab.sacha.house";
           "www.froment.software" = "froment.software";
           "www.sacha.house" = "sacha.house";
         };

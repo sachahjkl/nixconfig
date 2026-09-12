@@ -1,0 +1,8 @@
+application:
+  name: example
+  port: 8080
+  healthPath: /health
+
+domain:
+  production: example.sacha.house
+  staging: staging.example.sacha.house

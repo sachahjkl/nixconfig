@@ -535,24 +535,75 @@ Grant the smallest possible repository permissions to every job.
 
 ## Application onboarding
 
-Use this sequence for each new website:
+Create a standard application repository with one command:
 
-1. Add staging and production runtime configuration.
-2. Add a deterministic OCI image build.
-3. Add `/api/health` or an equivalent health endpoint.
-4. Create staging and production Nomad variable sets.
-5. Create staging and production persistent volumes.
-6. Add one Nomad job specification per environment.
-7. Add staging and production Traefik tags to the Nomad jobs.
-8. Add GitHub Environments and branch policies.
-9. Add Tailscale and Nomad deployment credentials.
-10. Deploy staging.
-11. Test backup and restoration.
-12. Promote the tested digest to production.
+```bash
+nix run .#homelabAppCreate -- \
+  --repository example \
+  --application example \
+  --production-domain example.sacha.house \
+  --staging-domain staging.example.sacha.house
+```
+
+The command uses `sachahjkl/homelab-application-template`.
+
+The command creates both GitHub Environments and restricts them to `master`.
+
+The command requires production approval and protects `master` with the `check` status.
+
+The application manifest declares exact domains:
+
+```yaml
+application:
+  name: example
+  port: 8080
+  healthPath: /health
+
+domain:
+  production: example.sacha.house
+  staging: staging.example.sacha.house
+```
+
+The platform accepts subdomains in these trusted zones:
+
+- `sacha.house`;
+- `homelab.sacha.house`;
+- `froment.software`.
+
+GitHub Actions exchanges its OIDC identity for a Nomad token valid for 15 minutes.
+
+Do not store a permanent Nomad token in a new application repository.
+
+The generated repository performs this sequence:
+
+1. Validate the explicit application manifest.
+2. Build a deterministic OCI image.
+3. Generate both jobs with Nomad Pack.
+4. Add the environment-specific Traefik tags.
+5. Use the generated GitHub Environments and branch policies.
+6. Authenticate to Tailscale and Nomad with GitHub OIDC.
+7. Deploy staging.
+8. Promote the tested digest to production after approval.
+
+For persistent data, add `--volume-path /data` to the creation command.
+
+The platform creates one Nomad dynamic host volume per environment.
+
+Removing the volume declaration does not delete existing data.
 
 ## Automatic ingress
 
 Point wildcard DNS records for approved zones to the Traefik ingress address.
+
+Manage these wildcard records in platform configuration:
+
+```text
+*.sacha.house
+*.homelab.sacha.house
+*.froment.software
+```
+
+Do not create one DNS record per standard application.
 
 Traefik must use DNS-01 to issue certificates for domains in approved Cloudflare zones.
 

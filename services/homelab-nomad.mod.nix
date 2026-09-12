@@ -8,6 +8,43 @@
     cfg = config.homelab.services.nomad;
     dataRoot = "${config.homelab.dataRoot}/Services/nomad";
     secretFile = config.sops.templates."nomad-secrets.json".path;
+    githubActionsPolicy = pkgs.writeText "nomad-github-actions-policy.hcl" ''
+      namespace "staging" {
+        policy = "write"
+      }
+
+      namespace "production" {
+        policy = "write"
+      }
+
+      agent {
+        policy = "read"
+      }
+
+      node {
+        policy = "read"
+      }
+
+      host_volume "*-staging-data" {
+        policy = "write"
+      }
+
+      host_volume "*-production-data" {
+        policy = "write"
+      }
+    '';
+    githubActionsAuthConfig = pkgs.writeText "nomad-github-actions-auth.json" (builtins.toJSON {
+      JWKSURL = "https://token.actions.githubusercontent.com/.well-known/jwks";
+      BoundAudiences = [cfg.githubActions.audience];
+      BoundIssuer = ["https://token.actions.githubusercontent.com"];
+      SigningAlgs = ["RS256"];
+      ClaimMappings = {
+        environment = "environment";
+        ref = "ref";
+        repository = "repository";
+        repository_owner = "repository_owner";
+      };
+    });
   in {
     imports = [self.nixosModules.sops];
 
@@ -19,6 +56,22 @@
       client = lib.mkEnableOption "Nomad client role";
 
       ingress = lib.mkEnableOption "Traefik ingress role";
+
+      githubActions = {
+        enable = lib.mkEnableOption "short-lived GitHub Actions Nomad authentication";
+
+        owner = lib.mkOption {
+          type = lib.types.str;
+          default = "sachahjkl";
+          description = "GitHub repository owner allowed to request Nomad deployment tokens.";
+        };
+
+        audience = lib.mkOption {
+          type = lib.types.str;
+          default = "nomad.sacha.house";
+          description = "Audience required in GitHub Actions identity tokens.";
+        };
+      };
 
       nodeClass = lib.mkOption {
         type = lib.types.str;
@@ -73,6 +126,13 @@
             sopsFile = self + /secrets/homelab.yaml;
             owner = "traefik";
             group = "traefik";
+            mode = "0400";
+          };
+          "nomad/management-token" = lib.mkIf (cfg.server && cfg.githubActions.enable) {
+            sopsFile = self + /secrets/homelab.yaml;
+            key = "nomad/management-token";
+            owner = "root";
+            group = "root";
             mode = "0400";
           };
         };
@@ -184,6 +244,84 @@
         traefik = lib.mkIf cfg.ingress {
           after = ["nomad.service"];
           requires = ["nomad.service"];
+        };
+        nomad-github-actions-auth = lib.mkIf (cfg.server && cfg.githubActions.enable) {
+          description = "Configure GitHub Actions authentication in Nomad";
+          after = ["nomad.service"];
+          requires = ["nomad.service"];
+          wantedBy = ["multi-user.target"];
+          path = [pkgs.coreutils pkgs.jq pkgs.nomad];
+          environment.NOMAD_ADDR = "http://${cfg.address}:4646";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+          script = ''
+            set -euo pipefail
+
+            export NOMAD_TOKEN="$(cat ${config.sops.secrets."nomad/management-token".path})"
+
+            for _ in $(seq 1 60); do
+              if nomad status >/dev/null 2>&1; then
+                break
+              fi
+              sleep 1
+            done
+            nomad status >/dev/null
+
+            nomad acl policy apply \
+              -description "Deploy trusted GitHub repositories to shared application namespaces" \
+              github-actions-deploy ${githubActionsPolicy}
+
+            auth_method_args=(
+              -type JWT
+              -token-locality local
+              -max-token-ttl 15m
+              -token-name-format "\''${value.repository}"
+              -config @${githubActionsAuthConfig}
+            )
+            if nomad acl auth-method info github-actions >/dev/null 2>&1; then
+              nomad acl auth-method update "''${auth_method_args[@]}" github-actions
+            else
+              nomad acl auth-method create -name github-actions "''${auth_method_args[@]}"
+            fi
+
+            configure_rule() {
+              local description="$1"
+              local selector="$2"
+              local rule_id
+
+              rule_id="$(
+                nomad acl binding-rule list -json \
+                  | jq -r --arg description "$description" \
+                    '.[] | select(.AuthMethod == "github-actions" and .Description == $description) | .ID' \
+                  | head -n 1
+              )"
+
+              if [ -n "$rule_id" ]; then
+                nomad acl binding-rule update \
+                  -description "$description" \
+                  -selector "$selector" \
+                  -bind-type policy \
+                  -bind-name github-actions-deploy \
+                  "$rule_id"
+              else
+                nomad acl binding-rule create \
+                  -description "$description" \
+                  -auth-method github-actions \
+                  -selector "$selector" \
+                  -bind-type policy \
+                  -bind-name github-actions-deploy
+              fi
+            }
+
+            configure_rule \
+              "Trusted GitHub staging deployments" \
+              'value.repository_owner=="${cfg.githubActions.owner}" and value.ref=="refs/heads/master" and value.environment=="staging"'
+            configure_rule \
+              "Trusted GitHub production deployments" \
+              'value.repository_owner=="${cfg.githubActions.owner}" and value.ref=="refs/heads/master" and value.environment=="production"'
+          '';
         };
       };
 
