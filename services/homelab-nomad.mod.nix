@@ -26,9 +26,20 @@
         description = "Nomad node class used for capability-based job placement.";
       };
 
+      serverCount = lib.mkOption {
+        type = lib.types.ints.positive;
+        default = 1;
+        description = "Number of Nomad servers expected during cluster bootstrap.";
+      };
+
+      serverAddresses = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        description = "Private addresses of Nomad servers used by this client.";
+      };
+
       address = lib.mkOption {
         type = lib.types.str;
-        description = "Stable private address used by Nomad servers, clients, and API consumers.";
+        description = "Stable private address of this Nomad agent.";
       };
 
       interface = lib.mkOption {
@@ -39,6 +50,17 @@
     };
 
     config = lib.mkIf cfg.enable {
+      assertions = [
+        {
+          assertion = cfg.server || cfg.client || cfg.ingress;
+          message = "An enabled Nomad platform must declare at least one role.";
+        }
+        {
+          assertion = !cfg.client || cfg.serverAddresses != [];
+          message = "A Nomad client must declare at least one server address.";
+        }
+      ];
+
       sops = {
         secrets = {
           "nomad/gossip-key" = {
@@ -88,7 +110,7 @@
         extraPackages = [pkgs.cni-plugins];
         extraSettingsPaths = [secretFile];
         settings = {
-          name = "homelab";
+          name = config.networking.hostName;
           region = "global";
           datacenter = "homelab";
           data_dir = "${dataRoot}/state";
@@ -105,11 +127,11 @@
           };
           server = {
             enabled = cfg.server;
-            bootstrap_expect = 1;
+            bootstrap_expect = cfg.serverCount;
           };
           client = {
             enabled = cfg.client;
-            servers = ["${cfg.address}:4647"];
+            servers = map (address: "${address}:4647") cfg.serverAddresses;
             network_interface = cfg.interface;
             alloc_dir = "${dataRoot}/alloc";
             cni_path = "${pkgs.cni-plugins}/bin";

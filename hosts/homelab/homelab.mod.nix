@@ -59,6 +59,7 @@ lib.systems.nixosSystem "homelab" {
           client = true;
           ingress = true;
           nodeClass = "general";
+          serverAddresses = ["100.106.51.80"];
           address = "100.106.51.80";
         };
       };
