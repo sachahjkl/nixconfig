@@ -2,165 +2,41 @@
   flake.nixosModules.homelabProxy = {
     config,
     lib,
-    pkgs,
     ...
   }: let
     inherit
       (lib)
-      concatLines
-      concatStringsSep
-      escapeShellArg
-      listToAttrs
-      mapAttrsToList
       mkEnableOption
       mkIf
-      mkMerge
       mkOption
-      optionalString
       types
       ;
 
     cfg = config.homelab.proxy;
-
-    sanitize = value:
-      builtins.replaceStrings ["." "-" "/"] ["_" "_" "_"] value;
-
-    usesCloudflareDns = domain:
-      builtins.any (zone: domain == zone || lib.hasSuffix ".${zone}" domain) cfg.dns.acmeZoneNames;
-
-    hostRule = domain: aliases:
-      concatStringsSep " || " (map (name: "Host(`${name}`)") ([domain] ++ aliases));
-
-    hostEntries = mapAttrsToList (domain: hostCfg: hostCfg // {inherit domain;}) cfg.hosts;
-    dockerHosts = builtins.filter (hostCfg: hostCfg.dockerContainer != null) hostEntries;
-    externalDomains = builtins.filter (domain: !usesCloudflareDns domain) (builtins.attrNames cfg.hosts);
-    dockerSpec = builtins.listToAttrs (map
-      (hostCfg: {
-        name = hostCfg.domain;
-        value = {
-          container = hostCfg.dockerContainer;
-          port = hostCfg.dockerPort;
-          upstreamName = "docker_${sanitize hostCfg.domain}";
-        };
-      })
-      dockerHosts);
-    dockerSpecFile = pkgs.writeText "homelab-proxy-docker-hosts.json" (builtins.toJSON dockerSpec);
-    nginxBackend = "http://127.0.0.1:9150";
-
-    legacyRouters = listToAttrs (mapAttrsToList
-      (domain: hostCfg: {
-        name = "legacy-${sanitize domain}";
-        value = {
-          rule = hostRule domain hostCfg.aliases;
-          entryPoints = ["nomad"];
-          service = "legacy-nginx";
-        };
-      })
-      cfg.hosts);
-
-    renderHost = domain: hostCfg: let
-      proxyPass =
-        if hostCfg.dockerContainer != null
-        then "${hostCfg.scheme}://docker_${sanitize domain}"
-        else "${hostCfg.scheme}://${hostCfg.upstreamHost}:${toString hostCfg.upstreamPort}";
-    in {
-      name = domain;
-      value = {
-        enableACME = !usesCloudflareDns domain;
-        forceSSL = false;
-        serverAliases = hostCfg.aliases;
-        inherit (hostCfg) basicAuthFile;
-        extraConfig = concatLines [
-          hostCfg.extraConfig
-          (optionalString hostCfg.robotsNoIndex ''
-            add_header X-Robots-Tag "noindex, nofollow" always;
-          '')
-        ];
-        locations."/" = {
-          inherit proxyPass;
-          proxyWebsockets = hostCfg.websockets;
-        };
-      };
-    };
+    hostEntries = lib.attrValues cfg.hosts;
   in {
-    imports = [self.nixosModules.sops];
+    imports = [
+      self.nixosModules.cloudflareDns
+      self.nixosModules.homelabTraefik
+    ];
 
     options.homelab.proxy = {
-      enable = mkEnableOption "Traefik ingress with a local nginx legacy backend";
+      enable = mkEnableOption "Traefik ingress for homelab services";
 
       address = mkOption {
         type = types.str;
-        description = "Address used by the public Traefik entry points.";
+        description = "Address used by the public Traefik entrypoints.";
       };
 
       acmeEmail = mkOption {
         type = types.str;
-        default = "sacha@sacha.house";
         description = "Contact email used for ACME registrations.";
       };
 
       defaultDomainRedirect = mkOption {
         type = types.nullOr types.str;
         default = null;
-        description = "Optional domain used by the catch-all vhost redirect.";
-      };
-
-      dns = {
-        acmeZoneNames = mkOption {
-          type = types.listOf types.str;
-          default = [];
-          description = "Zones that use Traefik DNS-01 certificate management.";
-        };
-
-        enable = mkOption {
-          type = types.bool;
-          default = false;
-        };
-
-        defaultType = mkOption {
-          type = types.enum ["A" "CNAME"];
-          default = "CNAME";
-        };
-
-        defaultTarget = mkOption {
-          type = types.str;
-          default = "homelab.sacha.house";
-        };
-
-        defaultValue = mkOption {
-          type = types.nullOr types.str;
-          default = null;
-        };
-
-        defaultProxied = mkOption {
-          type = types.bool;
-          default = true;
-        };
-
-        defaultTTL = mkOption {
-          type = types.int;
-          default = 1;
-        };
-
-        cnames = mkOption {
-          type = types.attrsOf types.str;
-          default = {};
-        };
-
-        zoneNames = mkOption {
-          type = types.listOf types.str;
-          default = [];
-        };
-
-        managedComment = mkOption {
-          type = types.str;
-          default = "managed-by=nixconfig.cloudflare-dns";
-        };
-
-        tokenPath = mkOption {
-          type = types.str;
-          default = "/run/secrets/cloudflare-api-key";
-        };
+        description = "Domain used by the catch-all HTTPS redirect.";
       };
 
       hosts = mkOption {
@@ -169,53 +45,81 @@
             aliases = mkOption {
               type = types.listOf types.str;
               default = [];
+              description = "Additional domains routed to this service.";
             };
 
             scheme = mkOption {
               type = types.enum ["http" "https"];
               default = "http";
+              description = "Protocol used between Traefik and the service.";
             };
 
             upstreamHost = mkOption {
               type = types.nullOr types.str;
               default = null;
+              description = "Host name or address of a host service.";
             };
 
             upstreamPort = mkOption {
               type = types.nullOr types.port;
               default = null;
+              description = "Port of a host service.";
             };
 
             dockerContainer = mkOption {
               type = types.nullOr types.str;
               default = null;
+              description = "Docker container resolved to a bridge address.";
             };
 
             dockerPort = mkOption {
               type = types.nullOr types.port;
               default = null;
-            };
-
-            websockets = mkOption {
-              type = types.bool;
-              default = false;
+              description = "Port exposed inside the Docker container.";
             };
 
             basicAuthFile = mkOption {
               type = types.nullOr types.str;
               default = null;
+              description = "htpasswd file used by the Traefik basic-auth middleware.";
             };
 
-            extraConfig = mkOption {
-              type = types.lines;
-              default = "";
-              description = "Additional nginx virtual host configuration.";
+            maxRequestBodyBytes = mkOption {
+              type = types.nullOr types.ints.positive;
+              default = null;
+              description = "Maximum buffered request body size in bytes.";
             };
 
             robotsNoIndex = mkOption {
               type = types.bool;
               default = false;
               description = "Send an X-Robots-Tag header that blocks search indexing.";
+            };
+
+            pathRoutes = mkOption {
+              type = types.listOf (types.submodule (_: {
+                options = {
+                  rule = mkOption {
+                    type = types.str;
+                    description = "Traefik path rule combined with this host rule.";
+                  };
+                  upstreamHost = mkOption {
+                    type = types.str;
+                    description = "Host name or address of the path service.";
+                  };
+                  upstreamPort = mkOption {
+                    type = types.port;
+                    description = "Port of the path service.";
+                  };
+                  priority = mkOption {
+                    type = types.int;
+                    default = 100;
+                    description = "Router priority for this path rule.";
+                  };
+                };
+              }));
+              default = [];
+              description = "Higher-priority routes for selected paths.";
             };
 
             dns = {
@@ -255,214 +159,16 @@
       };
     };
 
-    config = mkIf cfg.enable (mkMerge [
-      {
-        persist.system.directories = [
-          "/var/lib/acme"
-        ];
-
-        assertions =
-          map
-          (hostCfg: {
-            assertion =
-              (hostCfg.dockerContainer != null && hostCfg.dockerPort != null && hostCfg.upstreamHost == null && hostCfg.upstreamPort == null)
-              || (hostCfg.dockerContainer == null && hostCfg.dockerPort == null && hostCfg.upstreamHost != null && hostCfg.upstreamPort != null);
-            message = "Each homelab.proxy.hosts entry must define either upstreamHost+upstreamPort or dockerContainer+dockerPort.";
-          })
-          hostEntries;
-
-        security.acme = {
-          acceptTerms = true;
-          defaults = {
-            email = cfg.acmeEmail;
-            reloadServices = ["traefik.service"];
-          };
-        };
-
-        sops.secrets."cloudflare/traefik-dns" = {
-          sopsFile = self + /secrets/shared.yaml;
-          key = "cloudflare/dns";
-          owner = "traefik";
-          group = "traefik";
-          mode = "0400";
-        };
-
-        sops.templates."traefik-cloudflare.env" = {
-          owner = "traefik";
-          group = "traefik";
-          mode = "0400";
-          content = ''
-            CF_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/traefik-dns"}
-          '';
-        };
-
-        services.nginx = {
-          enable = true;
-          defaultHTTPListenPort = 9150;
-          recommendedGzipSettings = true;
-          recommendedOptimisation = true;
-          recommendedProxySettings = true;
-          recommendedTlsSettings = true;
-          commonHttpConfig = concatLines [
-            "map $http_upgrade $connection_upgrade {"
-            "  default upgrade;"
-            "  '' close;"
-            "}"
-            "include /run/homelab-proxy/docker-upstreams.conf;"
-          ];
-          virtualHosts =
-            (listToAttrs (mapAttrsToList renderHost cfg.hosts))
-            // lib.optionalAttrs (cfg.defaultDomainRedirect != null) {
-              "_" = {
-                default = true;
-                locations."/".return = "301 https://${cfg.defaultDomainRedirect}$request_uri";
-              };
-            };
-        };
-
-        services.traefik = {
-          environmentFiles = [config.sops.templates."traefik-cloudflare.env".path];
-          staticConfigOptions = {
-            entryPoints = {
-              web = {
-                address = "${cfg.address}:80";
-                http.redirections.entryPoint = {
-                  to = "nomad";
-                  scheme = "https";
-                  permanent = true;
-                };
-              };
-              nomad = {
-                address = "${cfg.address}:443";
-                http.tls.certResolver = "cloudflare";
-              };
-            };
-            certificatesResolvers = {
-              cloudflare.acme = {
-                email = cfg.acmeEmail;
-                storage = "/var/lib/traefik/acme-cloudflare.json";
-                dnsChallenge = {
-                  provider = "cloudflare";
-                  resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
-                };
-              };
-            };
-          };
-          dynamicConfigOptions.http = {
-            routers = legacyRouters;
-            services.legacy-nginx.loadBalancer = {
-              passHostHeader = true;
-              servers = [{url = nginxBackend;}];
-            };
-          };
-          dynamicConfigOptions.tls.certificates =
-            map (domain: {
-              certFile = "/var/lib/acme/${domain}/fullchain.pem";
-              keyFile = "/var/lib/acme/${domain}/key.pem";
-            })
-            externalDomains;
-        };
-
-        users.users.traefik.extraGroups = ["nginx"];
-
-        systemd.services.traefik = {
-          after = ["nginx.service"];
-          wants = ["nginx.service"];
-        };
-
-        networking.firewall.allowedTCPPorts = [80 443];
-
-        systemd.tmpfiles.rules = [
-          "d /run/homelab-proxy 0755 root root -"
-          "f /run/homelab-proxy/docker-upstreams.conf 0644 root root -"
-        ];
-      }
-
-      (mkIf (dockerHosts != []) {
-        # NixOS nginx runs directly on the host, while the services it proxies
-        # to live inside Docker networks and intentionally do not publish ports
-        # on the host.  This service inspects each referenced Docker container,
-        # extracts its IP address from the shared `services` network, and emits
-        # nginx `upstream` blocks so the host-based nginx can reach containers by
-        # their bridge-network IPs without needing any port bindings.
-        systemd.services.homelab-proxy-refresh-docker-upstreams = {
-          description = "Refresh nginx upstreams for docker-backed homelab services";
-          wants = ["docker.service" "network-online.target"];
-          after = ["docker.service" "network-online.target"];
-          before = ["nginx.service"];
-          wantedBy = ["multi-user.target"];
-          restartTriggers = [dockerSpecFile];
-          path = with pkgs; [bash coreutils docker gnugrep gnused python3 systemd];
-          serviceConfig = {
-            Type = "oneshot";
-          };
-          script = ''
-            set -euo pipefail
-            mkdir -p /run/homelab-proxy
-            export SPEC_FILE=${escapeShellArg dockerSpecFile}
-            export OUT_FILE=/run/homelab-proxy/docker-upstreams.conf
-            export TMP_FILE=/run/homelab-proxy/docker-upstreams.conf.tmp
-
-            python3 - <<'PY'
-            import json
-            import os
-            import subprocess
-
-            spec_path = os.environ["SPEC_FILE"]
-            out_path = os.environ["OUT_FILE"]
-            tmp_path = os.environ["TMP_FILE"]
-
-            with open(spec_path, "r", encoding="utf-8") as fh:
-                spec = json.load(fh)
-
-            lines = ["# generated by homelab-proxy-refresh-docker-upstreams"]
-            for domain, entry in spec.items():
-                container = entry["container"]
-                port = entry["port"]
-                upstream_name = entry["upstreamName"]
-                target = "127.0.0.1"
-                try:
-                    inspect = subprocess.check_output(["docker", "inspect", container], text=True)
-                    data = json.loads(inspect)[0]
-                    networks = data.get("NetworkSettings", {}).get("Networks", {})
-                    for network_name in ("services", *networks.keys()):
-                        network = networks.get(network_name)
-                        if network and network.get("IPAddress"):
-                            target = network["IPAddress"]
-                            break
-                except Exception:
-                    target = "127.0.0.1"
-                    port = 9
-
-                lines.append(f"upstream {upstream_name} {{")
-                lines.append(f"  server {target}:{port};")
-                lines.append("  keepalive 32;")
-                lines.append("}")
-
-            content = "\n".join(lines) + "\n"
-            with open(tmp_path, "w", encoding="utf-8") as fh:
-                fh.write(content)
-            os.replace(tmp_path, out_path)
-            PY
-
-            if systemctl is-active --quiet nginx.service; then
-              # Use --no-block to avoid a deadlock: this service is ordered
-              # Before=nginx.service, so a blocking reload would wait for nginx
-              # to finish starting while nginx waits for this service to finish.
-              systemctl reload --no-block nginx.service
-            fi
-          '';
-        };
-
-        systemd.timers.homelab-proxy-refresh-docker-upstreams = {
-          wantedBy = ["timers.target"];
-          timerConfig = {
-            OnBootSec = "1min";
-            OnUnitActiveSec = "2min";
-            Unit = "homelab-proxy-refresh-docker-upstreams.service";
-          };
-        };
-      })
-    ]);
+    config = mkIf cfg.enable {
+      assertions =
+        map
+        (hostCfg: {
+          assertion =
+            (hostCfg.dockerContainer != null && hostCfg.dockerPort != null && hostCfg.upstreamHost == null && hostCfg.upstreamPort == null)
+            || (hostCfg.dockerContainer == null && hostCfg.dockerPort == null && hostCfg.upstreamHost != null && hostCfg.upstreamPort != null);
+          message = "Each homelab.proxy.hosts entry must define one Docker or host service.";
+        })
+        hostEntries;
+    };
   };
 }

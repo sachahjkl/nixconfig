@@ -327,6 +327,65 @@
       exec ${lib.getExe pkgs.python3} ${lib.escapeShellArg cloudflareDnsLib} push "$@"
     '';
   in {
+    options.homelab.proxy.dns = {
+      acmeZoneNames = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Zones that use Traefik DNS-01 certificate management.";
+      };
+
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Enable Cloudflare DNS reconciliation commands.";
+      };
+
+      defaultType = lib.mkOption {
+        type = lib.types.enum ["A" "CNAME"];
+        default = "CNAME";
+      };
+
+      defaultTarget = lib.mkOption {
+        type = lib.types.str;
+        default = "homelab.sacha.house";
+      };
+
+      defaultValue = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+      };
+
+      defaultProxied = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+      };
+
+      defaultTTL = lib.mkOption {
+        type = lib.types.int;
+        default = 1;
+      };
+
+      cnames = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = {};
+      };
+
+      zoneNames = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+      };
+
+      managedComment = lib.mkOption {
+        type = lib.types.str;
+        default = "managed-by=nixconfig.cloudflare-dns";
+      };
+
+      tokenPath = lib.mkOption {
+        type = lib.types.str;
+        default = "/run/secrets/cloudflare-api-key";
+      };
+    };
+
     config = lib.mkIf proxyEnabled (lib.mkMerge [
       {
         assertions =

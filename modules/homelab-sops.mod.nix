@@ -63,9 +63,9 @@
 
         "observability/otlp-htpasswd" = {
           owner = "root";
-          group = "nginx";
+          group = "traefik";
           mode = "0440";
-          restartUnits = ["nginx.service"];
+          restartUnits = ["traefik.service"];
         };
 
         "codex-proxy/token" = {

@@ -55,12 +55,6 @@
       homelab.proxy.hosts."codex.sacha.house" = {
         upstreamHost = mkDefault cfg.host;
         upstreamPort = mkDefault cfg.port;
-        websockets = mkDefault true;
-        extraConfig = ''
-          proxy_buffering off;
-          proxy_read_timeout 3600s;
-          proxy_send_timeout 3600s;
-        '';
       };
     };
   };

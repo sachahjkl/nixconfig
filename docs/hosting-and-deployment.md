@@ -562,6 +562,8 @@ Set `traefik.enable=true` on each service that needs public ingress.
 
 Declare the exact hostname in the service router rule.
 
+Attach HTTPS routers to the `websecure` entrypoint.
+
 Set `exposedByDefault=false` in the Nomad provider.
 
 Use a dedicated namespace when deployment sources must be isolated from each other.
@@ -571,6 +573,10 @@ Treat all sources with write access to one namespace as one trust domain.
 Do not put node identifiers, ingress addresses, or public ports in application repositories.
 
 NixOS owns ingress listeners and approved zones. Nomad service tags own application routes.
+
+Route host and Docker services directly through the Traefik file provider.
+
+Use HTTP-01 for domains outside the approved Cloudflare DNS-01 zones.
 
 ## Deployment verification
 
