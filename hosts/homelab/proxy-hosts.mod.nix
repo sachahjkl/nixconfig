@@ -10,6 +10,7 @@ _: {
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
       dns = {
+        acmeZoneNames = ["sacha.house"];
         defaultType = "CNAME";
         defaultValue = "82.66.185.90";
         defaultProxied = false;

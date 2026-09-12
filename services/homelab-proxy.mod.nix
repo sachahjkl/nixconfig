@@ -26,7 +26,7 @@
       builtins.replaceStrings ["." "-" "/"] ["_" "_" "_"] value;
 
     usesCloudflareDns = domain:
-      domain == "sacha.house" || lib.hasSuffix ".sacha.house" domain;
+      builtins.any (zone: domain == zone || lib.hasSuffix ".${zone}" domain) cfg.dns.acmeZoneNames;
 
     hostRule = domain: aliases:
       concatStringsSep " || " (map (name: "Host(`${name}`)") ([domain] ++ aliases));
@@ -106,6 +106,12 @@
       };
 
       dns = {
+        acmeZoneNames = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          description = "Zones that use Traefik DNS-01 certificate management.";
+        };
+
         enable = mkOption {
           type = types.bool;
           default = false;
