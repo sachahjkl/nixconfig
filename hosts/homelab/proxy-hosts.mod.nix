@@ -53,6 +53,13 @@ _: {
           websockets = true;
         };
 
+        "staging.htmx.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9121;
+          websockets = true;
+          robotsNoIndex = true;
+        };
+
         "lanblaster.sacha.house" = {
           upstreamHost = "127.0.0.1";
           upstreamPort = 9032;
