@@ -8,6 +8,7 @@ _: {
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
       dns = {
+        aRecords."froment.software" = "82.66.185.90";
         acmeZoneNames = ["sacha.house"];
         defaultType = "CNAME";
         defaultValue = "82.66.185.90";
@@ -17,6 +18,7 @@ _: {
           "*.homelab.sacha.house" = "homelab.sacha.house";
           "*.sacha.house" = "homelab.sacha.house";
           "sacha.house" = "homelab.sacha.house";
+          "staging.froment.software" = "homelab.sacha.house";
           "www.froment.software" = "froment.software";
           "www.sacha.house" = "sacha.house";
         };
@@ -110,22 +112,6 @@ _: {
           scheme = "https";
           upstreamHost = "192.168.50.1";
           upstreamPort = 8443;
-        };
-
-        "froment.software" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9012;
-          dns = {
-            type = "A";
-            value = "82.66.185.90";
-            proxied = false;
-          };
-        };
-
-        "staging.froment.software" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9011;
-          robotsNoIndex = true;
         };
 
         "portainer.homelab.sacha.house" = {

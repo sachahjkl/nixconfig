@@ -13,7 +13,14 @@
     hasUserName = lib.hasAttrByPath ["userName"] options;
 
     dnsEntries =
-      (lib.mapAttrsToList (domain: target: {
+      (lib.mapAttrsToList (domain: value: {
+          inherit domain value;
+          type = "A";
+          proxied = cfg.defaultProxied;
+          ttl = cfg.defaultTTL;
+        })
+        cfg.aRecords)
+      ++ (lib.mapAttrsToList (domain: target: {
           inherit domain;
           type = "CNAME";
           value = target;
@@ -334,6 +341,12 @@
         description = "Zones that use Traefik DNS-01 certificate management.";
       };
 
+      aRecords = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = {};
+        description = "DNS-only A records managed independently from proxy routes.";
+      };
+
       enable = lib.mkOption {
         type = lib.types.bool;
         default = false;
@@ -402,7 +415,7 @@
           dnsEntries
           ++ map (record: {
             assertion = record.type != "A" || record.value != null;
-            message = "Cloudflare DNS A records need homelab.proxy.dns.defaultValue or hosts.${record.domain}.dns.value.";
+            message = "Cloudflare DNS A records need a configured address: ${record.domain}.";
           })
           dnsEntries;
 
