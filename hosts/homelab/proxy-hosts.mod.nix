@@ -202,6 +202,13 @@ _: {
           websockets = true;
         };
 
+        "staging.php.homelab.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9111;
+          websockets = true;
+          robotsNoIndex = true;
+        };
+
         "pixels.aubetoile.dev" = {
           dockerContainer = "pixelsaubetoiledev-pixels_web-1";
           dockerPort = 80;
