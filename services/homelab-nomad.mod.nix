@@ -114,7 +114,7 @@
             alloc_dir = "${dataRoot}/alloc";
             cni_path = "${pkgs.cni-plugins}/bin";
             host_volumes_dir = "${dataRoot}/volumes";
-            meta.node_class = cfg.nodeClass;
+            node_class = cfg.nodeClass;
             host_network.loopback = {
               cidr = "127.0.0.1/32";
             };

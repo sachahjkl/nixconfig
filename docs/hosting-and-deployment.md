@@ -55,7 +55,9 @@ Normal application releases must not change this layer.
 
 ### Node roles
 
-Declare host capabilities as Nomad node metadata.
+Declare the general placement class with Nomad `node_class`.
+
+Declare special capabilities as Nomad node metadata.
 
 Constrain jobs by capability or node class. Never constrain a job by node identifier.
 
