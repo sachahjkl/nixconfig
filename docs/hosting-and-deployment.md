@@ -541,15 +541,17 @@ Create a standard application repository with one command:
 nix run .#homelabAppCreate -- \
   --repository example \
   --application example \
-  --production-domain example.sacha.house \
-  --staging-domain staging.example.sacha.house
+  --environment staging=staging.example.sacha.house \
+  --environment production=example.sacha.house \
+  --no-index-environment staging \
+  --approval-environment production
 ```
 
-The command uses `sachahjkl/homelab-application-template`.
+The command uses `sachahjkl/application-template`.
 
-The command creates both GitHub Environments and restricts them to `master`.
+The command creates each declared GitHub Environment and restricts it to `master`.
 
-The command requires production approval and protects `master` with the `check` status.
+The command adds approval to each selected environment and protects `master` with the `platform / check` status.
 
 The application manifest declares exact domains:
 
@@ -559,16 +561,13 @@ application:
   port: 8080
   healthPath: /health
 
-domain:
-  production: example.sacha.house
-  staging: staging.example.sacha.house
+environments:
+  staging:
+    domain: staging.example.sacha.house
+    noIndex: true
+  production:
+    domain: example.sacha.house
 ```
-
-The platform accepts subdomains in these trusted zones:
-
-- `sacha.house`;
-- `homelab.sacha.house`;
-- `froment.software`.
 
 GitHub Actions exchanges its OIDC identity for a Nomad token valid for 15 minutes.
 
@@ -578,12 +577,12 @@ The generated repository performs this sequence:
 
 1. Validate the explicit application manifest.
 2. Build a deterministic OCI image.
-3. Generate both jobs with Nomad Pack.
+3. Generate the environment jobs with Nomad Pack.
 4. Add the environment-specific Traefik tags.
 5. Use the generated GitHub Environments and branch policies.
 6. Authenticate to Tailscale and Nomad with GitHub OIDC.
-7. Deploy staging.
-8. Promote the tested digest to production after approval.
+7. Deploy the continuous-delivery environment.
+8. Promote the tested digest to an approved environment.
 
 For persistent data, add `--volume-path /data` to the creation command.
 

@@ -15,7 +15,7 @@ _: {
     '';
     homelabAppCreate = pkgs.writeShellApplication {
       name = "homelab-app-create";
-      runtimeInputs = with pkgs; [coreutils gnugrep jq] ++ [gh];
+      runtimeInputs = with pkgs; [coreutils gitMinimal gnugrep jq nix] ++ [gh];
       text = ''
         set -euo pipefail
 
@@ -24,8 +24,10 @@ _: {
         Usage: homelab-app-create \
           --repository REPOSITORY \
           --application APPLICATION \
-          --production-domain DOMAIN \
-          --staging-domain DOMAIN \
+          --environment NAME=DOMAIN \
+          [--environment NAME=DOMAIN] ... \
+          [--approval-environment NAME] ... \
+          [--no-index-environment NAME] ... \
           [--volume-path PATH] \
           [--private]
 
@@ -35,8 +37,10 @@ _: {
 
         repository=""
         application=""
-        production_domain=""
-        staging_domain=""
+        declare -a environment_names=()
+        declare -a approval_environments=()
+        declare -a no_index_environments=()
+        declare -A domains=()
         volume_path=""
         visibility="public"
 
@@ -50,12 +54,27 @@ _: {
               application="$2"
               shift 2
               ;;
-            --production-domain)
-              production_domain="$2"
+            --environment)
+              environment_name="''${2%%=*}"
+              domain="''${2#*=}"
+              if [ "$environment_name" = "$2" ] || [ -z "$environment_name" ] || [ -z "$domain" ]; then
+                printf 'Invalid environment: %s\n' "$2" >&2
+                exit 1
+              fi
+              if [ -n "''${domains[$environment_name]+set}" ]; then
+                printf 'Duplicate environment: %s\n' "$environment_name" >&2
+                exit 1
+              fi
+              environment_names+=("$environment_name")
+              domains["$environment_name"]="$domain"
               shift 2
               ;;
-            --staging-domain)
-              staging_domain="$2"
+            --approval-environment)
+              approval_environments+=("$2")
+              shift 2
+              ;;
+            --no-index-environment)
+              no_index_environments+=("$2")
               shift 2
               ;;
             --volume-path)
@@ -78,36 +97,41 @@ _: {
           esac
         done
 
-        if [ -z "$repository" ] || [ -z "$application" ] || [ -z "$production_domain" ] || [ -z "$staging_domain" ]; then
+        if [ -z "$repository" ] || [ -z "$application" ] || [ "''${#environment_names[@]}" -eq 0 ]; then
           usage >&2
           exit 1
         fi
 
         name_pattern='^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$'
-        domain_pattern='^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$'
         if ! grep -Eq "$name_pattern" <<<"$application"; then
           printf 'Invalid application name: %s\n' "$application" >&2
           exit 1
         fi
 
-        trusted_domain() {
-          local domain="$1"
-          grep -Eq "$domain_pattern" <<<"$domain" \
-            && grep -Eq '^(sacha\.house|homelab\.sacha\.house|froment\.software|.+\.(sacha\.house|homelab\.sacha\.house|froment\.software))$' <<<"$domain"
+        contains() {
+          local expected="$1"
+          shift
+          local value
+          for value in "$@"; do
+            if [ "$value" = "$expected" ]; then
+              return 0
+            fi
+          done
+          return 1
         }
 
-        if ! trusted_domain "$production_domain"; then
-          printf 'Untrusted production domain: %s\n' "$production_domain" >&2
-          exit 1
-        fi
-        if ! trusted_domain "$staging_domain"; then
-          printf 'Untrusted staging domain: %s\n' "$staging_domain" >&2
-          exit 1
-        fi
-        if [ "$production_domain" = "$staging_domain" ]; then
-          printf 'Staging and production domains must differ.\n' >&2
-          exit 1
-        fi
+        for environment_name in "''${environment_names[@]}"; do
+          if ! grep -Eq "$name_pattern" <<<"$environment_name"; then
+            printf 'Invalid environment name: %s\n' "$environment_name" >&2
+            exit 1
+          fi
+        done
+        for environment_name in "''${approval_environments[@]}" "''${no_index_environments[@]}"; do
+          if [ -n "$environment_name" ] && [ -z "''${domains[$environment_name]+set}" ]; then
+            printf 'Environment is not declared: %s\n' "$environment_name" >&2
+            exit 1
+          fi
+        done
         if [ -n "$volume_path" ]; then
           if ! grep -Eq '^/[A-Za-z0-9._/-]+$' <<<"$volume_path"; then
             printf 'Invalid volume path: %s\n' "$volume_path" >&2
@@ -138,25 +162,19 @@ _: {
         if [ "$visibility" = "private" ]; then
           private=true
         fi
-        jq -cn \
-          --arg owner "$owner" \
-          --arg name "$repository" \
-          --argjson private "$private" \
-          '{owner:$owner,name:$name,private:$private,include_all_branches:false}' \
-          | gh api --method POST \
-              repos/sachahjkl/homelab-application-template/generate \
-              --input - >/dev/null
+        jq -cn --arg name "$repository" --argjson private "$private" \
+          '{name:$name,private:$private}' \
+          | gh api --method POST user/repos --input - >/dev/null
 
-        for _ in $(seq 1 30); do
-          if gh api "repos/$full_repository/contents/application.yaml" >/dev/null 2>&1; then
-            break
-          fi
-          sleep 2
-        done
+        checkout="$(mktemp -d)"
+        trap 'rm -rf "$checkout"' EXIT
+        nix flake new \
+          -t github:sachahjkl/application-template/v1.0.0 \
+          "$checkout"
 
-        for environment in staging production; do
+        for environment in "''${environment_names[@]}"; do
           environment_config='{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}'
-          if [ "$environment" = production ]; then
+          if contains "$environment" "''${approval_environments[@]}"; then
             environment_config="$(
               jq -cn --argjson id "$user_id" \
                 '{prevent_self_review:false,reviewers:[{type:"User",id:$id}],deployment_branch_policy:{protected_branches:false,custom_branch_policies:true}}'
@@ -170,39 +188,45 @@ _: {
             -f name=master -f type=branch >/dev/null
         done
 
-        current_file="$(gh api "repos/$full_repository/contents/application.yaml")"
-        current_sha="$(jq -r .sha <<<"$current_file")"
-        manifest="$(mktemp)"
-        trap 'rm -f "$manifest"' EXIT
-        cat >"$manifest" <<EOF
+        cat >"$checkout/application.yaml" <<EOF
         application:
           name: $application
           port: 8080
           healthPath: /health
 
-        domain:
-          production: $production_domain
-          staging: $staging_domain
+        environments:
+        EOF
+        for environment_name in "''${environment_names[@]}"; do
+          {
+            printf '  %s:\n' "$environment_name"
+            printf '    domain: %s\n' "$(jq -Rn --arg value "''${domains[$environment_name]}" '$value')"
+            if contains "$environment_name" "''${no_index_environments[@]}"; then
+              printf '    noIndex: true\n'
+            fi
+          } >>"$checkout/application.yaml"
+        done
+        cat >>"$checkout/application.yaml" <<EOF
+
+        resources:
+          cpu: 200
+          memory: 256
         EOF
         if [ -n "$volume_path" ]; then
-          cat >>"$manifest" <<EOF
+          cat >>"$checkout/application.yaml" <<EOF
 
         volume:
           mountPath: $volume_path
         EOF
         fi
-        manifest_content="$(base64 -w0 <"$manifest")"
-        jq -cn \
-          --arg message "Configure $application" \
-          --arg content "$manifest_content" \
-          --arg sha "$current_sha" \
-          '{message:$message,content:$content,sha:$sha,branch:"master"}' \
-          | gh api --method PUT \
-              "repos/$full_repository/contents/application.yaml" \
-              --input - >/dev/null
+
+        git -C "$checkout" init --initial-branch master
+        git -C "$checkout" add .
+        git -C "$checkout" commit -S -m "Create $application"
+        git -C "$checkout" remote add origin "git@github.com:$full_repository.git"
+        git -C "$checkout" push --set-upstream origin master
 
         jq -cn '{
-          required_status_checks:{strict:true,contexts:["check"]},
+          required_status_checks:{strict:true,contexts:["platform / check"]},
           enforce_admins:true,
           required_pull_request_reviews:{dismiss_stale_reviews:true,required_approving_review_count:0},
           restrictions:null,
@@ -214,8 +238,9 @@ _: {
           --input - >/dev/null
 
         printf 'Created https://github.com/%s\n' "$full_repository"
-        printf 'Staging will deploy to https://%s\n' "$staging_domain"
-        printf 'Production requires approval at https://github.com/%s/actions/workflows/deploy-production.yml\n' "$full_repository"
+        for environment_name in "''${environment_names[@]}"; do
+          printf '%s uses https://%s\n' "$environment_name" "''${domains[$environment_name]}"
+        done
       '';
     };
   in {

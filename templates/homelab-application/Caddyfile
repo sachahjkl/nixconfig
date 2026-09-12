@@ -1,9 +1,0 @@
-:8080 {
-	respond /health 200 {
-		body `{ "status": "ok" }`
-		close
-	}
-
-	root * /srv
-	file_server
-}
