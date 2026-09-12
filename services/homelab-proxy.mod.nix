@@ -8,6 +8,7 @@
     inherit
       (lib)
       concatLines
+      concatStringsSep
       escapeShellArg
       listToAttrs
       mapAttrsToList
@@ -27,6 +28,9 @@
     usesCloudflareDns = domain:
       domain == "sacha.house" || lib.hasSuffix ".sacha.house" domain;
 
+    hostRule = domain: aliases:
+      concatStringsSep " || " (map (name: "Host(`${name}`)") ([domain] ++ aliases));
+
     hostEntries = mapAttrsToList (domain: hostCfg: hostCfg // {inherit domain;}) cfg.hosts;
     dockerHosts = builtins.filter (hostCfg: hostCfg.dockerContainer != null) hostEntries;
     externalDomains = builtins.filter (domain: !usesCloudflareDns domain) (builtins.attrNames cfg.hosts);
@@ -44,17 +48,13 @@
     nginxBackend = "http://127.0.0.1:9150";
 
     legacyRouters = listToAttrs (mapAttrsToList
-      (domain: _: {
+      (domain: hostCfg: {
         name = "legacy-${sanitize domain}";
-        value =
-          {
-            rule = "Host(`${domain}`)";
-            entryPoints = ["nomad"];
-            service = "legacy-nginx";
-          }
-          // lib.optionalAttrs (!usesCloudflareDns domain) {
-            tls.certResolver = "letsencrypt";
-          };
+        value = {
+          rule = hostRule domain hostCfg.aliases;
+          entryPoints = ["nomad"];
+          service = "legacy-nginx";
+        };
       })
       cfg.hosts);
 
@@ -70,8 +70,6 @@
         forceSSL = false;
         serverAliases = hostCfg.aliases;
         inherit (hostCfg) basicAuthFile;
-        # NixOS already emits `http2 on;` for SSL vhosts; adding it again is a
-        # duplicate and breaks nginx config validation.
         extraConfig = concatLines [
           hostCfg.extraConfig
           (optionalString hostCfg.robotsNoIndex ''
@@ -88,7 +86,7 @@
     imports = [self.nixosModules.sops];
 
     options.homelab.proxy = {
-      enable = mkEnableOption "nginx + ACME reverse proxy for the homelab";
+      enable = mkEnableOption "Traefik ingress with a local nginx legacy backend";
 
       address = mkOption {
         type = types.str;
@@ -192,24 +190,9 @@
               default = null;
             };
 
-            enableACME = mkOption {
-              type = types.bool;
-              default = true;
-            };
-
-            forceSSL = mkOption {
-              type = types.bool;
-              default = true;
-            };
-
             websockets = mkOption {
               type = types.bool;
               default = false;
-            };
-
-            http2 = mkOption {
-              type = types.bool;
-              default = true;
             };
 
             basicAuthFile = mkOption {
@@ -356,11 +339,6 @@
                   provider = "cloudflare";
                   resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
                 };
-              };
-              letsencrypt.acme = {
-                email = cfg.acmeEmail;
-                storage = "/var/lib/traefik/acme-http.json";
-                httpChallenge.entryPoint = "web";
               };
             };
           };
