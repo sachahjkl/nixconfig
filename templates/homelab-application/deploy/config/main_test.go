@@ -6,6 +6,8 @@ func TestTrustedDomain(t *testing.T) {
 	t.Parallel()
 
 	for _, domain := range []string{
+		"sacha.house",
+		"froment.software",
 		"app.sacha.house",
 		"staging.app.sacha.house",
 		"app.homelab.sacha.house",
@@ -30,8 +32,6 @@ func TestUntrustedDomain(t *testing.T) {
 	t.Parallel()
 
 	for _, domain := range []string{
-		"sacha.house",
-		"froment.software",
 		"sacha.house.example.com",
 		"example.com",
 	} {

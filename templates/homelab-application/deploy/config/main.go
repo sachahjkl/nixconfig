@@ -111,7 +111,7 @@ func (value config) validate() error {
 
 func trustedDomain(domain string) bool {
 	for _, zone := range allowedZones {
-		if strings.HasSuffix(domain, "."+zone) {
+		if domain == zone || strings.HasSuffix(domain, "."+zone) {
 			return true
 		}
 	}
@@ -154,6 +154,7 @@ func (value config) nomadVars(environment, image string) error {
 		name  string
 		value any
 	}{
+		{"domain", domain},
 		{"environment", environment},
 		{"name", value.Application.Name},
 		{"health_path", value.Application.HealthPath},
@@ -198,7 +199,7 @@ func (value config) volumeSpec(environment string) error {
 	fmt.Println("plugin_id = \"mkdir\"")
 	fmt.Println("parameters = { mode = \"0700\" }")
 	fmt.Println("capability {")
-	fmt.Println("  access_mode = \"single-node-single-writer\"")
+	fmt.Println("  access_mode = \"single-node-writer\"")
 	fmt.Println("  attachment_mode = \"file-system\"")
 	fmt.Println("}")
 	return nil

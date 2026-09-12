@@ -93,7 +93,7 @@ _: {
         trusted_domain() {
           local domain="$1"
           grep -Eq "$domain_pattern" <<<"$domain" \
-            && grep -Eq '\.(sacha\.house|homelab\.sacha\.house|froment\.software)$' <<<"$domain"
+            && grep -Eq '^(sacha\.house|homelab\.sacha\.house|froment\.software|.+\.(sacha\.house|homelab\.sacha\.house|froment\.software))$' <<<"$domain"
         }
 
         if ! trusted_domain "$production_domain"; then

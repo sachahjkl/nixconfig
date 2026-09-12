@@ -19,7 +19,7 @@ job [[ var "name" . | quote ]] {
     volume "data" {
       type            = "host"
       source          = [[ var "volume_name" . | quote ]]
-      access_mode     = "single-node-single-writer"
+      access_mode     = "single-node-writer"
       attachment_mode = "file-system"
     }
 [[ end ]]
