@@ -74,8 +74,8 @@ _: {
         };
 
         "musee.sacha.house" = {
-          dockerContainer = "musee-app";
-          dockerPort = 80;
+          upstreamHost = "127.0.0.1";
+          upstreamPort = 9132;
           websockets = true;
         };
 
