@@ -538,7 +538,7 @@ Grant the smallest possible repository permissions to every job.
 Create a standard application repository with one command:
 
 ```bash
-nix run .#homelabAppCreate -- \
+nix run .#applicationCreate -- \
   --repository example \
   --application example \
   --environment staging=staging.example.sacha.house \

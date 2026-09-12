@@ -13,15 +13,15 @@ _: {
 
       exec ${lib.getExe pkgs.gh} "$@"
     '';
-    homelabAppCreate = pkgs.writeShellApplication {
-      name = "homelab-app-create";
+    applicationCreate = pkgs.writeShellApplication {
+      name = "application-create";
       runtimeInputs = with pkgs; [coreutils gitMinimal gnugrep jq nix] ++ [gh];
       text = ''
         set -euo pipefail
 
         usage() {
           cat <<'EOF'
-        Usage: homelab-app-create \
+        Usage: application-create \
           --repository REPOSITORY \
           --application APPLICATION \
           --environment NAME=DOMAIN \
@@ -31,7 +31,7 @@ _: {
           [--volume-path PATH] \
           [--private]
 
-        Create and configure a repository from the homelab application template.
+        Create and configure a repository from the application template.
         EOF
         }
 
@@ -244,10 +244,10 @@ _: {
       '';
     };
   in {
-    packages.homelabAppCreate = homelabAppCreate;
-    apps.homelabAppCreate = {
+    packages.applicationCreate = applicationCreate;
+    apps.applicationCreate = {
       type = "app";
-      program = lib.getExe self'.packages.homelabAppCreate;
+      program = lib.getExe self'.packages.applicationCreate;
     };
   };
 }
