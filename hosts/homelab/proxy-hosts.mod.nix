@@ -55,7 +55,7 @@ _: {
 
         "staging.htmx.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9121;
+          upstreamPort = 9140;
           websockets = true;
           robotsNoIndex = true;
         };
@@ -68,7 +68,7 @@ _: {
 
         "staging.lanblaster.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9031;
+          upstreamPort = 9140;
           websockets = true;
           robotsNoIndex = true;
         };
@@ -93,7 +93,7 @@ _: {
 
         "staging.button.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9041;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
@@ -104,7 +104,7 @@ _: {
 
         "staging.react-training.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9051;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
@@ -115,13 +115,13 @@ _: {
 
         "staging.marketing.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9061;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
         "staging.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9071;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
@@ -132,7 +132,7 @@ _: {
 
         "staging.clockin.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9081;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
@@ -143,7 +143,7 @@ _: {
 
         "staging.albumator.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9091;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
@@ -179,7 +179,7 @@ _: {
 
         "staging.wthhyb.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9021;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
@@ -190,7 +190,7 @@ _: {
 
         "staging.chat.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9101;
+          upstreamPort = 9140;
           robotsNoIndex = true;
         };
 
@@ -218,7 +218,7 @@ _: {
 
         "staging.php.homelab.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9111;
+          upstreamPort = 9140;
           websockets = true;
           robotsNoIndex = true;
         };
