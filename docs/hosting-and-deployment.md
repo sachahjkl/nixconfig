@@ -10,6 +10,7 @@ The platform uses these components:
 
 - NixOS configures the host and the hosting platform.
 - Nomad schedules and supervises application workloads.
+- Traefik discovers healthy Nomad services and terminates public TLS.
 - GHCR stores immutable OCI images.
 - Tailscale gives CI private access to the Nomad API.
 - GitHub Actions builds images and submits Nomad jobs.
@@ -43,6 +44,7 @@ NixOS owns stable host infrastructure:
 - firewall rules;
 - storage roots;
 - reverse proxy infrastructure;
+- wildcard DNS records and ACME configuration;
 - monitoring agents;
 - backup schedules;
 - bootstrap secrets.
@@ -65,6 +67,7 @@ Nomad owns the application lifecycle:
 - persistent volume claims;
 - application secrets;
 - deployment history.
+- application ingress routes.
 
 Changing an application release requires only a Nomad job submission.
 
@@ -378,7 +381,8 @@ APPLICATION-production
 Declare these controls in each service job:
 
 - one immutable image digest variable;
-- a static or service-discovered ingress port;
+- a dynamic service-discovered ingress port;
+- explicit Traefik route tags;
 - an HTTP health check;
 - CPU and memory limits;
 - bounded restart attempts;
@@ -523,13 +527,32 @@ Use this sequence for each new website:
 4. Create staging and production Nomad variable sets.
 5. Create staging and production persistent volumes.
 6. Add one Nomad job specification per environment.
-7. Add staging and production ingress routes.
-8. Add DNS records.
-9. Add GitHub Environments and branch policies.
-10. Add Tailscale and Nomad deployment credentials.
-11. Deploy staging.
-12. Test backup and restoration.
-13. Promote the tested digest to production.
+7. Add staging and production Traefik tags to the Nomad jobs.
+8. Add GitHub Environments and branch policies.
+9. Add Tailscale and Nomad deployment credentials.
+10. Deploy staging.
+11. Test backup and restoration.
+12. Promote the tested digest to production.
+
+## Automatic ingress
+
+Point wildcard DNS records for approved zones to the Traefik ingress address.
+
+Traefik must use DNS-01 to issue certificates for domains in approved Cloudflare zones.
+
+Keep the Cloudflare token in the platform configuration. Never expose it to application repositories.
+
+Set `traefik.enable=true` on each service that needs public ingress.
+
+Declare the exact hostname in the service router rule.
+
+Set `exposedByDefault=false` in the Nomad provider.
+
+Give each deployment source a Nomad ACL token limited to its job prefix and namespace.
+
+Do not put node identifiers, ingress addresses, or public ports in application repositories.
+
+NixOS owns ingress listeners and approved zones. Nomad service tags own application routes.
 
 ## Deployment verification
 

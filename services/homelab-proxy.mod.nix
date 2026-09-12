@@ -1,4 +1,4 @@
-_: {
+{self, ...}: {
   flake.nixosModules.homelabProxy = {
     config,
     lib,
@@ -26,6 +26,7 @@ _: {
 
     hostEntries = mapAttrsToList (domain: hostCfg: hostCfg // {inherit domain;}) cfg.hosts;
     dockerHosts = builtins.filter (hostCfg: hostCfg.dockerContainer != null) hostEntries;
+    externalDomains = builtins.filter (domain: !(lib.hasSuffix ".sacha.house" domain || domain == "sacha.house")) (builtins.attrNames cfg.hosts);
     dockerSpec = builtins.listToAttrs (map
       (hostCfg: {
         name = hostCfg.domain;
@@ -37,6 +38,22 @@ _: {
       })
       dockerHosts);
     dockerSpecFile = pkgs.writeText "homelab-proxy-docker-hosts.json" (builtins.toJSON dockerSpec);
+    nginxBackend = "http://127.0.0.1:9150";
+
+    legacyRouters = listToAttrs (mapAttrsToList
+      (domain: _: {
+        name = "legacy-${sanitize domain}";
+        value =
+          {
+            rule = "Host(`${domain}`)";
+            entryPoints = ["nomad"];
+            service = "legacy-nginx";
+          }
+          // lib.optionalAttrs (!(lib.hasSuffix ".sacha.house" domain || domain == "sacha.house")) {
+            tls.certResolver = "letsencrypt";
+          };
+      })
+      cfg.hosts);
 
     renderHost = domain: hostCfg: let
       proxyPass =
@@ -46,8 +63,8 @@ _: {
     in {
       name = domain;
       value = {
-        inherit (hostCfg) enableACME;
-        inherit (hostCfg) forceSSL;
+        enableACME = false;
+        forceSSL = false;
         serverAliases = hostCfg.aliases;
         inherit (hostCfg) basicAuthFile;
         # NixOS already emits `http2 on;` for SSL vhosts; adding it again is a
@@ -65,8 +82,15 @@ _: {
       };
     };
   in {
+    imports = [self.nixosModules.sops];
+
     options.homelab.proxy = {
       enable = mkEnableOption "nginx + ACME reverse proxy for the homelab";
+
+      address = mkOption {
+        type = types.str;
+        description = "Address used by the public Traefik entry points.";
+      };
 
       acmeEmail = mkOption {
         type = types.str;
@@ -262,8 +286,26 @@ _: {
           };
         };
 
+        sops.secrets."cloudflare/traefik-dns" = {
+          sopsFile = self + /secrets/shared.yaml;
+          key = "cloudflare/dns";
+          owner = "traefik";
+          group = "traefik";
+          mode = "0400";
+        };
+
+        sops.templates."traefik-cloudflare.env" = {
+          owner = "traefik";
+          group = "traefik";
+          mode = "0400";
+          content = ''
+            CF_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/traefik-dns"}
+          '';
+        };
+
         services.nginx = {
           enable = true;
+          defaultHTTPListenPort = 9150;
           recommendedGzipSettings = true;
           recommendedOptimisation = true;
           recommendedProxySettings = true;
@@ -283,6 +325,61 @@ _: {
                 locations."/".return = "301 https://${cfg.defaultDomainRedirect}$request_uri";
               };
             };
+        };
+
+        services.traefik = {
+          environmentFiles = [config.sops.templates."traefik-cloudflare.env".path];
+          staticConfigOptions = {
+            entryPoints = {
+              web = {
+                address = "${cfg.address}:80";
+                http.redirections.entryPoint = {
+                  to = "nomad";
+                  scheme = "https";
+                  permanent = true;
+                };
+              };
+              nomad = {
+                address = "${cfg.address}:443";
+                http.tls.certResolver = "cloudflare";
+              };
+            };
+            certificatesResolvers = {
+              cloudflare.acme = {
+                email = cfg.acmeEmail;
+                storage = "/var/lib/traefik/acme-cloudflare.json";
+                dnsChallenge = {
+                  provider = "cloudflare";
+                  resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
+                };
+              };
+              letsencrypt.acme = {
+                email = cfg.acmeEmail;
+                storage = "/var/lib/traefik/acme-http.json";
+                httpChallenge.entryPoint = "web";
+              };
+            };
+          };
+          dynamicConfigOptions.http = {
+            routers = legacyRouters;
+            services.legacy-nginx.loadBalancer = {
+              passHostHeader = true;
+              servers = [{url = nginxBackend;}];
+            };
+          };
+          dynamicConfigOptions.tls.certificates =
+            map (domain: {
+              certFile = "/var/lib/acme/${domain}/fullchain.pem";
+              keyFile = "/var/lib/acme/${domain}/key.pem";
+            })
+            externalDomains;
+        };
+
+        users.users.traefik.extraGroups = ["nginx"];
+
+        systemd.services.traefik = {
+          after = ["nginx.service"];
+          wants = ["nginx.service"];
         };
 
         networking.firewall.allowedTCPPorts = [80 443];

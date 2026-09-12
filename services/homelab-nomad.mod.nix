@@ -128,7 +128,6 @@
         enable = true;
         environmentFiles = [config.sops.templates."traefik-nomad.env".path];
         staticConfigOptions = {
-          entryPoints.nomad.address = "127.0.0.1:9140";
           providers.nomad = {
             namespaces = ["staging" "production"];
             exposedByDefault = false;

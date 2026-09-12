@@ -2,10 +2,11 @@ _: {
   flake.nixosModules.homelabProxyHosts = {config, ...}: let
     observability = config.homelab.services.observability;
   in {
-    services.nginx.defaultListenAddresses = ["192.168.50.22"];
+    services.nginx.defaultListenAddresses = ["127.0.0.1"];
 
     homelab.proxy = {
       enable = true;
+      address = "192.168.50.22";
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
       dns = {
@@ -14,6 +15,8 @@ _: {
         defaultProxied = false;
         defaultTarget = "homelab.sacha.house";
         cnames = {
+          "*.homelab.sacha.house" = "homelab.sacha.house";
+          "*.sacha.house" = "homelab.sacha.house";
           "www.froment.software" = "froment.software";
           "www.sacha.house" = "sacha.house";
         };
@@ -47,111 +50,6 @@ _: {
           upstreamPort = 5000;
         };
 
-        "htmx.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9122;
-          websockets = true;
-        };
-
-        "staging.htmx.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          websockets = true;
-          robotsNoIndex = true;
-        };
-
-        "lanblaster.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9032;
-          websockets = true;
-        };
-
-        "staging.lanblaster.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          websockets = true;
-          robotsNoIndex = true;
-        };
-
-        "musee.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          websockets = true;
-        };
-
-        "staging.musee.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          websockets = true;
-          robotsNoIndex = true;
-        };
-
-        "button.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9042;
-        };
-
-        "staging.button.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
-        "react-training.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9052;
-        };
-
-        "staging.react-training.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
-        "marketing.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9062;
-        };
-
-        "staging.marketing.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
-        "staging.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
-        "sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9072;
-        };
-
-        "staging.clockin.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
-        "clockin.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9082;
-        };
-
-        "staging.albumator.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
-        "albumator.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9092;
-        };
-
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;
@@ -172,28 +70,6 @@ _: {
           websockets = true;
         };
 
-        "wthhyb.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9022;
-        };
-
-        "staging.wthhyb.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
-        "chat.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9102;
-        };
-
-        "staging.chat.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          robotsNoIndex = true;
-        };
-
         "debrid.homelab.sacha.house" = {
           dockerContainer = "rdtclient";
           dockerPort = 6500;
@@ -208,19 +84,6 @@ _: {
             value = "82.66.185.90";
             proxied = false;
           };
-        };
-
-        "php.homelab.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9112;
-          websockets = true;
-        };
-
-        "staging.php.homelab.sacha.house" = {
-          upstreamHost = "127.0.0.1";
-          upstreamPort = 9140;
-          websockets = true;
-          robotsNoIndex = true;
         };
 
         "pixels.aubetoile.dev" = {
