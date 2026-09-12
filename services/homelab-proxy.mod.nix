@@ -24,9 +24,12 @@
     sanitize = value:
       builtins.replaceStrings ["." "-" "/"] ["_" "_" "_"] value;
 
+    usesCloudflareDns = domain:
+      domain == "sacha.house" || lib.hasSuffix ".sacha.house" domain;
+
     hostEntries = mapAttrsToList (domain: hostCfg: hostCfg // {inherit domain;}) cfg.hosts;
     dockerHosts = builtins.filter (hostCfg: hostCfg.dockerContainer != null) hostEntries;
-    externalDomains = builtins.filter (domain: !(lib.hasSuffix ".sacha.house" domain || domain == "sacha.house")) (builtins.attrNames cfg.hosts);
+    externalDomains = builtins.filter (domain: !usesCloudflareDns domain) (builtins.attrNames cfg.hosts);
     dockerSpec = builtins.listToAttrs (map
       (hostCfg: {
         name = hostCfg.domain;
@@ -49,7 +52,7 @@
             entryPoints = ["nomad"];
             service = "legacy-nginx";
           }
-          // lib.optionalAttrs (!(lib.hasSuffix ".sacha.house" domain || domain == "sacha.house")) {
+          // lib.optionalAttrs (!usesCloudflareDns domain) {
             tls.certResolver = "letsencrypt";
           };
       })
@@ -63,7 +66,7 @@
     in {
       name = domain;
       value = {
-        enableACME = !(lib.hasSuffix ".sacha.house" domain || domain == "sacha.house");
+        enableACME = !usesCloudflareDns domain;
         forceSSL = false;
         serverAliases = hostCfg.aliases;
         inherit (hostCfg) basicAuthFile;
