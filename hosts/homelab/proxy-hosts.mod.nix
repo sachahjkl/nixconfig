@@ -17,6 +17,7 @@ _: {
         cnames = {
           "*.homelab.sacha.house" = "homelab.sacha.house";
           "*.sacha.house" = "homelab.sacha.house";
+          "sacha.house" = "homelab.sacha.house";
           "www.froment.software" = "froment.software";
           "www.sacha.house" = "sacha.house";
         };
