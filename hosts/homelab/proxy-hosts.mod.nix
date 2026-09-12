@@ -75,13 +75,13 @@ _: {
 
         "musee.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9132;
+          upstreamPort = 9140;
           websockets = true;
         };
 
         "staging.musee.sacha.house" = {
           upstreamHost = "127.0.0.1";
-          upstreamPort = 9131;
+          upstreamPort = 9140;
           websockets = true;
           robotsNoIndex = true;
         };
