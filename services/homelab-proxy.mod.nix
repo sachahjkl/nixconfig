@@ -63,7 +63,7 @@
     in {
       name = domain;
       value = {
-        enableACME = false;
+        enableACME = !(lib.hasSuffix ".sacha.house" domain || domain == "sacha.house");
         forceSSL = false;
         serverAliases = hostCfg.aliases;
         inherit (hostCfg) basicAuthFile;
@@ -283,6 +283,7 @@
           acceptTerms = true;
           defaults = {
             email = cfg.acmeEmail;
+            reloadServices = ["traefik.service"];
           };
         };
 
