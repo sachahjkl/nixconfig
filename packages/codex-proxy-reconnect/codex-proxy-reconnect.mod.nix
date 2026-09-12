@@ -88,7 +88,7 @@ _: {
                   systemctl is-active codex-proxy.service
                   token=$(cat /run/credentials/codex-proxy.service/proxy-token)
                   curl --fail --silent --show-error --max-time 15 \
-                    -H "Proxy-Authorization: Bearer $token" \
+                    -H "X-Codex-Authorization: Bearer $token" \
                     http://127.0.0.1:8083/readyz >/dev/null
         REMOTE
         opencode2 auth logout openai

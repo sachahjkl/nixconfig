@@ -49,7 +49,7 @@
       plugins = ["${backlogPackage}/lib/opencode-backlog/dist/index.js"];
       providers.simulacra = {
         settings.apiKey = "unused";
-        headers.Proxy-Authorization = "Bearer {env:SIMULACRA_TOKEN}";
+        headers.X-Codex-Authorization = "Bearer {env:SIMULACRA_TOKEN}";
       };
       share = "disabled";
       skills = ["${inputs.skills}"];
