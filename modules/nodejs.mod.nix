@@ -8,6 +8,7 @@
   }: let
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasHomeDirectory = lib.hasAttrByPath ["homeDirectory"] options;
+    hasPersistDirectories = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasSharedSops = lib.hasAttrByPath ["sharedSops" "enable"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
     npmTokenPath = "/run/secrets/npm-current-token";
@@ -30,9 +31,19 @@
       {
         environment.systemPackages = [
           pkgs.nodejs
+          pkgs.pnpm
           (lib.hiPrio wrappedNpm)
         ];
       }
+
+      (lib.optionalAttrs hasHomeDirectory {
+        environment = {
+          extraInit = ''
+            export PATH="${config.homeDirectory}/.local/share/pnpm/bin:$PATH"
+          '';
+          sessionVariables.PNPM_HOME = "${config.homeDirectory}/.local/share/pnpm";
+        };
+      })
 
       (lib.optionalAttrs (hasHjemUsers && hasHomeDirectory && hasUserName) {
         hjem.users.${config.userName}.files.".npmrc".text = ''
@@ -51,6 +62,10 @@
           group = "users";
           mode = "0400";
         };
+      })
+
+      (lib.optionalAttrs hasPersistDirectories {
+        persist.user.directories = [".local/share/pnpm"];
       })
     ];
   };
