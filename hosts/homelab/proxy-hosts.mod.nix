@@ -5,6 +5,7 @@ _: {
     homelab.proxy = {
       enable = true;
       address = "192.168.50.22";
+      controlAddress = "100.106.51.80";
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
       dns = {

@@ -8,7 +8,6 @@ _: {
   }: let
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasHomeDirectory = lib.hasAttrByPath ["homeDirectory"] options;
-    hasOpenCodeSettings = lib.hasAttrByPath ["opencode" "settings"] options;
     hasPersistDirectories = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
   in {
@@ -35,13 +34,6 @@ _: {
 
       (lib.optionalAttrs hasPersistDirectories {
         persist.user.directories = [".local/share/go"];
-      })
-
-      (lib.optionalAttrs hasOpenCodeSettings {
-        opencode.settings.lsp.go = {
-          command = [(lib.getExe pkgs.gopls)];
-          extensions = [".go"];
-        };
       })
     ];
   };

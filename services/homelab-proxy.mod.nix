@@ -28,6 +28,17 @@
         description = "Address used by the public Traefik entrypoints.";
       };
 
+      controlAddress = mkOption {
+        type = types.str;
+        description = "Private address used by the Traefik read-only API.";
+      };
+
+      controlInterface = mkOption {
+        type = types.str;
+        default = "ts0";
+        description = "Private interface that accepts Traefik API traffic.";
+      };
+
       acmeEmail = mkOption {
         type = types.str;
         description = "Contact email used for ACME registrations.";

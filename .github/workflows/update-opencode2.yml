@@ -1,0 +1,49 @@
+name: Update OpenCode V2
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31
+      - name: Update the pinned beta release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          package=packages/opencode2/opencode2.mod.nix
+          current=$(nix eval --raw .#opencode2.version)
+          latest=$(npm view @opencode/cli@beta version)
+          if [ "$current" = "$latest" ]; then
+            exit 0
+          fi
+
+          nix run nixpkgs#nix-update -- --flake opencode2 --version "$latest"
+
+          nix build .#opencode2
+          test "$(./result/bin/opencode2 --version)" = "opencode v$latest"
+          nix flake check --no-write-lock-file
+
+          branch="automation/opencode2-$latest"
+          git config user.name github-actions
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git switch -c "$branch"
+          git add "$package"
+          git commit -m "Update OpenCode V2 to $latest"
+          git push --force-with-lease origin "$branch"
+          if ! gh pr view "$branch" >/dev/null 2>&1; then
+            gh pr create \
+              --base master \
+              --head "$branch" \
+              --title "Update OpenCode V2 to $latest" \
+              --body "Update the prebuilt OpenCode V2 binary from the npm beta channel."
+          fi

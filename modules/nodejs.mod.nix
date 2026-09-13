@@ -36,18 +36,12 @@
         ];
       }
 
-      (lib.optionalAttrs hasHomeDirectory {
-        environment = {
-          extraInit = ''
-            export PATH="${config.homeDirectory}/.local/share/pnpm/bin:$PATH"
-          '';
-          sessionVariables.PNPM_HOME = "${config.homeDirectory}/.local/share/pnpm";
-        };
-      })
-
       (lib.optionalAttrs (hasHjemUsers && hasHomeDirectory && hasUserName) {
         hjem.users.${config.userName} = {
           environment.sessionVariables.PNPM_HOME = "${config.homeDirectory}/.local/share/pnpm";
+          files.".config/fish/conf.d/pnpm.fish".text = ''
+            fish_add_path --global --move ${config.homeDirectory}/.local/share/pnpm/bin
+          '';
           files.".npmrc".text = ''
             prefix=${config.homeDirectory}/.local
           '';

@@ -58,7 +58,9 @@
         dynamicConfigFile = "/run/homelab-traefik/routes.yaml";
         environmentFiles = [config.sops.templates."traefik-cloudflare.env".path];
         staticConfigOptions = {
+          api.dashboard = false;
           entryPoints = {
+            control.address = "${cfg.controlAddress}:8080";
             web = {
               address = "${cfg.address}:80";
               http.redirections.entryPoint = {
@@ -91,6 +93,7 @@
       };
 
       networking.firewall.allowedTCPPorts = [80 443];
+      networking.firewall.interfaces.${cfg.controlInterface}.allowedTCPPorts = [8080];
 
       systemd = {
         tmpfiles.rules = [
@@ -243,6 +246,13 @@
                     "service": "noop@internal",
                     "tls": {"certResolver": "cloudflare"},
                 }
+
+            routers["traefik-api"] = {
+                "entryPoints": ["control"],
+                "priority": 1000,
+                "rule": "PathPrefix(`/api`)",
+                "service": "api@internal",
+            }
 
             http = {
                 "middlewares": middlewares,

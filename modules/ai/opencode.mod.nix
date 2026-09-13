@@ -5,8 +5,8 @@
   ...
 }: {
   flake.lib.opencode = {
-    defaultSettings = pkgs: let
-      backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    defaultSettings = homeDirectory: let
+      extensionDirectory = "${homeDirectory}/.local/share/opencode/nix-extensions";
       readOnlyJjCommands = [
         "jj bookmark list*"
         "jj config get*"
@@ -45,14 +45,14 @@
         "jj workspace root*"
       ];
     in {
-      autoupdate = false;
-      plugins = ["${backlogPackage}/lib/opencode-backlog/dist/index.js"];
+      update = "disable";
+      plugins = ["${extensionDirectory}/opencode-backlog.js"];
       providers.simulacra = {
         settings.apiKey = "unused";
         headers.X-Codex-Authorization = "Bearer {env:SIMULACRA_TOKEN}";
       };
       share = "disabled";
-      skills = ["${inputs.skills}"];
+      skills = ["${extensionDirectory}/skills"];
       permissions =
         [
           {
@@ -75,7 +75,7 @@
           }
           {
             action = "external_directory";
-            resource = "/home/sacha/Projects/*";
+            resource = "${homeDirectory}/Projects/*";
             effect = "allow";
           }
           {
@@ -101,15 +101,10 @@
         "node_modules/**"
         "result/**"
       ];
-      lsp.nix = {
-        command = [(lib.getExe pkgs.nixd)];
-        extensions = [".nix"];
-      };
     };
 
-    defaultCliSettings = pkgs: let
-      backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    in {
+    defaultCliSettings = homeDirectory: {
+      "$schema" = "https://opencode.ai/v2/cli.json";
       attention.enabled = true;
       animations = true;
       debug = {
@@ -120,7 +115,7 @@
         view = "split";
         wrap = "word";
       };
-      plugins = ["${backlogPackage}/lib/opencode-backlog/dist/tui.js"];
+      plugins = ["${homeDirectory}/.local/share/opencode/nix-extensions/opencode-backlog-tui.js"];
       prompt.image_preview = true;
       scroll.acceleration = true;
       session = {
@@ -159,6 +154,7 @@
       '';
 
     mkOpenCodeConfig = {
+      homeDirectory,
       pkgs,
       settings ? {},
     }:
@@ -167,16 +163,17 @@
           {
             "$schema" = "https://opencode.ai/config.json";
           }
-          // lib.recursiveUpdate (self.lib.opencode.defaultSettings pkgs) settings
+          // lib.recursiveUpdate (self.lib.opencode.defaultSettings homeDirectory) settings
         )
       );
 
     mkOpenCodeCliConfig = {
+      homeDirectory,
       pkgs,
       settings ? {},
     }:
       pkgs.writeText "cli.json" (
-        builtins.toJSON (lib.recursiveUpdate (self.lib.opencode.defaultCliSettings pkgs) settings)
+        builtins.toJSON (lib.recursiveUpdate (self.lib.opencode.defaultCliSettings homeDirectory) settings)
       );
   };
 
@@ -188,15 +185,19 @@
   }: let
     cfg = config.opencode;
     inherit (lib) mkIf mkOption types;
+    backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    extensionDirectory = "${config.homeDirectory}/.local/share/opencode/nix-extensions";
 
     opencodeConfig = self.lib.opencode.mkOpenCodeConfig {
+      inherit (config) homeDirectory;
       inherit pkgs;
-      inherit (cfg) settings;
+      settings = cfg.initialSettings;
     };
     opencodeAgents = self.lib.opencode.mkOpenCodeAgents pkgs;
     opencodeCliConfig = self.lib.opencode.mkOpenCodeCliConfig {
+      inherit (config) homeDirectory;
       inherit pkgs;
-      settings = cfg.cliSettings;
+      settings = cfg.initialCliSettings;
     };
   in {
     imports = [
@@ -211,16 +212,16 @@
         description = "Whether to initialize writable OpenCode configuration files.";
       };
 
-      settings = mkOption {
+      initialSettings = mkOption {
         type = types.attrs;
         default = {};
-        description = "Settings merged into the generated OpenCode configuration.";
+        description = "Settings used only when the writable OpenCode configuration is first created.";
       };
 
-      cliSettings = mkOption {
+      initialCliSettings = mkOption {
         type = types.attrs;
         default = {};
-        description = "Settings merged into the generated OpenCode TUI configuration.";
+        description = "Settings used only when the writable OpenCode CLI configuration is first created.";
       };
     };
 
@@ -241,35 +242,26 @@
         ".local/share/opencode"
       ];
 
-      systemd.services.opencode-config = {
-        description = "Initialize writable OpenCode configuration files";
-        wantedBy = ["multi-user.target"];
-        after = ["hjem.target"];
-        requires = ["hjem.target"];
-        restartTriggers = [opencodeAgents opencodeCliConfig opencodeConfig];
-        serviceConfig = {
-          Type = "oneshot";
-          User = config.userName;
-          Group = "users";
-        };
-        script = ''
-          config_directory=${lib.escapeShellArg "${config.homeDirectory}/.config/opencode"}
-          mkdir -p "$config_directory"
-
-          initialize_config() {
-            source="$1"
-            target="$2"
-
-            if [ ! -e "$target" ]; then
-              install -m 0644 "$source" "$target"
-            fi
-          }
-
-          initialize_config ${opencodeAgents} "$config_directory/AGENTS.md"
-          initialize_config ${opencodeCliConfig} "$config_directory/cli.json"
-          initialize_config ${opencodeConfig} "$config_directory/opencode.json"
+      environment = {
+        extraInit = ''
+          if [ -r /run/secrets/ai/simulacra-token ]; then
+            export SIMULACRA_TOKEN="$(cat /run/secrets/ai/simulacra-token)"
+          fi
         '';
+        sessionVariables.OPENCODE_MODELS_URL = "https://codex.sacha.house";
+        systemPackages = [self.packages.${pkgs.stdenv.hostPlatform.system}.opencode2];
       };
+
+      systemd.user.tmpfiles.users.${config.userName}.rules = [
+        "d ${config.homeDirectory}/.config/opencode 0700 - - -"
+        "d ${extensionDirectory} 0700 - - -"
+        "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
+        "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
+        "C ${config.homeDirectory}/.config/opencode/opencode.json 0644 - - - ${opencodeConfig}"
+        "L+ ${extensionDirectory}/opencode-backlog.js - - - - ${backlogPackage}/lib/opencode-backlog/dist/index.js"
+        "L+ ${extensionDirectory}/opencode-backlog-tui.js - - - - ${backlogPackage}/lib/opencode-backlog/dist/tui.js"
+        "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
+      ];
     };
   };
 }
