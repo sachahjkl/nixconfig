@@ -123,10 +123,26 @@
             import json
             import os
             import subprocess
+            import time
 
 
             def docker_address(container):
-                inspect = subprocess.check_output(["docker", "inspect", container], text=True)
+                for _ in range(60):
+                    result = subprocess.run(
+                        ["docker", "inspect", container],
+                        capture_output=True,
+                        text=True,
+                    )
+                    if result.returncode == 0:
+                        inspect = result.stdout
+                        break
+                    time.sleep(1)
+                else:
+                    raise RuntimeError(
+                        f"Docker container {container} was not available after 60 seconds: "
+                        f"{result.stderr.strip()}"
+                    )
+
                 networks = json.loads(inspect)[0].get("NetworkSettings", {}).get("Networks", {})
                 for network_name in (spec["dockerNetwork"], *networks.keys()):
                     network = networks.get(network_name)
