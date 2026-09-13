@@ -11,6 +11,10 @@
     githubActionsPolicies = lib.genAttrs cfg.namespaces (
       namespace:
         pkgs.writeText "nomad-github-actions-${namespace}-policy.hcl" ''
+          namespace "*" {
+            policy = "read"
+          }
+
           namespace ${builtins.toJSON namespace} {
             policy = "write"
           }
