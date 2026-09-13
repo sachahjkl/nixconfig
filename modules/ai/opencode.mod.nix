@@ -180,20 +180,14 @@
       );
   };
 
-  perSystem = {pkgs, ...}: {
-    packages.opencode2 = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
-  };
-
   flake.nixosModules.opencode = {
     config,
     lib,
-    options,
     pkgs,
     ...
   }: let
     cfg = config.opencode;
-    inherit (lib) mkEnableOption mkIf mkOption types;
-    hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
+    inherit (lib) mkIf mkOption types;
 
     opencodeConfig = self.lib.opencode.mkOpenCodeConfig {
       inherit pkgs;
@@ -204,37 +198,6 @@
       inherit pkgs;
       settings = cfg.cliSettings;
     };
-
-    upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
-    mcpNixos = pkgs.mcp-nixos;
-    simulacraTokenPath = lib.attrByPath ["sops" "secrets" "ai/simulacra-token" "path"] "/run/secrets/ai/simulacra-token" config;
-
-    mkOpenCodeWrapper = name:
-      pkgs.writeShellScriptBin name ''
-        export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
-        export OPENCODE_MODELS_URL="https://codex.sacha.house"
-        if [ -r ${simulacraTokenPath} ]; then
-          export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
-        fi
-        exec ${lib.getExe upstreamOpencode} "$@"
-      '';
-
-    wrappedOpenCode = pkgs.symlinkJoin {
-      name = "opencode2-wrapped";
-      paths = [(mkOpenCodeWrapper "opencode2")];
-      meta.mainProgram = "opencode2";
-    };
-
-    opencodeCompletions = pkgs.runCommand "opencode-completions" {} ''
-      mkdir -p $out/share/fish/vendor_completions.d
-      mkdir -p $out/share/bash-completion/completions
-      mkdir -p $out/share/zsh/site-functions
-      export HOME=$TMPDIR
-
-      ${lib.getExe upstreamOpencode} --completions fish > $out/share/fish/vendor_completions.d/opencode2.fish
-      ${lib.getExe upstreamOpencode} --completions bash > $out/share/bash-completion/completions/opencode2
-      ${lib.getExe upstreamOpencode} --completions zsh > $out/share/zsh/site-functions/_opencode2
-    '';
   in {
     imports = [
       self.nixosModules.sops
@@ -245,35 +208,7 @@
       enable = mkOption {
         type = types.bool;
         default = true;
-        description = "Whether to install and configure OpenCode.";
-      };
-
-      server = {
-        enable = mkEnableOption "OpenCode headless API server";
-
-        hostname = mkOption {
-          type = types.str;
-          default = "127.0.0.1";
-          description = "Hostname the OpenCode server listens on.";
-        };
-
-        port = mkOption {
-          type = types.port;
-          default = 4096;
-          description = "Port the OpenCode server listens on.";
-        };
-
-        openFirewall = mkOption {
-          type = types.bool;
-          default = true;
-          description = "Open the firewall for the OpenCode server port.";
-        };
-      };
-
-      homelabServerUrl = mkOption {
-        type = types.nullOr types.str;
-        default = null;
-        description = "URL of a remote OpenCode server to connect to via a shell function.";
+        description = "Whether to initialize writable OpenCode configuration files.";
       };
 
       settings = mkOption {
@@ -306,51 +241,31 @@
         ".local/share/opencode"
       ];
 
-      hjem.users.${config.userName} = mkIf hasHjemUsers {
-        files = {
-          ".config/opencode/AGENTS.md".source = opencodeAgents;
-          ".config/opencode/cli.json".source = opencodeCliConfig;
-          ".config/opencode/opencode.json".source = opencodeConfig;
-        };
+      system.userActivationScripts.opencode-config.text = ''
+        if [ "$(id --user --name)" = ${lib.escapeShellArg config.userName} ]; then
+          config_directory=${lib.escapeShellArg "${config.homeDirectory}/.config/opencode"}
+          mkdir -p "$config_directory"
 
-        rum.programs.fish.functions.homelab-code = mkIf (cfg.homelabServerUrl != null) ''
-          opencode2 --server ${cfg.homelabServerUrl} $argv
-        '';
-      };
+          initialize_config() {
+            source="$1"
+            target="$2"
 
-      environment.systemPackages =
-        [
-          wrappedOpenCode
-          opencodeCompletions
-        ]
-        ++ lib.optional (cfg.homelabServerUrl != null) (
-          pkgs.writeShellScriptBin "opencode-homelab" ''
-            exec ${lib.getExe wrappedOpenCode} --server ${cfg.homelabServerUrl} "$@"
-          ''
-        );
+            if [ -L "$target" ]; then
+              temporary="$(mktemp)"
+              cp --dereference "$target" "$temporary"
+              rm "$target"
+              install -m 0644 "$temporary" "$target"
+              rm "$temporary"
+            elif [ ! -e "$target" ]; then
+              install -m 0644 "$source" "$target"
+            fi
+          }
 
-      systemd.services.opencode-server = mkIf cfg.server.enable {
-        description = "OpenCode headless server";
-        wantedBy = ["multi-user.target"];
-        after = ["network-online.target"];
-        requires = ["network-online.target"];
-        serviceConfig = {
-          Type = "simple";
-          ExecStart = lib.escapeShellArgs [
-            (lib.getExe wrappedOpenCode)
-            "serve"
-            "--hostname"
-            cfg.server.hostname
-            "--port"
-            (toString cfg.server.port)
-          ];
-          Restart = "on-failure";
-          User = config.userName;
-          Group = "users";
-        };
-      };
-
-      networking.firewall.allowedTCPPorts = mkIf (cfg.server.enable && cfg.server.openFirewall) [cfg.server.port];
+          initialize_config ${opencodeAgents} "$config_directory/AGENTS.md"
+          initialize_config ${opencodeCliConfig} "$config_directory/cli.json"
+          initialize_config ${opencodeConfig} "$config_directory/opencode.json"
+        fi
+      '';
     };
   };
 }

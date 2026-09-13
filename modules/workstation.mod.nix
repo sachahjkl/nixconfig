@@ -69,8 +69,6 @@
       distributedBuilds = true;
     };
 
-    opencode.homelabServerUrl = lib.mkDefault "http://homelab:4096";
-
     editor.vscode.enable = true;
   };
 }

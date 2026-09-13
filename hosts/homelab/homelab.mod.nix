@@ -70,12 +70,6 @@ lib.systems.nixosSystem "homelab" {
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
 
-    opencode.server = {
-      enable = false;
-      hostname = "0.0.0.0";
-      port = 4096;
-    };
-
     system.autoUpgrade = {
       enable = true;
       flake = "${config.nixConfigPath}#homelab";
