@@ -187,6 +187,7 @@
     inherit (lib) mkIf mkOption types;
     backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
     extensionDirectory = "${config.homeDirectory}/.local/share/opencode/nix-extensions";
+    simulacraTokenPath = "/run/secrets/ai/simulacra-token";
 
     opencodeConfig = self.lib.opencode.mkOpenCodeConfig {
       inherit (config) homeDirectory;
@@ -234,6 +235,7 @@
           };
           owner = config.userName;
           mode = "0400";
+          path = simulacraTokenPath;
         };
       };
 
@@ -244,12 +246,22 @@
 
       environment = {
         extraInit = ''
-          if [ -r /run/secrets/ai/simulacra-token ]; then
-            export SIMULACRA_TOKEN="$(cat /run/secrets/ai/simulacra-token)"
+          if [ -r ${simulacraTokenPath} ]; then
+            export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
           fi
         '';
         sessionVariables.OPENCODE_MODELS_URL = "https://codex.sacha.house";
         systemPackages = [self.packages.${pkgs.stdenv.hostPlatform.system}.opencode2];
+      };
+
+      hjem.users.${config.userName} = {
+        environment.sessionVariables.OPENCODE_MODELS_URL = "https://codex.sacha.house";
+        files.".config/fish/conf.d/opencode.fish".text = ''
+          set --global --export OPENCODE_MODELS_URL https://codex.sacha.house
+          if test -r ${simulacraTokenPath}
+            set --global --export SIMULACRA_TOKEN (string collect <${simulacraTokenPath})
+          end
+        '';
       };
 
       systemd.user.tmpfiles.users.${config.userName}.rules = [
