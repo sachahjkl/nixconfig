@@ -46,9 +46,12 @@
       })
 
       (lib.optionalAttrs (hasHjemUsers && hasHomeDirectory && hasUserName) {
-        hjem.users.${config.userName}.files.".npmrc".text = ''
-          prefix=${config.homeDirectory}/.local
-        '';
+        hjem.users.${config.userName} = {
+          environment.sessionVariables.PNPM_HOME = "${config.homeDirectory}/.local/share/pnpm";
+          files.".npmrc".text = ''
+            prefix=${config.homeDirectory}/.local
+          '';
+        };
       })
 
       (lib.mkIf (hasSharedSops && config.sharedSops.enable && hasUserName) {
