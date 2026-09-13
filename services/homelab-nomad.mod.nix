@@ -8,31 +8,26 @@
     cfg = config.homelab.services.nomad;
     dataRoot = "${config.homelab.dataRoot}/Services/nomad";
     secretFile = config.sops.templates."nomad-secrets.json".path;
-    githubActionsPolicy = pkgs.writeText "nomad-github-actions-policy.hcl" ''
-      namespace "staging" {
-        policy = "write"
-      }
+    githubActionsPolicies = lib.genAttrs cfg.namespaces (
+      namespace:
+        pkgs.writeText "nomad-github-actions-${namespace}-policy.hcl" ''
+          namespace ${builtins.toJSON namespace} {
+            policy = "write"
+          }
 
-      namespace "production" {
-        policy = "write"
-      }
+          agent {
+            policy = "read"
+          }
 
-      agent {
-        policy = "read"
-      }
+          node {
+            policy = "read"
+          }
 
-      node {
-        policy = "read"
-      }
-
-      host_volume "*-staging-data" {
-        policy = "write"
-      }
-
-      host_volume "*-production-data" {
-        policy = "write"
-      }
-    '';
+          host_volume ${builtins.toJSON "*-${namespace}-data"} {
+            policy = "write"
+          }
+        ''
+    );
     githubActionsAuthConfig = pkgs.writeText "nomad-github-actions-auth.json" (builtins.toJSON {
       JWKSURL = "https://token.actions.githubusercontent.com/.well-known/jwks";
       BoundAudiences = [cfg.githubActions.audience];
@@ -73,6 +68,12 @@
         };
       };
 
+      namespaces = lib.mkOption {
+        type = lib.types.listOf (lib.types.strMatching "[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?");
+        default = [];
+        description = "Application namespaces exposed through Nomad and Traefik.";
+      };
+
       nodeClass = lib.mkOption {
         type = lib.types.str;
         default = "general";
@@ -111,6 +112,10 @@
         {
           assertion = !cfg.client || cfg.serverAddresses != [];
           message = "A Nomad client must declare at least one server address.";
+        }
+        {
+          assertion = !(cfg.ingress || cfg.githubActions.enable) || cfg.namespaces != [];
+          message = "Nomad ingress and GitHub Actions authentication require application namespaces.";
         }
       ];
 
@@ -224,7 +229,7 @@
         environmentFiles = [config.sops.templates."traefik-nomad.env".path];
         staticConfigOptions = {
           providers.nomad = {
-            namespaces = ["staging" "production"];
+            inherit (cfg) namespaces;
             exposedByDefault = false;
             watch = true;
             endpoint = {
@@ -269,9 +274,16 @@
             done
             nomad status >/dev/null
 
-            nomad acl policy apply \
-              -description "Deploy trusted GitHub repositories to shared application namespaces" \
-              github-actions-deploy ${githubActionsPolicy}
+            ${lib.concatMapStringsSep "\n" (namespace: ''
+                nomad acl policy apply \
+                  -description "Deploy trusted GitHub repositories to ${namespace}" \
+                  github-actions-deploy-${namespace} ${githubActionsPolicies.${namespace}}
+              '')
+              cfg.namespaces}
+
+            if nomad acl policy info github-actions-deploy >/dev/null 2>&1; then
+              nomad acl policy delete github-actions-deploy
+            fi
 
             auth_method_args=(
               -type JWT
@@ -286,41 +298,37 @@
               nomad acl auth-method create -name github-actions "''${auth_method_args[@]}"
             fi
 
-            configure_rule() {
-              local description="$1"
-              local selector="$2"
-              local rule_id
+            description="Trusted GitHub deployments"
+            selector='value.repository_owner=="${cfg.githubActions.owner}" and value.ref=="refs/heads/master"'
+            rule_id="$(
+              nomad acl binding-rule list -json \
+                | jq -r --arg description "$description" \
+                  '.[] | select(.AuthMethod == "github-actions" and .Description == $description) | .ID' \
+                | head -n 1
+            )"
 
-              rule_id="$(
-                nomad acl binding-rule list -json \
-                  | jq -r --arg description "$description" \
-                    '.[] | select(.AuthMethod == "github-actions" and .Description == $description) | .ID' \
-                  | head -n 1
-              )"
+            binding_rule_args=(
+              -description "$description"
+              -selector "$selector"
+              -bind-type policy
+              -bind-name "github-actions-deploy-\''${value.environment}"
+            )
+            if [ -n "$rule_id" ]; then
+              nomad acl binding-rule update "''${binding_rule_args[@]}" "$rule_id"
+            else
+              nomad acl binding-rule create \
+                -auth-method github-actions \
+                "''${binding_rule_args[@]}"
+            fi
 
-              if [ -n "$rule_id" ]; then
-                nomad acl binding-rule update \
-                  -description "$description" \
-                  -selector "$selector" \
-                  -bind-type policy \
-                  -bind-name github-actions-deploy \
-                  "$rule_id"
-              else
-                nomad acl binding-rule create \
-                  -description "$description" \
-                  -auth-method github-actions \
-                  -selector "$selector" \
-                  -bind-type policy \
-                  -bind-name github-actions-deploy
-              fi
-            }
-
-            configure_rule \
-              "Trusted GitHub staging deployments" \
-              'value.repository_owner=="${cfg.githubActions.owner}" and value.ref=="refs/heads/master" and value.environment=="staging"'
-            configure_rule \
-              "Trusted GitHub production deployments" \
-              'value.repository_owner=="${cfg.githubActions.owner}" and value.ref=="refs/heads/master" and value.environment=="production"'
+            mapfile -t obsolete_rule_ids < <(
+              nomad acl binding-rule list -json \
+                | jq -r --arg description "$description" \
+                  '.[] | select(.AuthMethod == "github-actions" and .Description != $description) | .ID'
+            )
+            for obsolete_rule_id in "''${obsolete_rule_ids[@]}"; do
+              nomad acl binding-rule delete "$obsolete_rule_id"
+            done
           '';
         };
       };

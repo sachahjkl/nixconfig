@@ -59,6 +59,7 @@ lib.systems.nixosSystem "homelab" {
           client = true;
           githubActions.enable = true;
           ingress = true;
+          namespaces = ["staging" "production"];
           nodeClass = "general";
           serverAddresses = ["100.106.51.80"];
           address = "100.106.51.80";
