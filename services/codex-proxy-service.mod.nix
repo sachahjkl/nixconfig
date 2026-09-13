@@ -12,12 +12,23 @@
       mkOption
       types
       ;
-    cfg = config.homelab.services.codexProxy;
+    cfg = config.services.codexProxyIntegration;
   in {
     imports = [inputs.ai-api-proxy.nixosModules.default];
 
-    options.homelab.services.codexProxy = {
-      enable = mkEnableOption "codex.sacha.house reverse proxy";
+    options.services.codexProxyIntegration = {
+      enable = mkEnableOption "Codex API proxy integration";
+
+      domain = mkOption {
+        type = types.str;
+        description = "Domain routed to the Codex API proxy.";
+      };
+
+      publicUrl = mkOption {
+        type = types.str;
+        default = "https://${cfg.domain}";
+        description = "Public URL advertised by the Codex API proxy.";
+      };
 
       host = mkOption {
         type = types.str;
@@ -48,11 +59,11 @@
       services.codex-proxy = {
         enable = true;
         listenAddress = "${cfg.host}:${toString cfg.port}";
-        publicUrl = "https://codex.sacha.house";
+        inherit (cfg) publicUrl;
         inherit (cfg) oauthCredentialFile proxyTokenFile;
       };
 
-      homelab.proxy.hosts."codex.sacha.house" = {
+      services.reverseProxy.hosts.${cfg.domain} = {
         upstreamHost = mkDefault cfg.host;
         upstreamPort = mkDefault cfg.port;
       };

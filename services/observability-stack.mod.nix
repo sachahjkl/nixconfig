@@ -1,15 +1,15 @@
 _: {
-  flake.nixosModules.homelabObservability = {
+  flake.nixosModules.observabilityStack = {
     config,
     lib,
     pkgs,
     ...
   }: let
     inherit (lib) mkEnableOption mkIf mkOption types;
-    cfg = config.homelab.services.observability;
+    cfg = config.services.observabilityStack;
     yaml = pkgs.formats.yaml {};
-    dataRoot = "${config.homelab.dataRoot}/Docker/appdata/observability";
-    network = "services";
+    dataRoot = cfg.dataDir;
+    network = cfg.containerNetwork;
 
     collectorConfig = yaml.generate "otel-collector.yaml" {
       receivers.otlp.protocols = {
@@ -197,18 +197,27 @@ _: {
       "docker-tempo"
     ];
   in {
-    options.homelab.services.observability = {
+    options.services.observabilityStack = {
       enable = mkEnableOption "the central observability stack";
+
+      dataDir = mkOption {
+        type = types.str;
+        description = "Directory containing observability service data.";
+      };
+
+      containerNetwork = mkOption {
+        type = types.str;
+        default = "services";
+        description = "OCI network shared by the observability containers.";
+      };
 
       grafanaDomain = mkOption {
         type = types.str;
-        default = "grafana.sacha.house";
         description = "Public domain for Grafana.";
       };
 
       otlpDomain = mkOption {
         type = types.str;
-        default = "otlp.sacha.house";
         description = "Public domain for OTLP/HTTP ingestion.";
       };
 
@@ -320,8 +329,8 @@ _: {
       ];
 
       systemd.services = lib.genAttrs containerServices (_: {
-        after = ["docker-create-services-network.service"];
-        requires = ["docker-create-services-network.service"];
+        after = ["docker-create-shared-network.service"];
+        requires = ["docker-create-shared-network.service"];
       });
     };
   };

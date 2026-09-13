@@ -1,11 +1,14 @@
-_: {
-  flake.nixosModules.homelabProxyHosts = {config, ...}: let
-    observability = config.homelab.services.observability;
+{self, ...}: {
+  flake.nixosModules.homelabRoutes = {config, ...}: let
+    observability = config.services.observabilityStack;
   in {
-    homelab.proxy = {
+    services.reverseProxy = {
       enable = true;
       address = "192.168.50.22";
       controlAddress = "100.106.51.80";
+      controlInterface = "ts0";
+      cloudflareDnsSopsFile = self + /secrets/shared.yaml;
+      dockerNetwork = "services";
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
       dns = {

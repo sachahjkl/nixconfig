@@ -1,13 +1,13 @@
 _: {
-  flake.nixosModules.homelabFilebrowser = {
+  flake.nixosModules.filebrowserIntegration = {
     config,
     lib,
     ...
   }: let
-    cfg = config.homelab.services.filebrowser;
+    cfg = config.services.filebrowserIntegration;
     inherit (lib) mkEnableOption mkIf mkOption types;
   in {
-    options.homelab.services.filebrowser = {
+    options.services.filebrowserIntegration = {
       enable = mkEnableOption "File Browser native service";
 
       port = mkOption {
@@ -18,7 +18,6 @@ _: {
 
       root = mkOption {
         type = types.str;
-        default = "${config.homelab.dataRoot}";
         description = "Root directory served by File Browser.";
       };
     };

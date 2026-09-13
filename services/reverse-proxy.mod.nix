@@ -1,5 +1,5 @@
 {self, ...}: {
-  flake.nixosModules.homelabProxy = {
+  flake.nixosModules.reverseProxy = {
     config,
     lib,
     ...
@@ -12,16 +12,16 @@
       types
       ;
 
-    cfg = config.homelab.proxy;
+    cfg = config.services.reverseProxy;
     hostEntries = lib.attrValues cfg.hosts;
   in {
     imports = [
       self.nixosModules.cloudflareDns
-      self.nixosModules.homelabTraefik
+      self.nixosModules.reverseProxyTraefik
     ];
 
-    options.homelab.proxy = {
-      enable = mkEnableOption "Traefik ingress for homelab services";
+    options.services.reverseProxy = {
+      enable = mkEnableOption "Traefik reverse proxy";
 
       address = mkOption {
         type = types.str;
@@ -35,8 +35,18 @@
 
       controlInterface = mkOption {
         type = types.str;
-        default = "ts0";
         description = "Private interface that accepts Traefik API traffic.";
+      };
+
+      cloudflareDnsSopsFile = mkOption {
+        type = types.path;
+        description = "SOPS file containing the Cloudflare DNS token.";
+      };
+
+      cloudflareDnsSopsKey = mkOption {
+        type = types.str;
+        default = "cloudflare/dns";
+        description = "Key of the Cloudflare DNS token in the SOPS file.";
       };
 
       acmeEmail = mkOption {
@@ -48,6 +58,12 @@
         type = types.nullOr types.str;
         default = null;
         description = "Domain used by the catch-all HTTPS redirect.";
+      };
+
+      dockerNetwork = mkOption {
+        type = types.str;
+        default = "services";
+        description = "Preferred Docker network for container route addresses.";
       };
 
       hosts = mkOption {
@@ -177,7 +193,7 @@
           assertion =
             (hostCfg.dockerContainer != null && hostCfg.dockerPort != null && hostCfg.upstreamHost == null && hostCfg.upstreamPort == null)
             || (hostCfg.dockerContainer == null && hostCfg.dockerPort == null && hostCfg.upstreamHost != null && hostCfg.upstreamPort != null);
-          message = "Each homelab.proxy.hosts entry must define one Docker or host service.";
+          message = "Each services.reverseProxy.hosts entry must define one Docker or host service.";
         })
         hostEntries;
     };

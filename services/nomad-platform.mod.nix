@@ -1,12 +1,12 @@
 {self, ...}: {
-  flake.nixosModules.homelabNomad = {
+  flake.nixosModules.nomadPlatform = {
     config,
     lib,
     pkgs,
     ...
   }: let
-    cfg = config.homelab.services.nomad;
-    dataRoot = "${config.homelab.dataRoot}/Services/nomad";
+    cfg = config.services.nomadPlatform;
+    dataRoot = cfg.dataDir;
     secretFile = config.sops.templates."nomad-secrets.json".path;
     githubActionsPolicies = lib.genAttrs cfg.namespaces (
       namespace:
@@ -47,8 +47,29 @@
   in {
     imports = [self.nixosModules.sops];
 
-    options.homelab.services.nomad = {
-      enable = lib.mkEnableOption "single-node Nomad hosting platform";
+    options.services.nomadPlatform = {
+      enable = lib.mkEnableOption "Nomad application platform";
+
+      dataDir = lib.mkOption {
+        type = lib.types.str;
+        description = "Directory containing Nomad state, allocations, and host volumes.";
+      };
+
+      datacenter = lib.mkOption {
+        type = lib.types.str;
+        description = "Nomad datacenter name.";
+      };
+
+      region = lib.mkOption {
+        type = lib.types.str;
+        default = "global";
+        description = "Nomad region name.";
+      };
+
+      sopsFile = lib.mkOption {
+        type = lib.types.path;
+        description = "SOPS file containing the Nomad secrets.";
+      };
 
       server = lib.mkEnableOption "Nomad server role";
 
@@ -61,13 +82,11 @@
 
         owner = lib.mkOption {
           type = lib.types.str;
-          default = "sachahjkl";
           description = "GitHub repository owner allowed to request Nomad deployment tokens.";
         };
 
         audience = lib.mkOption {
           type = lib.types.str;
-          default = "nomad.sacha.house";
           description = "Audience required in GitHub Actions identity tokens.";
         };
       };
@@ -102,7 +121,6 @@
 
       interface = lib.mkOption {
         type = lib.types.str;
-        default = "ts0";
         description = "Private network interface that accepts Nomad API and cluster traffic.";
       };
     };
@@ -126,19 +144,19 @@
       sops = {
         secrets = {
           "nomad/gossip-key" = {
-            sopsFile = self + /secrets/homelab.yaml;
+            inherit (cfg) sopsFile;
             owner = "root";
             group = "root";
             mode = "0400";
           };
           "nomad/traefik-token" = lib.mkIf cfg.ingress {
-            sopsFile = self + /secrets/homelab.yaml;
+            inherit (cfg) sopsFile;
             owner = "traefik";
             group = "traefik";
             mode = "0400";
           };
           "nomad/management-token" = lib.mkIf (cfg.server && cfg.githubActions.enable) {
-            sopsFile = self + /secrets/homelab.yaml;
+            inherit (cfg) sopsFile;
             key = "nomad/management-token";
             owner = "root";
             group = "root";
@@ -180,8 +198,7 @@
         extraSettingsPaths = [secretFile];
         settings = {
           name = config.networking.hostName;
-          region = "global";
-          datacenter = "homelab";
+          inherit (cfg) datacenter region;
           data_dir = "${dataRoot}/state";
           bind_addr = cfg.address;
           advertise = {

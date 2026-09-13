@@ -1,11 +1,11 @@
 _: {
-  flake.nixosModules.homelabContainers = {
+  flake.nixosModules.containerHost = {
     config,
     lib,
     pkgs,
     ...
   }: let
-    dataRoot = config.homelab.dataRoot;
+    cfg = config.services.containerHost;
     registries = config.virtualisation.containers.registries;
     registriesConfig = (pkgs.formats.toml {}).generate "registries.conf" {
       "unqualified-search-registries" = registries.search;
@@ -22,7 +22,22 @@ _: {
         registries.block;
     };
   in {
-    config = {
+    options.services.containerHost = {
+      enable = lib.mkEnableOption "Docker and Podman container host";
+
+      dockerDataRoot = lib.mkOption {
+        type = lib.types.str;
+        description = "Directory containing Docker state.";
+      };
+
+      sharedNetwork = lib.mkOption {
+        type = lib.types.str;
+        default = "services";
+        description = "Docker network shared by local service containers.";
+      };
+    };
+
+    config = lib.mkIf cfg.enable {
       persist.system.directories = [
         "/var/lib/containers"
       ];
@@ -35,7 +50,7 @@ _: {
           flags = ["--all" "--volumes"];
         };
         daemon.settings = {
-          data-root = "${dataRoot}/Docker/storage";
+          data-root = cfg.dockerDataRoot;
           live-restore = false;
           log-driver = "json-file";
           log-opts = {
@@ -65,8 +80,8 @@ _: {
       # Docker 29.x with iptables-nft needs `nft` in its PATH to manage rules.
       systemd.services.docker.path = [pkgs.nftables];
 
-      systemd.services.docker-create-services-network = {
-        description = "Create the shared docker network used by compose stacks";
+      systemd.services.docker-create-shared-network = {
+        description = "Create the shared Docker network";
         after = ["docker.service"];
         wants = ["docker.service"];
         wantedBy = ["multi-user.target"];
@@ -76,7 +91,8 @@ _: {
         };
         path = [pkgs.docker];
         script = ''
-          docker network inspect services >/dev/null 2>&1 || docker network create services
+          network=${lib.escapeShellArg cfg.sharedNetwork}
+          docker network inspect "$network" >/dev/null 2>&1 || docker network create "$network"
         '';
       };
     };

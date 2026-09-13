@@ -1,5 +1,5 @@
 {self, ...}: {
-  flake.nixosModules.homelabSops = {
+  flake.nixosModules.homelabSecrets = {
     config,
     lib,
     ...
@@ -83,9 +83,9 @@
         };
       };
 
-      homelab.backup = {
-        resticEnvironmentFile = mkDefault config.sops.secrets."restic/environment".path;
-        resticPasswordFile = mkDefault config.sops.secrets."restic/password".path;
+      services.resticBackup = {
+        environmentFile = mkDefault config.sops.secrets."restic/environment".path;
+        passwordFile = mkDefault config.sops.secrets."restic/password".path;
       };
     };
   };

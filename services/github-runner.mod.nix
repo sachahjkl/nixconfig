@@ -5,7 +5,7 @@
     pkgs,
     ...
   }: let
-    cfg = config.homelab.services.githubRunner;
+    cfg = config.services.managedGithubRunners;
     runnerUser = "github-runner";
     trustedRunnerUser = "github-runner-nixconfig";
     secretName = "github/actions-runner";
@@ -17,8 +17,13 @@
   in {
     imports = [self.nixosModules.sops];
 
-    options.homelab.services.githubRunner = {
-      enable = lib.mkEnableOption "GitHub Actions runner for homelab CI";
+    options.services.managedGithubRunners = {
+      enable = lib.mkEnableOption "managed GitHub Actions runners";
+
+      sopsFile = lib.mkOption {
+        type = lib.types.path;
+        description = "SOPS file containing the GitHub runner token.";
+      };
 
       repositories = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
@@ -26,13 +31,31 @@
         example.git-migrate = "https://github.com/owner/git-migrate";
         description = "Repository URLs where separate runner instances are registered.";
       };
+
+      trustedRepositories = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Repository names whose runners can use the trusted Nix user.";
+      };
+
+      namePrefix = lib.mkOption {
+        type = lib.types.str;
+        default = config.networking.hostName;
+        description = "Prefix added to each GitHub runner name.";
+      };
+
+      labels = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = ["nixos" "nix"];
+        description = "Labels added to each GitHub runner.";
+      };
     };
 
     config = lib.mkIf cfg.enable {
       assertions = [
         {
           assertion = cfg.repositories != {};
-          message = "homelab.services.githubRunner.repositories must not be empty when the runner is enabled.";
+          message = "services.managedGithubRunners.repositories must not be empty when the runners are enabled.";
         }
       ];
 
@@ -75,7 +98,7 @@
       programs.nix-ld.enable = true;
 
       sops.secrets.${secretName} = {
-        sopsFile = self + /secrets/homelab.yaml;
+        inherit (cfg) sopsFile;
         owner = runnerUser;
         group = runnerUser;
         mode = "0440";
@@ -84,12 +107,12 @@
       services.github-runners =
         lib.mapAttrs (repositoryName: url: let
           serviceUser =
-            if repositoryName == "nixconfig"
+            if builtins.elem repositoryName cfg.trustedRepositories
             then trustedRunnerUser
             else runnerUser;
         in {
           enable = true;
-          name = "homelab-${repositoryName}";
+          name = "${cfg.namePrefix}-${repositoryName}";
           inherit url;
           tokenFile = config.sops.secrets.${secretName}.path;
           tokenType = "access";
@@ -107,11 +130,7 @@
             XDG_DATA_HOME = "%S/github-runner/${repositoryName}/.local/share";
             XDG_RUNTIME_DIR = "%t/github-runner/${repositoryName}";
           };
-          extraLabels = [
-            "nixos"
-            "nix"
-            "homelab"
-          ];
+          extraLabels = cfg.labels;
           serviceOverrides = {
             CapabilityBoundingSet = lib.mkForce "~";
             NoNewPrivileges = lib.mkForce false;

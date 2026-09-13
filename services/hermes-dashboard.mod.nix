@@ -6,10 +6,10 @@
     ...
   }: let
     inherit (lib) mkEnableOption mkIf mkOption types;
-    cfg = config.homelab.services.hermesDashboard;
+    cfg = config.services.hermesDashboard;
     hermesPackage = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default;
   in {
-    options.homelab.services.hermesDashboard = {
+    options.services.hermesDashboard = {
       enable = mkEnableOption "Hermes dashboard service";
 
       package = mkOption {

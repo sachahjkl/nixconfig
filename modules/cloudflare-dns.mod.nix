@@ -1,4 +1,4 @@
-{self, ...}: {
+_: {
   flake.nixosModules.cloudflareDns = {
     config,
     lib,
@@ -6,8 +6,9 @@
     pkgs,
     ...
   }: let
-    cfg = lib.attrByPath ["homelab" "proxy" "dns"] {} config;
-    proxyEnabled = lib.attrByPath ["homelab" "proxy" "enable"] false config;
+    proxyCfg = lib.attrByPath ["services" "reverseProxy"] {} config;
+    cfg = proxyCfg.dns or {};
+    proxyEnabled = proxyCfg.enable or false;
     hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
@@ -59,7 +60,7 @@
                 else dnsCfg.value
               else target;
           })
-        (lib.attrByPath ["homelab" "proxy" "hosts"] {} config));
+        (lib.attrByPath ["services" "reverseProxy" "hosts"] {} config));
 
     dnsConfig = pkgs.writeText "cloudflare-dns-config.json" (builtins.toJSON {
       inherit (cfg) defaultTarget managedComment tokenPath zoneNames;
@@ -334,7 +335,7 @@
       exec ${lib.getExe pkgs.python3} ${lib.escapeShellArg cloudflareDnsLib} push "$@"
     '';
   in {
-    options.homelab.proxy.dns = {
+    options.services.reverseProxy.dns = {
       acmeZoneNames = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
@@ -360,7 +361,7 @@
 
       defaultTarget = lib.mkOption {
         type = lib.types.str;
-        default = "homelab.sacha.house";
+        description = "Default target for managed CNAME records.";
       };
 
       defaultValue = lib.mkOption {
@@ -405,7 +406,7 @@
           [
             {
               assertion = cfg.zoneNames != [];
-              message = "homelab.proxy.dns.zoneNames must list the Cloudflare zones managed by the DNS CLI.";
+              message = "services.reverseProxy.dns.zoneNames must list the Cloudflare zones managed by the DNS CLI.";
             }
           ]
           ++ map (record: {
@@ -431,10 +432,8 @@
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName) {
         sops.secrets."cloudflare/dns" = {
-          sopsFile = builtins.path {
-            path = self + /secrets/shared.yaml;
-            name = "shared-secrets.yaml";
-          };
+          sopsFile = proxyCfg.cloudflareDnsSopsFile;
+          key = proxyCfg.cloudflareDnsSopsKey;
           path = cfg.tokenPath;
           owner = config.userName;
           group = "users";

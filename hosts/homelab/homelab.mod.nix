@@ -9,9 +9,20 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.disko
       self.diskoConfigurations.homelab
       self.nixosModules.deployUser
-      self.nixosModules.homelab
+      self.nixosModules.server
+      self.nixosModules.homelabLayout
+      self.nixosModules.containerHost
+      self.nixosModules.observabilityStack
+      self.nixosModules.homelabShares
+      self.nixosModules.resticBackup
+      self.nixosModules.homelabSecrets
+      self.nixosModules.reverseProxy
+      self.nixosModules.hermesDashboard
+      self.nixosModules.filebrowserIntegration
+      self.nixosModules.githubRunner
+      self.nixosModules.nomadPlatform
       self.nixosModules.homelab-hardware
-      self.nixosModules.homelabProxyHosts
+      self.nixosModules.homelabRoutes
       self.nixosModules.codexProxyService
       self.nixosModules.nixCache
       self.nixosModules.ai
@@ -32,38 +43,93 @@ lib.systems.nixosSystem "homelab" {
     homelab = {
       lanInterface = "eno1";
       dataRoot = "/data";
+      sops.enable = true;
+    };
 
-      sops = {
+    services = {
+      containerHost = {
         enable = true;
+        dockerDataRoot = "/data/Docker/storage";
+        sharedNetwork = "services";
       };
 
-      services = {
-        observability = {
-          enable = true;
-          grafanaDomain = "grafana.sacha.house";
-          otlpDomain = "otlp.sacha.house";
-        };
+      observabilityStack = {
+        enable = true;
+        dataDir = "/data/Docker/appdata/observability";
+        containerNetwork = "services";
+        grafanaDomain = "grafana.sacha.house";
+        otlpDomain = "otlp.sacha.house";
+      };
 
-        githubRunner = {
+      managedGithubRunners = {
+        enable = true;
+        sopsFile = self + /secrets/homelab.yaml;
+        repositories.nixconfig = "https://github.com/sachahjkl/nixconfig";
+        trustedRepositories = ["nixconfig"];
+        labels = ["nixos" "nix" "homelab"];
+      };
+
+      hermesDashboard.enable = false;
+
+      codexProxyIntegration = {
+        enable = true;
+        domain = "codex.sacha.house";
+      };
+
+      filebrowserIntegration = {
+        enable = true;
+        root = "/data";
+      };
+
+      nomadPlatform = {
+        enable = true;
+        server = true;
+        client = true;
+        ingress = true;
+        dataDir = "/data/Services/nomad";
+        datacenter = "homelab";
+        sopsFile = self + /secrets/homelab.yaml;
+        interface = "ts0";
+        namespaces = ["staging" "production"];
+        nodeClass = "general";
+        serverAddresses = ["100.106.51.80"];
+        address = "100.106.51.80";
+        githubActions = {
           enable = true;
-          repositories = {
-            nixconfig = "https://github.com/sachahjkl/nixconfig";
-          };
+          owner = "sachahjkl";
+          audience = "nomad.sacha.house";
         };
-        hermesDashboard.enable = false;
-        codexProxy.enable = true;
-        filebrowser.enable = true;
-        nomad = {
-          enable = true;
-          server = true;
-          client = true;
-          githubActions.enable = true;
-          ingress = true;
-          namespaces = ["staging" "production"];
-          nodeClass = "general";
-          serverAddresses = ["100.106.51.80"];
-          address = "100.106.51.80";
-        };
+      };
+
+      nixCache = {
+        enable = true;
+        signingKeySopsFile = self + /secrets/homelab.yaml;
+      };
+
+      resticBackup = {
+        enable = true;
+        paths = [
+          "/root"
+          "/persist/var/lib/sops-nix"
+          "/data/Secrets"
+          "/data/Services"
+          "/data/Docker/appdata"
+          "/data/Docker/data/Secrets"
+          "/data/Docker/storage/volumes"
+          "/data/Home"
+        ];
+        excludes = [
+          ".cache"
+          ".npm"
+          ".bun"
+          ".cargo"
+          ".rustup"
+          "node_modules"
+          ".git"
+          "tmp"
+          ".local/share/Trash"
+          "appdata.bak"
+        ];
       };
     };
 

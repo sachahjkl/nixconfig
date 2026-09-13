@@ -1,11 +1,11 @@
 {self, ...}: {
-  flake.nixosModules.homelabTraefik = {
+  flake.nixosModules.reverseProxyTraefik = {
     config,
     lib,
     pkgs,
     ...
   }: let
-    cfg = lib.attrByPath ["homelab" "proxy"] {} config;
+    cfg = lib.attrByPath ["services" "reverseProxy"] {} config;
     enabled = cfg.enable or false;
 
     sanitize = value:
@@ -27,8 +27,8 @@
       })
       cfg.hosts;
 
-    routeSpecFile = pkgs.writeText "homelab-traefik-routes.json" (builtins.toJSON {
-      inherit (cfg) defaultDomainRedirect;
+    routeSpecFile = pkgs.writeText "reverse-proxy-routes.json" (builtins.toJSON {
+      inherit (cfg) defaultDomainRedirect dockerNetwork;
       hosts = routeSpec;
     });
   in {
@@ -38,8 +38,8 @@
       persist.system.directories = ["/var/lib/traefik"];
 
       sops.secrets."cloudflare/traefik-dns" = {
-        sopsFile = self + /secrets/shared.yaml;
-        key = "cloudflare/dns";
+        sopsFile = cfg.cloudflareDnsSopsFile;
+        key = cfg.cloudflareDnsSopsKey;
         owner = "traefik";
         group = "traefik";
         mode = "0400";
@@ -55,7 +55,7 @@
       };
 
       services.traefik = {
-        dynamicConfigFile = "/run/homelab-traefik/routes.yaml";
+        dynamicConfigFile = "/run/reverse-proxy/routes.yaml";
         environmentFiles = [config.sops.templates."traefik-cloudflare.env".path];
         staticConfigOptions = {
           api.dashboard = false;
@@ -97,12 +97,12 @@
 
       systemd = {
         tmpfiles.rules = [
-          "d /run/homelab-traefik 0750 root traefik -"
+          "d /run/reverse-proxy 0750 root traefik -"
           "d /var/lib/traefik 0700 traefik traefik -"
         ];
 
-        services.homelab-traefik-refresh-routes = {
-          description = "Resolve direct Traefik routes for homelab services";
+        services.reverse-proxy-refresh-routes = {
+          description = "Resolve direct Traefik routes";
           wants = ["docker.service" "network-online.target"];
           after = ["docker.service" "network-online.target"];
           before = ["traefik.service"];
@@ -116,7 +116,7 @@
           script = ''
             set -euo pipefail
             export ROUTE_SPEC=${lib.escapeShellArg routeSpecFile}
-            export ROUTE_OUTPUT=/run/homelab-traefik/routes.yaml
+            export ROUTE_OUTPUT=/run/reverse-proxy/routes.yaml
 
             python3 - <<'PY'
             import grp
@@ -128,7 +128,7 @@
             def docker_address(container):
                 inspect = subprocess.check_output(["docker", "inspect", container], text=True)
                 networks = json.loads(inspect)[0].get("NetworkSettings", {}).get("Networks", {})
-                for network_name in ("services", *networks.keys()):
+                for network_name in (spec["dockerNetwork"], *networks.keys()):
                     network = networks.get(network_name)
                     if network and network.get("IPAddress"):
                         return network["IPAddress"]
@@ -278,18 +278,18 @@
           '';
         };
 
-        timers.homelab-traefik-refresh-routes = {
+        timers.reverse-proxy-refresh-routes = {
           wantedBy = ["timers.target"];
           timerConfig = {
             OnBootSec = "1min";
             OnUnitActiveSec = "2min";
-            Unit = "homelab-traefik-refresh-routes.service";
+            Unit = "reverse-proxy-refresh-routes.service";
           };
         };
 
         services.traefik = {
-          requires = ["homelab-traefik-refresh-routes.service"];
-          after = ["homelab-traefik-refresh-routes.service"];
+          requires = ["reverse-proxy-refresh-routes.service"];
+          after = ["reverse-proxy-refresh-routes.service"];
         };
       };
     };
