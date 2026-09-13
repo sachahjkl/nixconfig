@@ -241,8 +241,18 @@
         ".local/share/opencode"
       ];
 
-      system.userActivationScripts.opencode-config.text = ''
-        if [ "$(id --user --name)" = ${lib.escapeShellArg config.userName} ]; then
+      systemd.services.opencode-config = {
+        description = "Initialize writable OpenCode configuration files";
+        wantedBy = ["multi-user.target"];
+        after = ["hjem.target"];
+        requires = ["hjem.target"];
+        restartTriggers = [opencodeAgents opencodeCliConfig opencodeConfig];
+        serviceConfig = {
+          Type = "oneshot";
+          User = config.userName;
+          Group = "users";
+        };
+        script = ''
           config_directory=${lib.escapeShellArg "${config.homeDirectory}/.config/opencode"}
           mkdir -p "$config_directory"
 
@@ -250,13 +260,7 @@
             source="$1"
             target="$2"
 
-            if [ -L "$target" ]; then
-              temporary="$(mktemp)"
-              cp --dereference "$target" "$temporary"
-              rm "$target"
-              install -m 0644 "$temporary" "$target"
-              rm "$temporary"
-            elif [ ! -e "$target" ]; then
+            if [ ! -e "$target" ]; then
               install -m 0644 "$source" "$target"
             fi
           }
@@ -264,8 +268,8 @@
           initialize_config ${opencodeAgents} "$config_directory/AGENTS.md"
           initialize_config ${opencodeCliConfig} "$config_directory/cli.json"
           initialize_config ${opencodeConfig} "$config_directory/opencode.json"
-        fi
-      '';
+        '';
+      };
     };
   };
 }
