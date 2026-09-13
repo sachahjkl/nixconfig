@@ -15,7 +15,7 @@ _: {
         pkgs.sops
         pkgs.sqlite
         self'.packages.deploy-rs
-        self'.packages.opencode
+        self'.packages.opencode2
       ];
       text = ''
                 set -euo pipefail

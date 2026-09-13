@@ -180,16 +180,8 @@
       );
   };
 
-  perSystem = {pkgs, ...}: let
-    opencode2 = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
-  in {
-    packages.opencode = pkgs.symlinkJoin {
-      name = "opencode";
-      paths = [opencode2];
-      postBuild = ''
-        ln -sf ${lib.getExe opencode2} $out/bin/opencode
-      '';
-    };
+  perSystem = {pkgs, ...}: {
+    packages.opencode2 = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
   };
 
   flake.nixosModules.opencode = {
@@ -228,12 +220,9 @@
       '';
 
     wrappedOpenCode = pkgs.symlinkJoin {
-      name = "opencode-wrapped";
-      paths = [
-        (mkOpenCodeWrapper "opencode")
-        (mkOpenCodeWrapper "opencode2")
-      ];
-      meta.mainProgram = "opencode";
+      name = "opencode2-wrapped";
+      paths = [(mkOpenCodeWrapper "opencode2")];
+      meta.mainProgram = "opencode2";
     };
 
     opencodeCompletions = pkgs.runCommand "opencode-completions" {} ''
@@ -245,10 +234,6 @@
       ${lib.getExe upstreamOpencode} --completions fish > $out/share/fish/vendor_completions.d/opencode2.fish
       ${lib.getExe upstreamOpencode} --completions bash > $out/share/bash-completion/completions/opencode2
       ${lib.getExe upstreamOpencode} --completions zsh > $out/share/zsh/site-functions/_opencode2
-
-      sed 's/opencode2/opencode/g' $out/share/fish/vendor_completions.d/opencode2.fish > $out/share/fish/vendor_completions.d/opencode.fish
-      sed 's/opencode2/opencode/g' $out/share/bash-completion/completions/opencode2 > $out/share/bash-completion/completions/opencode
-      sed 's/opencode2/opencode/g' $out/share/zsh/site-functions/_opencode2 > $out/share/zsh/site-functions/_opencode
     '';
   in {
     imports = [
@@ -329,7 +314,7 @@
         };
 
         rum.programs.fish.functions.homelab-code = mkIf (cfg.homelabServerUrl != null) ''
-          opencode --server ${cfg.homelabServerUrl} $argv
+          opencode2 --server ${cfg.homelabServerUrl} $argv
         '';
       };
 
