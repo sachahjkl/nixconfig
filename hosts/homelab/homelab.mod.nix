@@ -19,6 +19,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.reverseProxy
       self.nixosModules.hermesDashboard
       self.nixosModules.filebrowserIntegration
+      self.nixosModules.webTerminal
       self.nixosModules.githubRunner
       self.nixosModules.nomadPlatform
       self.nixosModules.homelab-hardware
@@ -79,6 +80,11 @@ lib.systems.nixosSystem "homelab" {
       filebrowserIntegration = {
         enable = true;
         root = "/data";
+      };
+
+      webTerminal = {
+        enable = true;
+        user = "sacha";
       };
 
       nomadPlatform = {

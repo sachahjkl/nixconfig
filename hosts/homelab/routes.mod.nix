@@ -130,6 +130,13 @@
           upstreamHost = "127.0.0.1";
           upstreamPort = 8082;
         };
+
+        "ssh.sacha.house" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = config.services.webTerminal.port;
+          basicAuthFile = config.sops.secrets."web-terminal/htpasswd".path;
+          robotsNoIndex = true;
+        };
       };
     };
   };

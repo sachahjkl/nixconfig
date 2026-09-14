@@ -68,6 +68,13 @@
           restartUnits = ["traefik.service"];
         };
 
+        "web-terminal/htpasswd" = {
+          owner = "root";
+          group = "traefik";
+          mode = "0440";
+          restartUnits = ["traefik.service"];
+        };
+
         "codex-proxy/token" = {
           owner = "root";
           group = "root";
