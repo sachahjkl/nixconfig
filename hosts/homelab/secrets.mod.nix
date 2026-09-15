@@ -75,6 +75,13 @@
           restartUnits = ["traefik.service"];
         };
 
+        "filebrowser/admin-password" = {
+          owner = "filebrowser";
+          group = "filebrowser";
+          mode = "0400";
+          restartUnits = ["filebrowser.service"];
+        };
+
         "codex-proxy/token" = {
           owner = "root";
           group = "root";

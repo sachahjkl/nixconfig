@@ -18,7 +18,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelabSecrets
       self.nixosModules.reverseProxy
       self.nixosModules.hermesDashboard
-      self.nixosModules.filebrowserIntegration
+      self.nixosModules.filebrowser
       self.nixosModules.webTerminal
       self.nixosModules.githubRunner
       self.nixosModules.nomadPlatform
@@ -77,9 +77,14 @@ lib.systems.nixosSystem "homelab" {
         domain = "codex.sacha.house";
       };
 
-      filebrowserIntegration = {
+      filebrowser = {
         enable = true;
-        root = "/data";
+        adminPasswordFile = config.sops.secrets."filebrowser/admin-password".path;
+        settings = {
+          address = "127.0.0.1";
+          port = 8082;
+          root = "/data";
+        };
       };
 
       webTerminal = {
