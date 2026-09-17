@@ -200,6 +200,36 @@
       inherit pkgs;
       settings = cfg.initialCliSettings;
     };
+
+    upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
+    mcpNixos = pkgs.mcp-nixos;
+
+    mkOpenCodeWrapper = name:
+      pkgs.writeShellScriptBin name ''
+        export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
+        export OPENCODE_MODELS_URL="https://codex.sacha.house"
+        if [ -r ${simulacraTokenPath} ]; then
+          export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
+        fi
+        exec ${lib.getExe upstreamOpencode} "$@"
+      '';
+
+    wrappedOpenCode = pkgs.symlinkJoin {
+      name = "opencode2-wrapped";
+      paths = [(mkOpenCodeWrapper "opencode2")];
+      meta.mainProgram = "opencode2";
+    };
+
+    opencodeCompletions = pkgs.runCommand "opencode-completions" {} ''
+      mkdir -p $out/share/fish/vendor_completions.d
+      mkdir -p $out/share/bash-completion/completions
+      mkdir -p $out/share/zsh/site-functions
+      export HOME=$TMPDIR
+
+      ${lib.getExe upstreamOpencode} --completions fish > $out/share/fish/vendor_completions.d/opencode2.fish
+      ${lib.getExe upstreamOpencode} --completions bash > $out/share/bash-completion/completions/opencode2
+      ${lib.getExe upstreamOpencode} --completions zsh > $out/share/zsh/site-functions/_opencode2
+    '';
   in {
     imports = [
       self.nixosModules.sops
@@ -251,7 +281,7 @@
           fi
         '';
         sessionVariables.OPENCODE_MODELS_URL = "https://codex.sacha.house";
-        systemPackages = [self.packages.${pkgs.stdenv.hostPlatform.system}.opencode2];
+        systemPackages = [wrappedOpenCode opencodeCompletions];
       };
 
       hjem.users.${config.userName} = {

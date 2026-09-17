@@ -277,7 +277,7 @@ _: {
           };
 
           otel-collector = {
-            image = "otel/opentelemetry-collector-contrib:0.160.0";
+            image = "otel/opentelemetry-collector-contrib:0.161.0";
             cmd = ["--config=/etc/otelcol/config.yaml"];
             volumes = ["${collectorConfig}:/etc/otelcol/config.yaml:ro"];
             networks = [network];
@@ -301,7 +301,7 @@ _: {
           };
 
           grafana = {
-            image = "grafana/grafana:13.2.1";
+            image = "grafana/grafana:13.2.2";
             environment = {
               GF_SERVER_DOMAIN = cfg.grafanaDomain;
               GF_SERVER_ROOT_URL = "https://${cfg.grafanaDomain}";

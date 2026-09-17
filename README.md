@@ -347,19 +347,9 @@ nix build 'path:/home/sacha/Projects/nixconfig#nixosConfigurations.house-desktop
 
 ## Updating Opencode
 
-`opencode` is pinned through the `opencode-src` flake input.
-
-To update it, edit `flake.nix` to the desired tag, for example:
-
-```nix
-opencode-src.url = "github:anomalyco/opencode/v1.17.3";
-```
-
-Then update the lock and build once:
+`opencode2` comes from the `llm-agents` flake input. To update it, update the input and rebuild the package once:
 
 ```bash
-nix flake update opencode-src
-nix build 'path:/home/sacha/Projects/nixconfig#opencode' --no-link
+nix flake update llm-agents
+nix build 'path:/home/sacha/Projects/nixconfig#opencode2' --no-link
 ```
-
-If Nix reports a `node_modules` hash mismatch, copy the reported `got:` hash into `packages/opencode/opencode.mod.nix`.
