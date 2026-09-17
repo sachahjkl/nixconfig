@@ -11,12 +11,20 @@
   hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
   hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
   hasUserName = lib.hasAttrByPath ["userName"] options;
+  homeDirectory = lib.attrByPath ["homeDirectory"] "" config;
   moshiHookPkg = self.packages.${pkgs.stdenv.hostPlatform.system}.moshiHook;
+  # Moshi still ships a V1 OpenCode plugin. Install our V2 port over it until
+  # moshi-hook generates the V2 shape itself.
+  moshiOpencodePlugin = self + /modules/ai/plugins/moshi-hooks.ts;
+  installOpencodePlugin =
+    lib.optionalString (homeDirectory != "")
+    "${pkgs.coreutils}/bin/install -Dm644 ${moshiOpencodePlugin} ${homeDirectory}/.config/opencode/plugins/moshi-hooks.ts";
   pairingTokenPath = "/run/secrets/moshi-pairing-token";
   moshiSyncHooks = pkgs.writeShellScriptBin "moshi-sync-hooks" ''
     set -eu
 
     ${lib.getExe moshiHookPkg} install
+    ${installOpencodePlugin}
   '';
   moshiPair = pkgs.writeShellScriptBin "moshi-pair" ''
     set -eu
