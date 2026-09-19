@@ -55,6 +55,15 @@ _: {
         };
       };
     };
+
+    checks.moshi-hook =
+      pkgs.runCommand "moshi-hook-tests" {
+        nativeBuildInputs = [pkgs.bun];
+      } ''
+        export HOME="$TMPDIR"
+        bun test ${./ai/plugins}/moshi-hooks.test.ts
+        touch "$out"
+      '';
   };
 
   flake.nixosModules.moshiHook = import ./moshi-hook.nix;

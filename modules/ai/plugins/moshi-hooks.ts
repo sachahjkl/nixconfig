@@ -4,9 +4,8 @@
 // generates the V1 plugin shape, which OpenCode V2 refuses to load. Remove this
 // port when moshi publishes a V2 plugin.
 //
-// The daemon wire protocol is unchanged. This file only re-registers the same
-// behavior on the V2 plugin API: `setup(ctx)` instead of a plugin function that
-// returns a hook map.
+// The daemon wire protocol is unchanged. Permission requests are observed after
+// OpenCode publishes them. This lets OpenCode and Moshi answer the same request.
 
 import { spawnSync } from "node:child_process"
 import { readFileSync } from "node:fs"
@@ -148,6 +147,31 @@ function readJSONFile(path: string): AnyRecord | null {
   } catch {
     return null
   }
+}
+
+export function resolveCliPermissionMode(): "prompt" | "autoaccept" {
+  const configDirectory =
+    process.env.XDG_CONFIG_HOME ?? pathJoin(homedir(), ".config")
+  const config = readJSONFile(pathJoin(configDirectory, "opencode", "cli.json"))
+  const session =
+    config?.session && typeof config.session === "object"
+      ? (config.session as AnyRecord)
+      : undefined
+  let mode = stringProp(session, "permissions")
+
+  const inline = process.env.OPENCODE_CLI_CONFIG_CONTENT
+  if (inline) {
+    try {
+      const parsed = JSON.parse(inline) as AnyRecord
+      const inlineSession =
+        parsed.session && typeof parsed.session === "object"
+          ? (parsed.session as AnyRecord)
+          : undefined
+      mode = stringProp(inlineSession, "permissions") || mode
+    } catch {}
+  }
+
+  return mode === "autoaccept" ? "autoaccept" : "prompt"
 }
 
 function resolveMoshiServerUrl(): string {
@@ -757,7 +781,9 @@ function requestMoshiApproval(
       ? (event.source as AnyRecord)
       : {}
   const actionID =
-    stringProp(source, "id") || sessionID + ":" + approvalName(event) + ":" + newSessionID()
+    stringProp(event, "id") ||
+    stringProp(source, "id") ||
+    sessionID + ":" + approvalName(event) + ":" + newSessionID()
 
   const existing = approvalRequests.get(actionID)
   if (existing) return existing
@@ -810,6 +836,36 @@ function requestMoshiApproval(
   return promise
 }
 
+export async function handleMoshiPermissionRequest(
+  ctx: AnyRecord,
+  event: AnyRecord,
+  directory: string,
+): Promise<void> {
+  if (resolveCliPermissionMode() === "autoaccept") return
+
+  const sessionID = stringProp(event, "sessionID", "sessionId")
+  const requestID = stringProp(event, "id", "requestID", "requestId")
+  if (!sessionID || !requestID) return
+
+  const result = await requestMoshiApproval(event, directory)
+  const reply = result?.decision === "approve"
+    ? "once"
+    : result?.decision === "deny"
+      ? "reject"
+      : ""
+  if (!reply) return
+
+  const permission = ctx.permission as {
+    reply?: (input: AnyRecord) => Promise<unknown>
+  }
+  if (typeof permission.reply !== "function") return
+  try {
+    await permission.reply({ sessionID, requestID, reply })
+  } catch {
+    // Another OpenCode client can answer the request first.
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Plugin
 // ---------------------------------------------------------------------------
@@ -853,14 +909,6 @@ export default {
 
     await ctx.tool.hook("execute.after", (event: AnyRecord) => {
       markSessionActive(sessionIDFromProperties(event), pluginDirectory)
-    })
-
-    await ctx.permission.hook("evaluate", async (event: AnyRecord) => {
-      if (event.effect !== "ask") return
-      const result = await requestMoshiApproval(event, pluginDirectory)
-      if (!result) return
-      if (result.decision === "approve") event.effect = "allow"
-      else if (result.decision === "deny") event.effect = "deny"
     })
 
     const controller = new AbortController()
@@ -948,8 +996,10 @@ export default {
           if (sessionID) parentSessionBySession.delete(sessionID)
           sendSessionClosed("session.deleted", sessionID, directory)
           break
-        case "permission.replied":
-        case "permission.rejected":
+        case "permission.v2.asked":
+          void handleMoshiPermissionRequest(ctx, data, directory)
+          break
+        case "permission.v2.replied":
           sendSessionUpdate(type, sessionID, directory)
           break
         case "form.created":
