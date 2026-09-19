@@ -35,6 +35,9 @@
     imports = [self.nixosModules.sops];
 
     config = lib.mkIf enabled {
+      users.users.traefik.uid = 991;
+      users.groups.traefik.gid = 990;
+
       persist.system.directories = ["/var/lib/traefik"];
 
       sops.secrets."cloudflare/traefik-dns" = {
