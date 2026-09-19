@@ -19,7 +19,6 @@ lib.systems.nixosSystem "house-laptop" {
     terminal.default = "ghostty";
 
     display = {
-      autoLoginUser = config.userName;
       defaultSession = "hyprland-uwsm";
     };
     hyprland = {
