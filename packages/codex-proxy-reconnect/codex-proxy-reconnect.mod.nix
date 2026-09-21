@@ -56,7 +56,7 @@ _: {
         chmod 600 "$raw_credential" "$credential" "$encoded_credential"
 
                 if $login; then
-                  opencode2 auth login OpenAI --method chatgpt-headless
+                  opencode2 auth login openai --method chatgpt-headless
                 fi
         sqlite3 -noheader "$database" \
           "select value from credential where integration_id = 'openai' and active = 1 order by time_updated desc limit 1" \
