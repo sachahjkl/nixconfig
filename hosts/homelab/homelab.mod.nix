@@ -101,7 +101,7 @@ lib.systems.nixosSystem "homelab" {
         datacenter = "homelab";
         sopsFile = self + /secrets/homelab.yaml;
         interface = "ts0";
-        namespaces = ["staging" "production"];
+        namespaces = ["staging" "production" "demo"];
         nodeClass = "general";
         serverAddresses = ["100.106.51.80"];
         address = "100.106.51.80";
