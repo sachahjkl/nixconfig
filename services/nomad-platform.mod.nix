@@ -296,6 +296,7 @@
             nomad status >/dev/null
 
             ${lib.concatMapStringsSep "\n" (namespace: ''
+                nomad namespace apply ${lib.escapeShellArg namespace}
                 nomad acl policy apply \
                   -description "Deploy trusted GitHub repositories to ${namespace}" \
                   github-actions-deploy-${namespace} ${githubActionsPolicies.${namespace}}
