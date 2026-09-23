@@ -32,6 +32,14 @@
           }
         ''
     );
+    traefikPolicy = pkgs.writeText "nomad-traefik-policy.hcl" (
+      lib.concatMapStringsSep "\n" (namespace: ''
+        namespace ${builtins.toJSON namespace} {
+          capabilities = ["list-jobs", "read-job"]
+        }
+      '')
+      cfg.namespaces
+    );
     githubActionsAuthConfig = pkgs.writeText "nomad-github-actions-auth.json" (builtins.toJSON {
       JWKSURL = "https://token.actions.githubusercontent.com/.well-known/jwks";
       BoundAudiences = [cfg.githubActions.audience];
@@ -302,6 +310,10 @@
                   github-actions-deploy-${namespace} ${githubActionsPolicies.${namespace}}
               '')
               cfg.namespaces}
+
+            nomad acl policy apply \
+              -description "Allow Traefik to discover application services" \
+              traefik-service-discovery ${traefikPolicy}
 
             if nomad acl policy info github-actions-deploy >/dev/null 2>&1; then
               nomad acl policy delete github-actions-deploy
