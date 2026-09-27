@@ -91,7 +91,6 @@ _: {
                     -H "X-Codex-Authorization: Bearer $token" \
                     http://127.0.0.1:8083/readyz >/dev/null
         REMOTE
-        opencode2 auth logout openai
                 printf 'The Codex proxy uses the new OAuth credential.\n'
       '';
     };
