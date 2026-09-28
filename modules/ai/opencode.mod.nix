@@ -188,20 +188,22 @@
     upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
     mcpNixos = pkgs.mcp-nixos;
 
-    mkOpenCodeWrapper = name:
-      pkgs.writeShellScriptBin name ''
-        export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
-        export OPENCODE_MODELS_URL="https://codex.sacha.house"
-        if [ -r ${simulacraTokenPath} ]; then
-          export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
-        fi
-        exec ${lib.getExe upstreamOpencode} "$@"
-      '';
+    opencodeWrapper = pkgs.writeShellScriptBin "opencode" ''
+      export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
+      export OPENCODE_MODELS_URL="https://codex.sacha.house"
+      if [ -r ${simulacraTokenPath} ]; then
+        export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
+      fi
+      exec ${lib.getExe upstreamOpencode} "$@"
+    '';
 
     wrappedOpenCode = pkgs.symlinkJoin {
-      name = "opencode2-wrapped";
-      paths = [(mkOpenCodeWrapper "opencode2")];
-      meta.mainProgram = "opencode2";
+      name = "opencode-wrapped";
+      paths = [opencodeWrapper];
+      postBuild = ''
+        ln -s opencode $out/bin/opencode2
+      '';
+      meta.mainProgram = "opencode";
     };
 
     opencodeCompletions = pkgs.runCommand "opencode-completions" {} ''
@@ -210,9 +212,16 @@
       mkdir -p $out/share/zsh/site-functions
       export HOME=$TMPDIR
 
-      ${lib.getExe upstreamOpencode} --completions fish > $out/share/fish/vendor_completions.d/opencode2.fish
-      ${lib.getExe upstreamOpencode} --completions bash > $out/share/bash-completion/completions/opencode2
-      ${lib.getExe upstreamOpencode} --completions zsh > $out/share/zsh/site-functions/_opencode2
+      ${lib.getExe upstreamOpencode} --completions fish > $out/share/fish/vendor_completions.d/opencode.fish
+      ${lib.getExe upstreamOpencode} --completions bash > $out/share/bash-completion/completions/opencode
+      ${lib.getExe upstreamOpencode} --completions zsh > $out/share/zsh/site-functions/_opencode
+
+      sed 's/opencode/opencode2/g' $out/share/fish/vendor_completions.d/opencode.fish \
+        > $out/share/fish/vendor_completions.d/opencode2.fish
+      sed 's/opencode/opencode2/g' $out/share/bash-completion/completions/opencode \
+        > $out/share/bash-completion/completions/opencode2
+      sed 's/opencode/opencode2/g' $out/share/zsh/site-functions/_opencode \
+        > $out/share/zsh/site-functions/_opencode2
     '';
   in {
     imports = [

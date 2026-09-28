@@ -49,6 +49,7 @@ _: {
         };
 
         networking.firewall.trustedInterfaces = singleton config.services.tailscale.interfaceName;
+        systemd.services.tailscaled.restartIfChanged = false;
       }
 
       (lib.optionalAttrs hasPreservationDirs {
