@@ -46,7 +46,6 @@
       ];
     in {
       update = "disable";
-      plugins = ["${extensionDirectory}/opencode-backlog.js"];
       providers.simulacra = {
         settings.apiKey = "unused";
         headers.X-Codex-Authorization = "Bearer {env:SIMULACRA_TOKEN}";
@@ -103,7 +102,7 @@
       ];
     };
 
-    defaultCliSettings = homeDirectory: {
+    defaultCliSettings = _: {
       "$schema" = "https://opencode.ai/v2/cli.json";
       attention.enabled = true;
       animations = true;
@@ -115,7 +114,6 @@
         view = "split";
         wrap = "word";
       };
-      plugins = ["${homeDirectory}/.local/share/opencode/nix-extensions/opencode-backlog-tui.js"];
       prompt.image_preview = true;
       scroll.acceleration = true;
       session = {
@@ -138,20 +136,7 @@
     };
 
     mkOpenCodeAgents = pkgs:
-      pkgs.writeText "AGENTS.md" ''
-        ${builtins.readFile (self + /modules/ai/instructions.md)}
-
-        ## Backlog
-
-        Use the `backlog` tools to manage task stacks. Do not edit `BACKLOG.json` directly.
-
-        - Run `backlog_list` before work to inspect the stack and obtain task IDs.
-        - Run `backlog_add` to add a task.
-        - Run `backlog_update` to change a task title or notes.
-        - Run `backlog_move` to change a task state or position.
-        - Run `backlog_remove` only when a task must be permanently removed.
-        - Move active tasks to `doing`. Move completed tasks to `done`.
-      '';
+      pkgs.writeText "AGENTS.md" (builtins.readFile (self + /modules/ai/instructions.md));
 
     mkOpenCodeConfig = {
       homeDirectory,
@@ -185,7 +170,6 @@
   }: let
     cfg = config.opencode;
     inherit (lib) mkIf mkOption types;
-    backlogPackage = inputs.opencode-backlog.packages.${pkgs.stdenv.hostPlatform.system}.default;
     extensionDirectory = "${config.homeDirectory}/.local/share/opencode/nix-extensions";
     simulacraTokenPath = "/run/secrets/ai/simulacra-token";
 
@@ -300,8 +284,6 @@
         "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
         "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
         "C ${config.homeDirectory}/.config/opencode/opencode.json 0644 - - - ${opencodeConfig}"
-        "L+ ${extensionDirectory}/opencode-backlog.js - - - - ${backlogPackage}/lib/opencode-backlog/dist/index.js"
-        "L+ ${extensionDirectory}/opencode-backlog-tui.js - - - - ${backlogPackage}/lib/opencode-backlog/dist/tui.js"
         "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
       ];
     };

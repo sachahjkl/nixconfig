@@ -120,11 +120,6 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    opencode-backlog = {
-      url = "github:sachahjkl/opencode-backlog";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     skills = {
       url = "github:sachahjkl/skills";
       inputs = {

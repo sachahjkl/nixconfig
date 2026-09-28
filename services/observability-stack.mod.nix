@@ -257,7 +257,7 @@ _: {
         backend = "docker";
         containers = {
           loki = {
-            image = "grafana/loki:3.7.7";
+            image = "grafana/loki:3.7.8";
             cmd = ["-config.file=/etc/loki/config.yaml"];
             volumes = [
               "${lokiConfig}:/etc/loki/config.yaml:ro"
@@ -285,7 +285,7 @@ _: {
           };
 
           prometheus = {
-            image = "prom/prometheus:v3.14.0";
+            image = "prom/prometheus:v3.15.0";
             cmd = [
               "--config.file=/etc/prometheus/prometheus.yaml"
               "--storage.tsdb.path=/prometheus"

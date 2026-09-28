@@ -50,7 +50,7 @@ Before delivery, remove ambiguity, filler, synonym rotation, hidden conditions, 
 
 - At the start of work in each project, inspect its Nix flake and development checks.
 - Load the `nix-project` skill for detailed implementation and verification guidance.
-- If the flake is absent or incomplete, add a backlog task and complete it during the current work.
+- If the flake is absent or incomplete, complete its setup during the current work.
 - Expose applicable builds, tests, linters, formatters, and container images through `checks`.
 - Configure appropriate `cachix/git-hooks.nix` hooks for the project languages and file formats.
 - Set `package = pkgs.prek`. Do not use the Python `pre-commit` runner.
