@@ -76,7 +76,7 @@ if [ -n "$satty_mon" ]; then
     placement=$(jq -crn --arg monitor "$satty_mon" --arg workspace "$satty_ws" '
         "monitor = " + ($monitor | tojson)
         + (if $workspace == "" then "" else ", workspace = " + ($workspace | tojson) end)')
-    hyprctl eval "hl.window_rule({ name = \"satty-monitor-$$\", match = { class = \"com.gabm.satty\" }, $placement })" >/dev/null || exit 1
+    hyprctl eval "hl.window_rule({ name = \"satty-monitor-$$\", match = { class = \"com.gabm.satty\" }, float = true, center = true, $placement })" >/dev/null || exit 1
 fi
 
 before=$(hyprctl clients -j | jq -r '.[]|select(.class=="com.gabm.satty")|.address')

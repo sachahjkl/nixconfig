@@ -239,6 +239,7 @@
                 name = "satty-float",
                 match = { class = "com.gabm.satty" },
                 float = true,
+                center = true,
             })
 
             hl.window_rule({
