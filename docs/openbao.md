@@ -5,7 +5,7 @@ Existing applications keep their current SecretSpec and SOPS configuration until
 
 ## Access and storage
 
-- The private API and UI use `https://bao.sacha.house` on Tailscale.
+- The private API and UI use `https://bao.sacha.house:8200` on Tailscale.
 - DNS resolves `bao.sacha.house` to `100.106.51.80`.
 - ACME obtains the TLS certificate through Cloudflare DNS.
 - The maintenance API uses HTTP on `127.0.0.1:8202` only.
@@ -14,7 +14,7 @@ Existing applications keep their current SecretSpec and SOPS configuration until
 - The latest consistent Raft snapshot resides in `/data/Backups/openbao/raft.snap`.
 
 Do not expose OpenBao through the public reverse proxy or router.
-Restrict TCP port 443 on the Tailscale interface before onboarding application identities.
+Restrict TCP port 8200 on the Tailscale interface before onboarding application identities.
 
 The host holds one Shamir share with a threshold of one.
 Root access to the host therefore gives access to the encrypted storage and its unseal key.
@@ -141,7 +141,7 @@ PY
 In another terminal, verify login through the private TLS endpoint.
 
 ```sh
-export BAO_ADDR=https://bao.sacha.house
+export BAO_ADDR=https://bao.sacha.house:8200
 bao login -method=userpass username=sacha
 bao secrets list
 ```
@@ -161,7 +161,7 @@ Verify that each application's SecretSpec build includes the Vault provider.
 
 ```toml
 [providers]
-bao_production = "vault://bao.sacha.house:443/secret"
+bao_production = "vault://bao.sacha.house:8200/secret"
 ```
 
 SecretSpec stores each value under `secret/data/secretspec/PROJECT/PROFILE/KEY`, in the `value` field.

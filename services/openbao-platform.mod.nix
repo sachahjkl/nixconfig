@@ -85,7 +85,6 @@
         enable = true;
         settings = {
           ui = true;
-          disable_mlock = true;
           audit = [
             {
               type = "file";
@@ -93,7 +92,7 @@
               options.file_path = "${cfg.dataDir}/audit.json";
             }
           ];
-          api_addr = "https://${cfg.domain}";
+          api_addr = "https://${cfg.domain}:8200";
           cluster_addr = "https://127.0.0.1:8201";
           storage.raft = {
             path = "${cfg.dataDir}/raft";
@@ -102,7 +101,7 @@
           listener = {
             private = {
               type = "tcp";
-              address = "${cfg.address}:443";
+              address = "${cfg.address}:8200";
               cluster_address = "127.0.0.1:8201";
               tls_cert_file = "${certificate}/fullchain.pem";
               tls_key_file = "${certificate}/key.pem";
@@ -118,7 +117,7 @@
         };
       };
 
-      networking.firewall.interfaces.${cfg.interface}.allowedTCPPorts = [443];
+      networking.firewall.interfaces.${cfg.interface}.allowedTCPPorts = [8200];
       services.logrotate.settings.openbao-audit = {
         files = ["${cfg.dataDir}/audit.json"];
         frequency = "weekly";
@@ -146,9 +145,6 @@
             unitConfig.RequiresMountsFor = [cfg.dataDir];
             serviceConfig = {
               DynamicUser = lib.mkForce false;
-              CapabilityBoundingSet = lib.mkForce ["CAP_NET_BIND_SERVICE"];
-              AmbientCapabilities = ["CAP_NET_BIND_SERVICE"];
-              PrivateUsers = lib.mkForce false;
               ProtectSystem = "strict";
               ReadWritePaths = [cfg.dataDir];
             };

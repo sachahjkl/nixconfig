@@ -27,7 +27,6 @@ class RaftIntegrationTests(unittest.TestCase):
             root = Path(directory)
             (root / "raft").mkdir()
             configuration = {
-                "disable_mlock": True,
                 "audit": [
                     {
                         "type": "file",
