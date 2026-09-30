@@ -141,8 +141,8 @@
         services = {
           openbao = {
             wants = ["network-online.target"];
-            requires = ["acme-finished-${cfg.domain}.target"];
-            after = ["network-online.target" "acme-finished-${cfg.domain}.target"];
+            requires = ["acme-${cfg.domain}.service"];
+            after = ["network-online.target" "acme-${cfg.domain}.service"];
             unitConfig.RequiresMountsFor = [cfg.dataDir];
             serviceConfig = {
               DynamicUser = lib.mkForce false;
