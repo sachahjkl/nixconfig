@@ -19,8 +19,14 @@
             mode     = ${builtins.toJSON monitor.mode},
             position = ${builtins.toJSON monitor.position},
             scale    = ${toString monitor.scale},
-            cm       = "auto",
-            supports_hdr = -1,
+            cm       = ${builtins.toJSON monitor.colorManagement},
+            supports_hdr = ${
+          if monitor.hdr == null
+          then "-1"
+          else if monitor.hdr
+          then "1"
+          else "0"
+        },
         })
       '')
       hyprCfg.display.monitors;
@@ -85,6 +91,16 @@
               scale = lib.mkOption {
                 type = lib.types.number;
                 default = 1.875;
+              };
+              colorManagement = lib.mkOption {
+                type = lib.types.str;
+                default = "auto";
+                description = "Hyprland color management preset.";
+              };
+              hdr = lib.mkOption {
+                type = lib.types.nullOr lib.types.bool;
+                default = null;
+                description = "Override HDR support. Null uses automatic detection.";
               };
             };
           });

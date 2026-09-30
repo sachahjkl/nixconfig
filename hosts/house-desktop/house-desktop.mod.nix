@@ -43,9 +43,11 @@ lib.systems.nixosSystem "house-desktop" {
         }
         {
           output = "HDMI-A-1";
-          mode = "preferred";
+          mode = "3840x2160@60";
           position = "2048x0";
           scale = 1.875;
+          colorManagement = "srgb";
+          hdr = false;
         }
       ];
     };
