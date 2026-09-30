@@ -169,7 +169,7 @@
     ...
   }: let
     cfg = config.opencode;
-    inherit (lib) mkIf mkOption types;
+    inherit (lib) mkEnableOption mkIf mkOption types;
     extensionDirectory = "${config.homeDirectory}/.local/share/opencode/nix-extensions";
     simulacraTokenPath = "/run/secrets/ai/simulacra-token";
 
@@ -205,6 +205,15 @@
       '';
       meta.mainProgram = "opencode";
     };
+
+    opencodeServer = pkgs.writeShellScript "opencode-server" ''
+      set -eu
+      export OPENCODE_SERVER_PASSWORD="$(cat "$CREDENTIALS_DIRECTORY/password")"
+      exec ${lib.getExe wrappedOpenCode} serve \
+        --hostname ${lib.escapeShellArg cfg.server.hostname} \
+        --port ${toString cfg.server.port} \
+        ${lib.concatMapStringsSep " " (origin: "--cors ${lib.escapeShellArg origin}") cfg.server.cors}
+    '';
 
     opencodeCompletions = pkgs.runCommand "opencode-completions" {} ''
       mkdir -p $out/share/fish/vendor_completions.d
@@ -246,6 +255,34 @@
         type = types.attrs;
         default = {};
         description = "Settings used only when the writable OpenCode CLI configuration is first created.";
+      };
+
+      server = {
+        enable = mkEnableOption "OpenCode API and web server";
+
+        hostname = mkOption {
+          type = types.str;
+          default = "127.0.0.1";
+          description = "Address on which the OpenCode server listens.";
+        };
+
+        port = mkOption {
+          type = types.port;
+          default = 4096;
+          description = "Port on which the OpenCode server listens.";
+        };
+
+        passwordFile = mkOption {
+          type = types.nullOr types.str;
+          default = null;
+          description = "File containing the OpenCode server password.";
+        };
+
+        cors = mkOption {
+          type = types.listOf types.str;
+          default = [];
+          description = "Browser origins allowed to call the OpenCode server.";
+        };
       };
     };
 
@@ -295,6 +332,33 @@
         "C ${config.homeDirectory}/.config/opencode/opencode.json 0644 - - - ${opencodeConfig}"
         "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
       ];
+
+      assertions = [
+        {
+          assertion = !cfg.server.enable || cfg.server.passwordFile != null;
+          message = "opencode.server.passwordFile must be set when the OpenCode server is enabled.";
+        }
+      ];
+
+      systemd.services.opencode = mkIf cfg.server.enable {
+        description = "OpenCode API and web server";
+        wantedBy = ["multi-user.target"];
+        after = ["network-online.target"];
+        wants = ["network-online.target"];
+        environment = {
+          HOME = config.homeDirectory;
+          OPENCODE_MODELS_URL = "https://codex.sacha.house";
+        };
+        serviceConfig = {
+          User = config.userName;
+          Group = "users";
+          WorkingDirectory = config.homeDirectory;
+          ExecStart = opencodeServer;
+          LoadCredential = "password:${cfg.server.passwordFile}";
+          Restart = "on-failure";
+          RestartSec = 5;
+        };
+      };
     };
   };
 }

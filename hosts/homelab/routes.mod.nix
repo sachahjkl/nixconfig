@@ -12,6 +12,7 @@
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
       dns = {
+        aRecords."bao.sacha.house" = "100.106.51.80";
         aRecords."froment.software" = "82.66.185.90";
         acmeZoneNames = [
           "froment.software"

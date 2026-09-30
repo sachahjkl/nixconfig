@@ -95,6 +95,20 @@
           mode = "0400";
           restartUnits = ["codex-proxy.service"];
         };
+
+        "opencode/server-password" = {
+          owner = "root";
+          group = "root";
+          mode = "0400";
+          restartUnits = ["opencode.service"];
+        };
+
+        "opencode-telegram/bot-token" = {
+          owner = "root";
+          group = "root";
+          mode = "0400";
+          restartUnits = ["opencode-telegram-bot.service"];
+        };
       };
 
       services.resticBackup = {

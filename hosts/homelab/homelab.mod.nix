@@ -10,6 +10,7 @@ lib.systems.nixosSystem "homelab" {
       self.diskoConfigurations.homelab
       self.nixosModules.deployUser
       self.nixosModules.server
+      self.nixosModules.opencodeTelegramBot
       self.nixosModules.homelabLayout
       self.nixosModules.containerHost
       self.nixosModules.observabilityStack
@@ -23,6 +24,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.githubRunner
       self.nixosModules.nomadPlatform
       self.nixosModules.k3sPlatform
+      self.nixosModules.openbaoPlatform
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabRoutes
       self.nixosModules.codexProxyService
@@ -40,6 +42,19 @@ lib.systems.nixosSystem "homelab" {
       enable = true;
       handy.enable = false;
       herdr.enable = true;
+    };
+
+    opencode.server = {
+      enable = true;
+      passwordFile = config.sops.secrets."opencode/server-password".path;
+      cors = ["https://ai.sacha.house"];
+    };
+
+    services.opencodeTelegramBot = {
+      enable = true;
+      telegramTokenFile = config.sops.secrets."opencode-telegram/bot-token".path;
+      allowedUserId = "1532149944";
+      opencodePasswordFile = config.sops.secrets."opencode/server-password".path;
     };
 
     homelab = {
@@ -125,12 +140,25 @@ lib.systems.nixosSystem "homelab" {
         signingKeySopsFile = self + /secrets/homelab.yaml;
       };
 
+      openbaoPlatform = {
+        enable = true;
+        domain = "bao.sacha.house";
+        address = "100.106.51.80";
+        interface = "ts0";
+        dataDir = "/data/Services/openbao";
+        secretDir = "/data/Secrets/openbao";
+        snapshotDir = "/data/Backups/openbao";
+        acmeEmail = "sacha@sacha.house";
+        sopsFile = self + /secrets/shared.yaml;
+      };
+
       resticBackup = {
         enable = true;
         paths = [
           "/root"
           "/persist/var/lib/sops-nix"
           "/data/Secrets"
+          "/data/Backups/openbao"
           "/data/Services"
           "/data/Docker/appdata"
           "/data/Docker/data/Secrets"
@@ -138,6 +166,7 @@ lib.systems.nixosSystem "homelab" {
           "/data/Home"
         ];
         excludes = [
+          "/data/Services/openbao/raft"
           ".cache"
           ".npm"
           ".bun"
@@ -158,6 +187,10 @@ lib.systems.nixosSystem "homelab" {
     };
 
     git.signingKey = "~/.ssh/far-from-home.pub";
+    systemd.services.restic-backup = {
+      requires = ["openbao-snapshot.service"];
+      after = ["openbao-snapshot.service"];
+    };
     ssh.identityKey = "~/.ssh/far-from-home";
 
     system.autoUpgrade = {

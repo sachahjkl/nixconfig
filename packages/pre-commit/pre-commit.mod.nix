@@ -13,6 +13,8 @@
           enable = true;
           excludes = ["^hosts/.*/report\\.json$"];
         };
+        ruff.enable = true;
+        ruff-format.enable = true;
         shellcheck.enable = true;
         statix.enable = true;
         trim-trailing-whitespace.enable = true;
