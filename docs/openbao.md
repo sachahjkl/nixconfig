@@ -22,6 +22,25 @@ This is an accepted constraint for this single-host installation, not external a
 The unseal timer checks every 30 seconds and unseals a sealed instance.
 Stop `openbao-unseal.timer` before an intentional maintenance seal.
 
+## Sign in to the configured homelab
+
+Open `https://bao.sacha.house:8200/ui/` from a Tailscale device.
+Select the Username (`userpass`) authentication method.
+Enter `sacha` as the username.
+Read the generated password locally on the homelab:
+
+```sh
+sudo cat /data/Secrets/openbao/operator-password
+```
+
+The password file belongs to root and has mode `0400`.
+Do not paste the password or unseal key into chat, logs, or the repository.
+The local unseal key resides in `/data/Secrets/openbao/unseal-key` with the same file permissions.
+Keep an offline recovery copy of the unseal key.
+The initial root token was revoked after administrator access and snapshots were verified.
+
+The remaining initialization sections describe provisioning a new instance, not joining an existing Raft cluster.
+
 ## Deploy and initialize
 
 Deploy the homelab NixOS configuration before initialization.
