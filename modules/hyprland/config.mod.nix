@@ -138,7 +138,7 @@
             local menu = "uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command \"uwsm app -- {cmd}\""
             local mainMod = "SUPER"
 
-            local satty_args = "--copy-command wl-copy -o \"$HOME/Pictures/Screenshots/%Y%m%d_%H%M%S.png\" --actions-on-enter save-to-clipboard,save-to-file,exit --actions-on-right-click save-to-clipboard,save-to-file,exit --floating-hack --no-window-decoration --fullscreen current-screen"
+            local satty_args = "--copy-command wl-copy -o \"$HOME/Pictures/Screenshots/%Y%m%d_%H%M%S.png\" --actions-on-enter save-to-clipboard,save-to-file,exit --actions-on-right-click save-to-clipboard,save-to-file,exit --no-window-decoration --resize smart"
 
             ${monitorConfig}
 
@@ -256,6 +256,7 @@
                 match = { class = "com.gabm.satty" },
                 float = true,
                 center = true,
+                no_anim = true,
             })
 
             hl.window_rule({
