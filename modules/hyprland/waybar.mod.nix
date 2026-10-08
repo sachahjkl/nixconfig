@@ -49,8 +49,8 @@
         ];
         "hyprland/workspaces" = {
           spacing = 16;
-          on-scroll-up = "hyprctl dispatch workspace r+1";
-          on-scroll-down = "hyprctl dispatch workspace r-1";
+          on-scroll-up = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r+1\" })'";
+          on-scroll-down = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"r-1\" })'";
         };
         "custom/os_button" = {
           format = u "F17C";

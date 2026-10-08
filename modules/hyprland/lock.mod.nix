@@ -31,7 +31,9 @@ _: {
       }
       config;
     lockCmd = "pidof hyprlock || ${lib.getExe pkgs.hyprlock}";
-    lockAndDpmsCycle = "${lockCmd}; sleep 5; hyprctl dispatch dpms off";
+    dpmsOn = "hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
+    dpmsOff = "hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })'";
+    lockAndDpmsCycle = "${lockCmd}; sleep 5; ${dpmsOff}";
     inherit (config) userName;
   in {
     hjem.users.${userName}.rum.programs = {
@@ -123,19 +125,19 @@ _: {
           general = {
             lock_cmd = lockCmd;
             before_sleep_cmd = lockCmd;
-            after_sleep_cmd = "hyprctl dispatch dpms on";
+            after_sleep_cmd = dpmsOn;
           };
           listener =
             if laptopCfg.enable
             then [
               {
                 timeout = laptopCfg.lockTimeoutSeconds;
-                on-timeout = "hyprctl dispatch dpms on; sleep 0.5; ${lockAndDpmsCycle}";
+                on-timeout = "${dpmsOn}; sleep 0.5; ${lockAndDpmsCycle}";
               }
               {
                 timeout = laptopCfg.displayOffTimeoutSeconds;
-                on-timeout = "hyprctl dispatch dpms off";
-                on-resume = "hyprctl dispatch dpms on";
+                on-timeout = dpmsOff;
+                on-resume = dpmsOn;
               }
               {
                 timeout = laptopCfg.suspendTimeoutSeconds;
@@ -145,12 +147,12 @@ _: {
             else [
               {
                 timeout = 300;
-                on-timeout = "hyprctl dispatch dpms on; sleep 0.5; ${lockAndDpmsCycle}";
+                on-timeout = "${dpmsOn}; sleep 0.5; ${lockAndDpmsCycle}";
               }
               {
                 timeout = 120;
-                on-timeout = "hyprctl dispatch dpms off";
-                on-resume = "hyprctl dispatch dpms on";
+                on-timeout = dpmsOff;
+                on-resume = dpmsOn;
               }
             ];
         };

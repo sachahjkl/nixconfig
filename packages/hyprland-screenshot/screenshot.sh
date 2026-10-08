@@ -16,6 +16,7 @@ boxes=$(hyprctl clients -j | jq -r --argjson ids "$ws_ids" '
     | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"') || exit 1
 
 freeze_pid=""
+rule_name=""
 cleanup() {
     if [ -n "$freeze_pid" ]; then
         kill "$freeze_pid" 2>/dev/null || true
@@ -23,7 +24,13 @@ cleanup() {
         freeze_pid=""
     fi
 }
-trap cleanup EXIT
+disable_rule() {
+    if [ -n "$rule_name" ]; then
+        hyprctl eval "hl.window_rule({ name = \"$rule_name\", enabled = false })" >/dev/null || true
+        rule_name=""
+    fi
+}
+trap 'cleanup; disable_rule' EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
@@ -76,7 +83,8 @@ if [ -n "$satty_mon" ]; then
     placement=$(jq -crn --arg monitor "$satty_mon" --arg workspace "$satty_ws" '
         "monitor = " + ($monitor | tojson)
         + (if $workspace == "" then "" else ", workspace = " + ($workspace | tojson) end)')
-    hyprctl eval "hl.window_rule({ name = \"satty-monitor-$$\", match = { class = \"com.gabm.satty\" }, float = true, center = true, $placement })" >/dev/null || exit 1
+    rule_name="satty-placement-$$"
+    hyprctl eval "hl.window_rule({ name = \"$rule_name\", match = { class = \"com.gabm.satty\" }, float = true, center = true, $placement })" >/dev/null || exit 1
 fi
 
 before=$(hyprctl clients -j | jq -r '.[]|select(.class=="com.gabm.satty")|.address')
@@ -90,6 +98,7 @@ for _ in $(seq 1 150); do
     [ -n "$new" ] && break
     sleep 0.03
 done
+disable_rule
 if [ -n "$new" ]; then
     hyprctl dispatch "hl.dsp.focus({ window = \"address:$new\" })" >/dev/null
 fi
