@@ -12,9 +12,9 @@
       theme = config.theme.rofiTheme;
     };
     powerMenuLauncher = config.powerMenu.package;
-    monitorConfig =
+    monitorRules =
       lib.concatMapStringsSep "\n" (monitor: ''
-        hl.monitor({
+        {
             output   = ${builtins.toJSON monitor.output},
             mode     = ${builtins.toJSON monitor.mode},
             position = ${builtins.toJSON monitor.position},
@@ -27,9 +27,43 @@
           then "1"
           else "0"
         },
-        })
+        },
       '')
       hyprCfg.display.monitors;
+    startupModes = lib.concatStringsSep "\n" (lib.imap1 (index: monitor:
+      lib.optionalString (monitor.startupMode != null)
+      "[${toString index}] = ${builtins.toJSON monitor.startupMode},")
+    hyprCfg.display.monitors);
+    monitorConfig = ''
+      local monitors = {
+      ${monitorRules}
+      }
+      for _, monitor in ipairs(monitors) do
+          hl.monitor(monitor)
+      end
+
+      local startup_modes = {
+      ${startupModes}
+      }
+      local function retrain_monitor_links()
+          if next(startup_modes) == nil then
+              return
+          end
+          for index, mode in pairs(startup_modes) do
+              local monitor = {}
+              for key, value in pairs(monitors[index]) do
+                  monitor[key] = value
+              end
+              monitor.mode = mode
+              hl.monitor(monitor)
+          end
+          hl.timer(function()
+              for index in pairs(startup_modes) do
+                  hl.monitor(monitors[index])
+              end
+          end, { timeout = 2000, type = "oneshot" })
+      end
+    '';
   in {
     options.hyprland = {
       laptopMode = {
@@ -102,6 +136,11 @@
                 default = null;
                 description = "Override HDR support. Null uses automatic detection.";
               };
+              startupMode = lib.mkOption {
+                type = lib.types.nullOr lib.types.str;
+                default = null;
+                description = "Temporary mode to apply when Hyprland starts. Hyprland applies the normal mode 2 seconds later. Use this when the output has no signal after boot.";
+              };
             };
           });
           default = [{}];
@@ -143,6 +182,7 @@
             ${monitorConfig}
 
             hl.on("hyprland.start", function()
+                retrain_monitor_links()
                 hl.exec_cmd("uwsm app -- nm-applet")
                 hl.exec_cmd("uwsm app -- thunar --daemon")
                 hl.exec_cmd("uwsm app -- udiskie")
