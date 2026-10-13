@@ -1,6 +1,10 @@
 {self, ...}: {
   flake.nixosModules.homelabRoutes = {config, ...}: let
     observability = config.services.observabilityStack;
+    k3sIngress = {
+      upstreamHost = "127.0.0.1";
+      upstreamPort = config.services.k3sPlatform.ingressPort;
+    };
   in {
     services.reverseProxy = {
       enable = true;
@@ -12,8 +16,11 @@
       acmeEmail = "sacha@sacha.house";
       defaultDomainRedirect = "sacha.house";
       dns = {
-        aRecords."bao.sacha.house" = "100.106.51.80";
-        aRecords."froment.software" = "82.66.185.90";
+        aRecords = {
+          "bao.sacha.house" = "100.106.51.80";
+          ${config.services.containerRegistry.domain} = config.services.containerRegistry.address;
+          "froment.software" = "82.66.185.90";
+        };
         acmeZoneNames = [
           "froment.software"
           "sacha.house"
@@ -131,6 +138,11 @@
           upstreamHost = "127.0.0.1";
           upstreamPort = 8082;
         };
+
+        # Hommage (OGF prototype) on k3s: the in-cluster ingress routes by host name.
+        "hommage.sacha.house" = k3sIngress // {robotsNoIndex = true;};
+        "vitrine.hommage.sacha.house" = k3sIngress // {robotsNoIndex = true;};
+        "api.hommage.sacha.house" = k3sIngress // {robotsNoIndex = true;};
 
         "ssh.sacha.house" = {
           upstreamHost = "127.0.0.1";

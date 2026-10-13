@@ -24,6 +24,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.githubRunner
       self.nixosModules.nomadPlatform
       self.nixosModules.k3sPlatform
+      self.nixosModules.containerRegistry
       self.nixosModules.openbaoPlatform
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabRoutes
@@ -135,6 +136,17 @@ lib.systems.nixosSystem "homelab" {
         apiInterface = "ts0";
       };
 
+      containerRegistry = {
+        enable = true;
+        domain = "registry.sacha.house";
+        address = "100.106.51.80";
+        interface = "ts0";
+        dataDir = "/data/Services/registry";
+        acmeEmail = "sacha@sacha.house";
+        cloudflareSopsFile = self + /secrets/shared.yaml;
+        credentialsSopsFile = self + /secrets/homelab.yaml;
+      };
+
       nixCache = {
         enable = true;
         signingKeySopsFile = self + /secrets/homelab.yaml;
@@ -182,6 +194,8 @@ lib.systems.nixosSystem "homelab" {
           "/data/Services/k3s/state/data"
           "/data/Services/k3s/kubelet"
           "/data/Services/k3s/pod-logs"
+          # Registry images are rebuilt from their repositories.
+          "/data/Services/registry"
         ];
       };
     };
