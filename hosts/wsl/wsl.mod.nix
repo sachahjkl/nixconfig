@@ -70,6 +70,9 @@ in {
       module = {
         imports = [commonModule];
 
+        # Work machine: keep the personal Cloudflare token off it.
+        cloudflareCli.enable = false;
+
         security.pki.certificateFiles = [
           ./certs/zscaler-root-ca.pem
           ./certs/ca-ogfprod-root.pem
