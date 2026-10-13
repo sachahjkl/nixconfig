@@ -22,6 +22,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.webTerminal
       self.nixosModules.githubRunner
       self.nixosModules.nomadPlatform
+      self.nixosModules.k3sPlatform
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabRoutes
       self.nixosModules.codexProxyService
@@ -112,6 +113,13 @@ lib.systems.nixosSystem "homelab" {
         };
       };
 
+      k3sPlatform = {
+        enable = true;
+        dataDir = "/data/Services/k3s";
+        apiAddress = "100.106.51.80";
+        apiInterface = "ts0";
+      };
+
       nixCache = {
         enable = true;
         signingKeySopsFile = self + /secrets/homelab.yaml;
@@ -140,6 +148,11 @@ lib.systems.nixosSystem "homelab" {
           "tmp"
           ".local/share/Trash"
           "appdata.bak"
+          # k3s: images, kubelet state and logs are rebuilt; volumes stay backed up.
+          "/data/Services/k3s/agent"
+          "/data/Services/k3s/data"
+          "/data/Services/k3s/kubelet"
+          "/data/Services/k3s/pod-logs"
         ];
       };
     };
