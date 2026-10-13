@@ -60,8 +60,10 @@
     };
 
     config = lib.mkIf cfg.enable {
-      users.groups.openbao = {};
+      # Pinned like traefik: an automatic id can change and lock OpenBao out of its own raft data.
+      users.groups.openbao.gid = 993;
       users.users.openbao = {
+        uid = 992;
         isSystemUser = true;
         group = "openbao";
       };
@@ -133,6 +135,8 @@
         tmpfiles.rules = [
           "d ${cfg.dataDir} 0700 openbao openbao -"
           "d ${cfg.dataDir}/raft 0700 openbao openbao -"
+          # Ownership restored on every boot, file modes left untouched.
+          "Z ${cfg.dataDir} - openbao openbao -"
           "d ${cfg.secretDir} 0700 root root -"
           "d ${cfg.snapshotDir} 0700 root root -"
         ];
