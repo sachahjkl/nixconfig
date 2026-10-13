@@ -31,7 +31,8 @@ _: {
         namespace = "kube-system";
       };
       spec.valuesContent = builtins.toJSON {
-        service.type = "NodePort";
+        # Traefik chart 40+: the type lives under service.spec; service.type is silently ignored.
+        service.spec.type = "NodePort";
         ports = {
           web.nodePort = cfg.ingressPort;
           websecure.expose.default = false;
