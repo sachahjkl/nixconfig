@@ -8,6 +8,7 @@
   in {
     imports = [
       self.nixosModules.bat
+      self.nixosModules.cloudflareCli
       self.nixosModules.gh
       self.nixosModules.git
       self.nixosModules.golang
