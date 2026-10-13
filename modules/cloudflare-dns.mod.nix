@@ -211,15 +211,30 @@ _: {
                   existing_by_key.setdefault(key, []).append(record)
                   existing_by_name.setdefault(name_key, []).append(record)
 
+          # Only address records collide with a CNAME; MX, TXT and the like coexist with a
+          # flattened CNAME at the zone apex.
+          address_types = {"A", "AAAA", "CNAME"}
+
           for key, wanted in desired.items():
               existing = existing_by_key.get(key, [])
               same_name = existing_by_name.get((wanted["zone_name"], wanted["name"]), [])
               incompatible = [
                   record
                   for record in same_name
-                  if record["type"] != wanted["type"] and (wanted["type"] == "CNAME" or record["type"] == "CNAME")
+                  if record["type"] != wanted["type"]
+                  and record["type"] in address_types
+                  and (wanted["type"] == "CNAME" or record["type"] == "CNAME")
               ]
-              deletes.extend(incompatible)
+              for record in incompatible:
+                  # A record this tool did not create is never deleted: it blocks the push instead.
+                  if (record.get("comment") or "") == managed_comment:
+                      deletes.append(record)
+                  else:
+                      conflicts.append({
+                          "wanted": wanted,
+                          "reason": f"unmanaged {record['type']} record",
+                          "existing": [record["id"]],
+                      })
 
               if existing:
                   current = existing[0]

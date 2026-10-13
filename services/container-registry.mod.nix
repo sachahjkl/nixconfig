@@ -30,6 +30,13 @@
         description = "Private interface accepting registry traffic.";
       };
 
+      port = lib.mkOption {
+        type = lib.types.port;
+        # 443 on the Tailscale address belongs to Tailscale Funnel.
+        default = 5443;
+        description = "HTTPS port of the registry; image names carry it (domain:port/name).";
+      };
+
       dataDir = lib.mkOption {
         type = lib.types.str;
         description = "Persistent directory holding image layers and manifests.";
@@ -91,14 +98,14 @@
         services.dockerRegistry = {
           enable = true;
           listenAddress = cfg.address;
-          port = 443;
+          inherit (cfg) port;
           storagePath = cfg.dataDir;
           enableDelete = true;
           enableGarbageCollect = true;
           garbageCollectDates = "weekly";
           extraConfig = {
             http = {
-              host = "https://${cfg.domain}";
+              host = "https://${cfg.domain}:${toString cfg.port}";
               tls = {
                 certificate = "${certificate}/fullchain.pem";
                 key = "${certificate}/key.pem";
@@ -111,7 +118,7 @@
           };
         };
 
-        networking.firewall.interfaces.${cfg.interface}.allowedTCPPorts = [443];
+        networking.firewall.interfaces.${cfg.interface}.allowedTCPPorts = [cfg.port];
 
         systemd = {
           tmpfiles.rules = [
@@ -126,7 +133,6 @@
             requires = ["acme-${cfg.domain}.service"];
             after = ["network-online.target" "tailscaled.service" "acme-${cfg.domain}.service"];
             unitConfig.RequiresMountsFor = [cfg.dataDir];
-            # The upstream unit already grants CAP_NET_BIND_SERVICE for port 443.
             serviceConfig = {
               Restart = "on-failure";
               RestartSec = "10s";
@@ -144,7 +150,7 @@
             mode = "0400";
             restartUnits = ["k3s.service"];
             content = builtins.toJSON {
-              configs.${cfg.domain}.auth = {
+              configs."${cfg.domain}:${toString cfg.port}".auth = {
                 username = cfg.user;
                 password = config.sops.placeholder."registry/password";
               };
