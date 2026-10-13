@@ -177,9 +177,9 @@ lib.systems.nixosSystem "homelab" {
           "tmp"
           ".local/share/Trash"
           "appdata.bak"
-          # k3s: images, kubelet state and logs are rebuilt; volumes stay backed up.
-          "/data/Services/k3s/agent"
-          "/data/Services/k3s/data"
+          # k3s: images, kubelet state and logs are rebuilt; the server database and volumes stay backed up.
+          "/data/Services/k3s/state/agent"
+          "/data/Services/k3s/state/data"
           "/data/Services/k3s/kubelet"
           "/data/Services/k3s/pod-logs"
         ];

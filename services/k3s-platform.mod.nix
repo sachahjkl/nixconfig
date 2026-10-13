@@ -10,7 +10,16 @@ _: {
     hasPersistDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
     kubeconfig = "/etc/rancher/k3s/k3s.yaml";
-    podLogs = "/var/log/pods";
+
+    # k3s and the NixOS module keep their default paths (manifests, charts, and preloaded
+    # images live under /var/lib/rancher/k3s); the paths are bind-mounted from the data
+    # disk because the root filesystem is a tmpfs.
+    stateMounts = {
+      "/var/lib/rancher/k3s" = "state";
+      "/var/lib/kubelet" = "kubelet";
+      "/var/log/pods" = "pod-logs";
+    };
+    mountUnit = path: "${lib.replaceStrings ["/"] ["-"] (lib.removePrefix "/" path)}.mount";
 
     # The bundled Traefik stays inside the cluster: the host Traefik terminates TLS and
     # forwards to this NodePort, which kube-proxy only exposes on the loopback address.
@@ -35,7 +44,7 @@ _: {
 
       dataDir = lib.mkOption {
         type = lib.types.str;
-        description = "Persistent directory holding k3s state, images, kubelet data, pod logs, and volumes.";
+        description = "Persistent directory holding k3s state, kubelet data, pod logs, and volumes.";
       };
 
       apiAddress = lib.mkOption {
@@ -77,9 +86,6 @@ _: {
           disable = ["servicelb"];
           gracefulNodeShutdown.enable = true;
           extraFlags = [
-            "--data-dir=${cfg.dataDir}"
-            "--default-local-storage-path=${cfg.dataDir}/volumes"
-            "--kubelet-arg=root-dir=${cfg.dataDir}/kubelet"
             # A flag, not extraKubeProxyConfig: a kube-proxy config file overrides the flags k3s sets.
             "--kube-proxy-arg=nodeport-addresses=127.0.0.1/32"
             "--tls-san=${cfg.apiAddress}"
@@ -95,21 +101,21 @@ _: {
           manifests.traefik-config.content = traefikConfig;
         };
 
-        # Pod logs leave the tmpfs root for the data disk.
-        fileSystems.${podLogs} = {
-          device = "${cfg.dataDir}/pod-logs";
-          fsType = "none";
-          options = ["bind" "x-systemd.requires-mounts-for=${cfg.dataDir}"];
-        };
+        fileSystems =
+          lib.mapAttrs (_: subdir: {
+            device = "${cfg.dataDir}/${subdir}";
+            fsType = "none";
+            options = ["bind" "x-systemd.requires-mounts-for=${cfg.dataDir}"];
+          })
+          stateMounts;
 
         systemd = {
-          tmpfiles.rules = [
-            "d ${cfg.dataDir} 0700 root root -"
-            "d ${cfg.dataDir}/pod-logs 0755 root root -"
-          ];
+          tmpfiles.rules =
+            ["d ${cfg.dataDir} 0700 root root -"]
+            ++ lib.mapAttrsToList (_: subdir: "d ${cfg.dataDir}/${subdir} 0755 root root -") stateMounts;
           services.k3s = {
-            requires = ["var-log-pods.mount"];
-            after = ["var-log-pods.mount"];
+            requires = map mountUnit (lib.attrNames stateMounts);
+            after = map mountUnit (lib.attrNames stateMounts);
           };
         };
 
