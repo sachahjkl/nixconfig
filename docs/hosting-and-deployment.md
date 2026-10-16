@@ -130,6 +130,17 @@ Match the subject format that GitHub sends to Tailscale.
 
 If GitHub includes immutable IDs, use a pattern such as `repo:OWNER@OWNER_ID/*:environment:*`.
 
+The homelab trusts these GitHub owners:
+
+| Owner | Tailscale subject pattern |
+| --- | --- |
+| `sachahjkl` | `repo:sachahjkl@32895534/*` |
+| `petitpecule` | `repo:petitpecule@343200857/*` |
+
+A Tailscale trust credential accepts one subject pattern.
+Use one trust credential for each owner.
+Give each credential the `tag:github-actions-deploy` tag.
+
 Use the Tailscale credential diagnostic to read the received subject after a failed exchange.
 
 Use separate identities when applications need different network access.
@@ -143,6 +154,11 @@ Store the initial management token offline.
 Create one deployment policy for each trust boundary.
 
 Do not give CI a management token.
+
+GitHub Actions authenticate to Nomad with a short-lived JWT.
+The `github-actions` binding rule accepts a JWT only from the `master` branch of a repository whose owner is in `services.nomadPlatform.githubActions.owners`.
+The homelab sets this list to `sachahjkl` and `petitpecule`.
+The GitHub Environment name selects the Nomad policy and namespace: `staging`, `production`, or `demo`.
 
 A staging token can update only staging jobs and staging variables.
 

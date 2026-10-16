@@ -131,7 +131,7 @@ lib.systems.nixosSystem "homelab" {
         address = "100.106.51.80";
         githubActions = {
           enable = true;
-          owner = "sachahjkl";
+          owners = ["sachahjkl" "petitpecule"];
           audience = "nomad.sacha.house";
         };
       };

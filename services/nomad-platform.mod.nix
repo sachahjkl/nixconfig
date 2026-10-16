@@ -52,8 +52,17 @@
         repository_owner = "repository_owner";
       };
     });
+    githubActionsSelector = let
+      ownerClauses = map (owner: "value.repository_owner==${builtins.toJSON owner}") cfg.githubActions.owners;
+    in "(${lib.concatStringsSep " or " ownerClauses}) and value.ref==\"refs/heads/master\"";
   in {
-    imports = [self.nixosModules.sops];
+    imports = [
+      self.nixosModules.sops
+      (lib.mkChangedOptionModule
+        ["services" "nomadPlatform" "githubActions" "owner"]
+        ["services" "nomadPlatform" "githubActions" "owners"]
+        (oldConfig: [oldConfig.services.nomadPlatform.githubActions.owner]))
+    ];
 
     options.services.nomadPlatform = {
       enable = lib.mkEnableOption "Nomad application platform";
@@ -88,9 +97,11 @@
       githubActions = {
         enable = lib.mkEnableOption "short-lived GitHub Actions Nomad authentication";
 
-        owner = lib.mkOption {
-          type = lib.types.str;
-          description = "GitHub repository owner allowed to request Nomad deployment tokens.";
+        owners = lib.mkOption {
+          type = lib.types.listOf (lib.types.strMatching "[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?");
+          default = [];
+          example = ["sachahjkl" "petitpecule"];
+          description = "GitHub repository owners allowed to request Nomad deployment tokens.";
         };
 
         audience = lib.mkOption {
@@ -146,6 +157,10 @@
         {
           assertion = !(cfg.ingress || cfg.githubActions.enable) || cfg.namespaces != [];
           message = "Nomad ingress and GitHub Actions authentication require application namespaces.";
+        }
+        {
+          assertion = !cfg.githubActions.enable || cfg.githubActions.owners != [];
+          message = "Nomad GitHub Actions authentication requires at least one trusted repository owner.";
         }
       ];
 
@@ -333,7 +348,7 @@
             fi
 
             description="Trusted GitHub deployments"
-            selector='value.repository_owner=="${cfg.githubActions.owner}" and value.ref=="refs/heads/master"'
+            selector=${lib.escapeShellArg githubActionsSelector}
             rule_id="$(
               nomad acl binding-rule list -json \
                 | jq -r --arg description "$description" \
