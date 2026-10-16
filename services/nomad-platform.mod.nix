@@ -275,13 +275,22 @@
               "docker.volumes.enabled" = "true";
             };
           };
-          plugin = lib.mkIf (cfg.client && cfg.ghcrPull.enable) {
-            docker.config = {
-              auth.config = config.sops.templates."nomad-docker-auth.json".path;
-              # A plugin block replaces the deprecated client options: keep Docker volumes enabled.
-              volumes.enabled = true;
-            };
-          };
+          # Nomad's JSON configuration only accepts labelled plugin blocks written as lists.
+          plugin = lib.mkIf (cfg.client && cfg.ghcrPull.enable) [
+            {
+              docker = [
+                {
+                  config = [
+                    {
+                      auth = [{config = config.sops.templates."nomad-docker-auth.json".path;}];
+                      # A plugin block replaces the deprecated client options: keep Docker volumes enabled.
+                      volumes = [{enabled = true;}];
+                    }
+                  ];
+                }
+              ];
+            }
+          ];
           acl = {
             enabled = true;
             token_ttl = "30s";
