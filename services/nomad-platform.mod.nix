@@ -110,6 +110,11 @@
         };
       };
 
+      ghcrPull.enable = lib.mkEnableOption ''
+        pulling private GitHub Container Registry images with the read-only credential
+        stored under `nomad/ghcr-pull-auth` (base64 of `user:token`, token scoped to read:packages)
+      '';
+
       namespaces = lib.mkOption {
         type = lib.types.listOf (lib.types.strMatching "[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?");
         default = [];
@@ -185,6 +190,13 @@
             group = "root";
             mode = "0400";
           };
+          "nomad/ghcr-pull-auth" = lib.mkIf (cfg.client && cfg.ghcrPull.enable) {
+            inherit (cfg) sopsFile;
+            owner = "root";
+            group = "root";
+            mode = "0400";
+            restartUnits = ["nomad.service"];
+          };
         };
         templates = {
           "traefik-nomad.env" = lib.mkIf cfg.ingress {
@@ -194,6 +206,15 @@
             content = ''
               NOMAD_TOKEN=${config.sops.placeholder."nomad/traefik-token"}
             '';
+          };
+          # Docker credential file read by Nomad's docker driver to pull private images.
+          "nomad-docker-auth.json" = lib.mkIf (cfg.client && cfg.ghcrPull.enable) {
+            owner = "root";
+            group = "root";
+            mode = "0400";
+            content = builtins.toJSON {
+              auths."ghcr.io".auth = config.sops.placeholder."nomad/ghcr-pull-auth";
+            };
           };
           "nomad-secrets.json" = {
             owner = "root";
@@ -252,6 +273,13 @@
             options = {
               "driver.raw_exec.enable" = "0";
               "docker.volumes.enabled" = "true";
+            };
+          };
+          plugin = lib.mkIf (cfg.client && cfg.ghcrPull.enable) {
+            docker.config = {
+              auth.config = config.sops.templates."nomad-docker-auth.json".path;
+              # A plugin block replaces the deprecated client options: keep Docker volumes enabled.
+              volumes.enabled = true;
             };
           };
           acl = {

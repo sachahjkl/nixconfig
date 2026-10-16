@@ -126,6 +126,7 @@ lib.systems.nixosSystem "homelab" {
         sopsFile = self + /secrets/homelab.yaml;
         interface = "ts0";
         namespaces = ["staging" "production" "demo"];
+        ghcrPull.enable = true;
         nodeClass = "general";
         serverAddresses = ["100.106.51.80"];
         address = "100.106.51.80";
