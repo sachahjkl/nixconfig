@@ -16,6 +16,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.observabilityStack
       self.nixosModules.homelabShares
       self.nixosModules.resticBackup
+      self.nixosModules.sqliteSnapshots
       self.nixosModules.homelabSecrets
       self.nixosModules.reverseProxy
       self.nixosModules.hermesDashboard
@@ -179,6 +180,7 @@ lib.systems.nixosSystem "homelab" {
           "/persist/var/lib/sops-nix"
           "/data/Secrets"
           "/data/Backups/openbao"
+          "/data/Backups/sqlite"
           "/data/Services"
           "/data/Docker/appdata"
           "/data/Docker/data/Secrets"
@@ -206,12 +208,19 @@ lib.systems.nixosSystem "homelab" {
           "/data/Services/registry"
         ];
       };
+
+      # Live SQLite databases of Nomad applications, copied consistently before each Restic run.
+      sqliteSnapshots = {
+        enable = true;
+        directory = "/data/Backups/sqlite";
+        databases.petitpecule = "/data/Services/nomad/volumes/*/petitpecule.db";
+      };
     };
 
     git.signingKey = "~/.ssh/far-from-home.pub";
     systemd.services.restic-backup = {
-      requires = ["openbao-snapshot.service"];
-      after = ["openbao-snapshot.service"];
+      requires = ["openbao-snapshot.service" "sqlite-snapshots.service"];
+      after = ["openbao-snapshot.service" "sqlite-snapshots.service"];
     };
     ssh.identityKey = "~/.ssh/far-from-home";
 
