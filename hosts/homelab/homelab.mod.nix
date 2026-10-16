@@ -89,6 +89,13 @@ lib.systems.nixosSystem "homelab" {
 
       hermesDashboard.enable = false;
 
+      hardwareWatchdog.enable = true;
+
+      thermalGuard = {
+        enable = true;
+        criticalAction = "poweroff";
+      };
+
       codexProxyIntegration = {
         enable = true;
         domain = "codex.sacha.house";

@@ -43,6 +43,8 @@ _: {
         smartd.enable = true;
         journald.extraConfig = ''
           SystemMaxUse=1G
+          # Limit the log loss of an abrupt power cut.
+          SyncIntervalSec=10s
         '';
       };
 

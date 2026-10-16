@@ -9,6 +9,7 @@
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
   in {
     imports = [
+      self.nixosModules.claudeCode
       self.nixosModules.codex
       self.nixosModules.handy
       self.nixosModules.herdr
@@ -24,8 +25,11 @@
 
     config = lib.mkMerge [
       {
-        ai.handy.enable = lib.mkDefault cfg.enable;
-        ai.omp.enable = lib.mkDefault cfg.enable;
+        ai = {
+          claudeCode.enable = lib.mkDefault cfg.enable;
+          handy.enable = lib.mkDefault cfg.enable;
+          omp.enable = lib.mkDefault cfg.enable;
+        };
         codex.enable = lib.mkDefault (cfg.enable && cfg.codex.enable);
         herdr.enable = lib.mkDefault (cfg.enable && cfg.herdr.enable);
       }

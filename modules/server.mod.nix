@@ -5,6 +5,7 @@
       self.nixosModules.external-preservation
       self.nixosModules.editor
       self.nixosModules.fish
+      self.nixosModules.hardwareWatchdog
       self.nixosModules.hjem
       self.nixosModules.home-manager
       self.nixosModules.kernelHardening
@@ -23,6 +24,7 @@
       self.nixosModules.serverNix
       self.nixosModules.serverSsh
       self.nixosModules.serverTailscale
+      self.nixosModules.thermalGuard
     ];
 
     moshi.enable = true;
