@@ -80,11 +80,7 @@
           };
         };
 
-        "sae.aubetoile.dev" = {
-          dockerContainer = "sae.aubetoile";
-          dockerPort = 8080;
-          dns.enable = false;
-        };
+        # sae.aubetoile.dev is disabled until its container moves to a newer PHP.
 
         "dns.sacha.house" = {
           dockerContainer = "pihole";
