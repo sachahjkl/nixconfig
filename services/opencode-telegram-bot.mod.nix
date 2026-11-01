@@ -2,16 +2,16 @@
   perSystem = {pkgs, ...}: {
     packages.opencodeTelegramBot = pkgs.buildNpmPackage rec {
       pname = "opencode-telegram-bot";
-      version = "0.26.1";
+      version = "0.26.6";
 
       src = pkgs.fetchFromGitHub {
         owner = "grinev";
         repo = "opencode-telegram-bot";
         rev = "v${version}";
-        hash = "sha256-tadPEfxdaQCVGWTkJsVBYU9SQNQQ0mv500qWPxpF6g4=";
+        hash = "sha256-ysLqNhDlRMZJIvRhFtF5iFvmHIOkhd1esO4VvWs6Jqc=";
       };
 
-      npmDepsHash = "sha256-DNU/F6Bkb9ZcVc5BdArTSdytCLsNKKkBuRjYARN32uE=";
+      npmDepsHash = "sha256-g3i+CQ0GluD6XiN6aS644Fl1UK3T3DTPoVs1XH+9jQY=";
 
       meta = {
         description = "Telegram client for OpenCode";

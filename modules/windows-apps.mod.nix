@@ -1,22 +1,16 @@
-{inputs, ...}: {
+_: {
   flake.nixosModules.windowsApps = {
     lib,
     options,
     pkgs,
     ...
-  }: let
-    mv = inputs.multiverse.multiverse.${pkgs.stdenv.hostPlatform.system};
-    inherit (mv.tip) umu-launcher-unwrapped;
-    umuLauncher = pkgs.umu-launcher.override {
-      inherit umu-launcher-unwrapped;
-    };
-  in {
+  }: {
     config = lib.mkMerge [
       {
         environment.systemPackages = with pkgs; [
           bottles
           lutris
-          umuLauncher
+          umu-launcher
           wineWow64Packages.stableFull
           winetricks
         ];

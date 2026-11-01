@@ -19,7 +19,6 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.sqliteSnapshots
       self.nixosModules.homelabSecrets
       self.nixosModules.reverseProxy
-      self.nixosModules.hermesDashboard
       self.nixosModules.filebrowser
       self.nixosModules.webTerminal
       self.nixosModules.githubRunner
@@ -87,8 +86,6 @@ lib.systems.nixosSystem "homelab" {
         trustedRepositories = ["nixconfig"];
         labels = ["nixos" "nix" "homelab"];
       };
-
-      hermesDashboard.enable = false;
 
       hardwareWatchdog.enable = true;
 

@@ -10,6 +10,10 @@ _: {
         "fs.suid_dumpable" = 0;
         "kernel.perf_event_paranoid" = 3;
         "kernel.unprivileged_bpf_disabled" = 1;
+        # CVE-2026-98432 reaches the IPv4 TCP handshake. Multipath TCP listeners
+        # are only needed by applications that ask for them, and Go opens them
+        # by default since Go 1.24. Nothing here uses MPTCP.
+        "net.mptcp.enabled" = 0;
       };
 
       kernelParams = [

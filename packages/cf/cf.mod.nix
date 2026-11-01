@@ -9,16 +9,16 @@ _: {
     # runtime dependencies, then refresh both hashes from the build errors.
     packages.cf = pkgs.buildNpmPackage rec {
       pname = "cf";
-      version = "1.0.0-beta.14";
+      version = "1.0.0-beta.26";
 
       src = pkgs.fetchurl {
         url = "https://registry.npmjs.org/cf/-/cf-${version}.tgz";
-        hash = "sha256-Cl8wEn+WUfC4Qce37bccOiUKX4UgrBJHPSBi5bVswPM=";
+        hash = "sha256-RFJGFCd4ab2al9FyOCHIs5p7zIX0ZlcVBbI8ZKWiE7g=";
       };
 
       sourceRoot = "package";
       nodejs = pkgs.nodejs_22;
-      npmDepsHash = "sha256-078mupTsf39yUij/1g5+KJmv+q/eYIn1TuXbXS8r91Y=";
+      npmDepsHash = "sha256-0hYMHSCQIor2nqydYW2a+MzK2psn12YGraCgGKEMZt0=";
       npmFlags = ["--ignore-scripts"];
       dontNpmBuild = true;
 
