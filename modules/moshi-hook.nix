@@ -12,11 +12,12 @@
   hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
   hasUserName = lib.hasAttrByPath ["userName"] options;
   moshiHookPkg = self.packages.${pkgs.stdenv.hostPlatform.system}.moshiHook;
+  hookTargets = ["claude" "opencode" "gemini" "antigravity" "copilot" "omp"];
   pairingTokenPath = "/run/secrets/moshi-pairing-token";
   moshiSyncHooks = pkgs.writeShellScriptBin "moshi-sync-hooks" ''
     set -eu
 
-    ${lib.getExe moshiHookPkg} install
+    ${lib.getExe moshiHookPkg} install --target ${lib.concatStringsSep "," hookTargets}
   '';
   moshiPair = pkgs.writeShellScriptBin "moshi-pair" ''
     set -eu
@@ -59,6 +60,8 @@ in {
         description = "Moshi hook daemon";
         wantedBy = ["default.target"];
         after = ["network.target"];
+        # The daemon runs netstat to find OpenCode servers.
+        path = [pkgs.nettools];
         unitConfig.ConditionUser = config.userName;
         serviceConfig = {
           Type = "simple";
