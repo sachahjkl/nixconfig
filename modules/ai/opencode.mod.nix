@@ -46,10 +46,6 @@
       ];
     in {
       update = "disable";
-      providers.simulacra = {
-        settings.apiKey = "unused";
-        headers.X-Codex-Authorization = "Bearer {env:SIMULACRA_TOKEN}";
-      };
       share = "disabled";
       skills = ["${extensionDirectory}/skills"];
       permissions =
@@ -171,7 +167,6 @@
     cfg = config.opencode;
     inherit (lib) mkEnableOption mkIf mkOption types;
     extensionDirectory = "${config.homeDirectory}/.local/share/opencode/nix-extensions";
-    simulacraTokenPath = "/run/secrets/ai/simulacra-token";
 
     opencodeConfig = self.lib.opencode.mkOpenCodeConfig {
       inherit (config) homeDirectory;
@@ -190,10 +185,6 @@
 
     opencodeWrapper = pkgs.writeShellScriptBin "opencode" ''
       export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
-      export OPENCODE_MODELS_URL="https://codex.sacha.house"
-      if [ -r ${simulacraTokenPath} ]; then
-        export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
-      fi
       exec ${lib.getExe upstreamOpencode} "$@"
     '';
 
@@ -287,41 +278,13 @@
     };
 
     config = mkIf cfg.enable {
-      sops.secrets = mkIf (config.sops.defaultSopsFile != null) {
-        "ai/simulacra-token" = {
-          sopsFile = builtins.path {
-            path = self + /secrets/shared.yaml;
-            name = "shared-secrets.yaml";
-          };
-          owner = config.userName;
-          mode = "0400";
-          path = simulacraTokenPath;
-        };
-      };
-
       persist.user.directories = [
         ".config/opencode"
         ".local/share/opencode"
       ];
 
       environment = {
-        extraInit = ''
-          if [ -r ${simulacraTokenPath} ]; then
-            export SIMULACRA_TOKEN="$(cat ${simulacraTokenPath})"
-          fi
-        '';
-        sessionVariables.OPENCODE_MODELS_URL = "https://codex.sacha.house";
         systemPackages = [wrappedOpenCode opencodeCompletions];
-      };
-
-      hjem.users.${config.userName} = {
-        environment.sessionVariables.OPENCODE_MODELS_URL = "https://codex.sacha.house";
-        files.".config/fish/conf.d/opencode.fish".text = ''
-          set --global --export OPENCODE_MODELS_URL https://codex.sacha.house
-          if test -r ${simulacraTokenPath}
-            set --global --export SIMULACRA_TOKEN (string collect <${simulacraTokenPath})
-          end
-        '';
       };
 
       systemd.user.tmpfiles.users.${config.userName}.rules = [
@@ -347,7 +310,6 @@
         wants = ["network-online.target"];
         environment = {
           HOME = config.homeDirectory;
-          OPENCODE_MODELS_URL = "https://codex.sacha.house";
         };
         serviceConfig = {
           User = config.userName;

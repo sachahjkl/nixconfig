@@ -14,10 +14,46 @@
   moshiHookPkg = self.packages.${pkgs.stdenv.hostPlatform.system}.moshiHook;
   hookTargets = ["claude" "opencode" "gemini" "antigravity" "copilot" "omp"];
   pairingTokenPath = "/run/secrets/moshi-pairing-token";
+  # The generated OpenCode plugin always asks Moshi for approval. This function
+  # lets it skip the request when OpenCode runs with session.permissions set to
+  # autoaccept.
+  autoacceptGuard = pkgs.writeText "moshi-autoaccept-guard.ts" ''
+    function moshiAutoaccept(): boolean {
+      try {
+        const configHome = process.env.XDG_CONFIG_HOME ?? pathJoin(homedir(), ".config")
+        let mode = JSON.parse(readFileSync(pathJoin(configHome, "opencode", "cli.json"), "utf8"))?.session?.permissions
+        const inline = process.env.OPENCODE_CLI_CONFIG_CONTENT
+        if (inline) mode = JSON.parse(inline)?.session?.permissions ?? mode
+        return mode === "autoaccept"
+      } catch {
+        return false
+      }
+    }
+
+  '';
   moshiSyncHooks = pkgs.writeShellScriptBin "moshi-sync-hooks" ''
     set -eu
 
     ${lib.getExe moshiHookPkg} install --target ${lib.concatStringsSep "," hookTargets}
+
+    plugin="''${XDG_CONFIG_HOME:-$HOME/.config}/opencode/plugins/moshi-hooks.ts"
+    if [ -f "$plugin" ] && ! ${lib.getExe pkgs.gnugrep} -q moshiAutoaccept "$plugin"; then
+      ${lib.getExe pkgs.gawk} -v guard=${autoacceptGuard} '
+        /^function requestMoshiApproval\(/ {
+          while ((getline line < guard) > 0) print line
+          inside = 1
+        }
+        { print }
+        inside && /if \(!actionID\) return null/ {
+          print "  if (moshiAutoaccept()) return null"
+          inside = 0
+        }
+      ' "$plugin" > "$plugin.tmp"
+      mv "$plugin.tmp" "$plugin"
+      if ! ${lib.getExe pkgs.gnugrep} -q 'if (moshiAutoaccept()) return null' "$plugin"; then
+        printf 'moshi-sync-hooks: could not patch the OpenCode plugin\n' >&2
+      fi
+    fi
   '';
   moshiPair = pkgs.writeShellScriptBin "moshi-pair" ''
     set -eu

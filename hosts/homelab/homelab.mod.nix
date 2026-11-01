@@ -28,7 +28,6 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.openbaoPlatform
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabRoutes
-      self.nixosModules.codexProxyService
       self.nixosModules.nixCache
       self.nixosModules.ai
     ];
@@ -92,11 +91,6 @@ lib.systems.nixosSystem "homelab" {
       thermalGuard = {
         enable = true;
         criticalAction = "poweroff";
-      };
-
-      codexProxyIntegration = {
-        enable = true;
-        domain = "codex.sacha.house";
       };
 
       filebrowser = {

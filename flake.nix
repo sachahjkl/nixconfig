@@ -122,11 +122,6 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
-
-    ai-api-proxy = {
-      url = "github:sachahjkl/ai-api-proxy";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs:
