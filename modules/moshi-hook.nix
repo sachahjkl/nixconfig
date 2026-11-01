@@ -56,6 +56,10 @@ in {
         moshiPairFromSecret
       ];
 
+      # SSH and Mosh shells here do not get XDG_RUNTIME_DIR from PAM. Without it,
+      # the Moshi CLI looks for /tmp/moshi-hook.sock instead of the daemon socket.
+      environment.sessionVariables.XDG_RUNTIME_DIR = "/run/user/$UID";
+
       systemd.user.services.moshi-hook = {
         description = "Moshi hook daemon";
         wantedBy = ["default.target"];
