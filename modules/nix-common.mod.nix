@@ -25,30 +25,9 @@
       nix = {
         registry.nixpkgs.flake = inputs.nixpkgs;
 
-        settings =
-          (import ../nix-config.nix)
-          // {
-            accept-flake-config = true;
-            substituters = [
-              "https://cache.homelab.sacha.house"
-              "https://cache.nixos.org"
-              "https://hyprland.cachix.org"
-              "https://cache.numtide.com"
-              "https://nix-community.cachix.org"
-              "https://sachahjkl.cachix.org"
-              "https://install.determinate.systems"
-            ];
-            trusted-public-keys = [
-              "homelab-cache-1:ZaUHSv8slKsAKc9kd0AGI8p1HUjUumfho7ShgUVlnUg="
-              "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-              "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-              "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-              "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-              "sachahjkl.cachix.org-1:cepX7PCUV88hCchnh9prZM5V72wRkCf6oSJL6JfgWs0="
-              "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
-            ];
-            trusted-users = ["root" "@wheel"];
-          };
+        optimise.automatic = true;
+
+        settings = (import ../nix-config.nix) // {accept-flake-config = true;};
       };
 
       systemd.services.nix-daemon.environment = {

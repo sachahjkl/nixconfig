@@ -25,6 +25,11 @@
           enable = true;
           package = selfPkgs.nh;
           flake = config.nixConfigPath;
+          clean = {
+            enable = true;
+            dates = "weekly";
+            extraArgs = "--keep-since 14d --keep 5";
+          };
         };
       };
 
