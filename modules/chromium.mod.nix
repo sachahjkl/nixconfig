@@ -32,8 +32,8 @@ _: {
           "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
         ];
         defaultSearchProviderEnabled = true;
-        defaultSearchProviderSearchURL = "https://search.brave.com/search?q={searchTerms}";
-        defaultSearchProviderSuggestURL = "https://search.brave.com/api/suggest?q={searchTerms}";
+        defaultSearchProviderSearchURL = "https://www.google.com/search?q={searchTerms}";
+        defaultSearchProviderSuggestURL = "https://www.google.com/complete/search?client=chrome&q={searchTerms}";
         extraOpts = {
           BlockThirdPartyCookies = true;
           BrowserSignin = 0;

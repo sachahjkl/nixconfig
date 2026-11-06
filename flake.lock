@@ -702,10 +702,31 @@
         "nixpkgs": "nixpkgs_5",
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
+        "shojiwm": "shojiwm",
         "skills": "skills",
         "sops-nix": "sops-nix",
         "wrapper-modules": "wrapper-modules",
         "wrappers": "wrappers"
+      }
+    },
+    "shojiwm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793878208,
+        "narHash": "sha256-j0tz91qxfAbHtBitZc/I3P8ZbtwzeE9ZGc6rkTLWuEc=",
+        "owner": "bea4dev",
+        "repo": "ShojiWM",
+        "rev": "9e778dc717be3112558e4805eefae52891132f9c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bea4dev",
+        "repo": "ShojiWM",
+        "type": "github"
       }
     },
     "skills": {

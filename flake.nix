@@ -30,6 +30,11 @@
 
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
 
+    shojiwm = {
+      url = "github:bea4dev/ShojiWM";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";

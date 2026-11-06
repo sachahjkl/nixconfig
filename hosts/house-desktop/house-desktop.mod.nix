@@ -9,6 +9,7 @@ lib.systems.nixosSystem "house-desktop" {
       self.diskoConfigurations.house-desktop
       self.nixosModules.workstation
       self.nixosModules.hyprland
+      self.nixosModules.shojiwm
       self.nixosModules.gaming
       self.nixosModules.mt7927
       self.nixosModules.house-desktop-hardware
@@ -22,6 +23,8 @@ lib.systems.nixosSystem "house-desktop" {
     programs.corectrl.enable = true;
 
     ai.codex.enable = false;
+
+    shojiwm.enable = true;
 
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
