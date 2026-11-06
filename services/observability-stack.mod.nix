@@ -285,7 +285,7 @@ _: {
           };
 
           prometheus = {
-            image = "prom/prometheus:v3.15.1";
+            image = "prom/prometheus:v3.16.0";
             cmd = [
               "--config.file=/etc/prometheus/prometheus.yaml"
               "--storage.tsdb.path=/prometheus"

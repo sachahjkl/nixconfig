@@ -6,7 +6,7 @@
     ...
   }: {
     imports = [
-      self.nixosModules.brave
+      self.nixosModules.chromium
       self.nixosModules.face-icon
       self.nixosModules.firefox
       self.nixosModules.flatpak
@@ -19,7 +19,7 @@
       self.nixosModules.wireplumber
     ];
 
-    apps.brave.enable = true;
+    apps.chromium.enable = true;
     apps.firefox.enable = true;
 
     security = {

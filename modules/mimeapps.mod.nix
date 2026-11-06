@@ -21,18 +21,18 @@ _: {
       application/json=default-editor.desktop
       application/toml=default-editor.desktop
       application/x-shellscript=default-editor.desktop
-      application/xhtml+xml=brave-browser.desktop
+      application/xhtml+xml=chromium-browser.desktop
       inode/directory=thunar.desktop
-      text/html=brave-browser.desktop
+      text/html=chromium-browser.desktop
       text/markdown=default-editor.desktop
       text/plain=default-editor.desktop
       text/x-python=default-editor.desktop
       text/x-script.python=default-editor.desktop
       text/x-shellscript=default-editor.desktop
       text/xml=default-editor.desktop
-      x-scheme-handler/chrome=brave-browser.desktop
-      x-scheme-handler/http=brave-browser.desktop
-      x-scheme-handler/https=brave-browser.desktop
+      x-scheme-handler/chrome=chromium-browser.desktop
+      x-scheme-handler/http=chromium-browser.desktop
+      x-scheme-handler/https=chromium-browser.desktop
     '';
   in {
     hjem.users.${user} = {
