@@ -234,6 +234,22 @@
         "type": "github"
       }
     },
+    "flake-compat_5": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1767039857,
+        "narHash": "sha256-vNpUSpF5Nuw8xvDLj2KCwwksIbjua2LZCqhV1LNRDns=",
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "rev": "5edf11c44bc78a0d334f6334cdaf7d60d732daab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -335,6 +351,27 @@
       "original": {
         "type": "tarball",
         "url": "https://flakehub.com/f/cachix/git-hooks.nix/0.1.941"
+      }
+    },
+    "git-hooks_2": {
+      "inputs": {
+        "flake-compat": "flake-compat_5",
+        "nixpkgs": [
+          "shojiwm-win7",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793686154,
+        "narHash": "sha256-Zb/0L3soxrkfcrywpfp0J++0WFLB3tzh0Xtx9up+VNc=",
+        "rev": "204b6977e00caac19e2313015a598543ca7be150",
+        "revCount": 1265,
+        "type": "tarball",
+        "url": "https://api.flakehub.com/f/pinned/cachix/git-hooks.nix/0.1.1265%2Brev-204b6977e00caac19e2313015a598543ca7be150/01a1a27b-21bc-7563-8b9b-5aa927dae9c6/source.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://flakehub.com/f/cachix/git-hooks.nix/0.1"
       }
     },
     "hjem": {
@@ -703,6 +740,7 @@
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
         "shojiwm": "shojiwm",
+        "shojiwm-win7": "shojiwm-win7",
         "skills": "skills",
         "sops-nix": "sops-nix",
         "wrapper-modules": "wrapper-modules",
@@ -726,6 +764,44 @@
       "original": {
         "owner": "bea4dev",
         "repo": "ShojiWM",
+        "type": "github"
+      }
+    },
+    "shojiwm-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793878208,
+        "narHash": "sha256-j0tz91qxfAbHtBitZc/I3P8ZbtwzeE9ZGc6rkTLWuEc=",
+        "owner": "bea4dev",
+        "repo": "ShojiWM",
+        "rev": "9e778dc717be3112558e4805eefae52891132f9c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "bea4dev",
+        "repo": "ShojiWM",
+        "type": "github"
+      }
+    },
+    "shojiwm-win7": {
+      "inputs": {
+        "git-hooks": "git-hooks_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "shojiwm-src": "shojiwm-src"
+      },
+      "locked": {
+        "lastModified": 1794008256,
+        "narHash": "sha256-oTJvjw3nTANxMxGZnOsJthhdhaaYnrupYakIxs2NHFk=",
+        "owner": "sachahjkl",
+        "repo": "shojiwm-win7",
+        "rev": "fb605091158f552fc6560ecc0b8597764a758d58",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sachahjkl",
+        "repo": "shojiwm-win7",
         "type": "github"
       }
     },
