@@ -24,6 +24,12 @@
         };
       };
 
+      # The Control Panel's light or dark choice is the dconf colour scheme,
+      # which the settings portal (xdg-desktop-portal-gtk, from the ShojiWM
+      # module) hands to every program. Set here too, so the session has it
+      # whatever else the host imports.
+      programs.dconf.enable = true;
+
       # The Windows 7 configuration needs these at run time.
       environment.systemPackages = with pkgs; [
         inter
