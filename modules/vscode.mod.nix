@@ -10,12 +10,13 @@ _: {
   in {
     home-manager.users.${config.userName}.programs.vscode = {
       enable = enabled;
-      # VS Code 1.144.0 no longer ships its bundled ripgrep binary. Remove it only if it exists.
+      # VS Code 1.144.0 no longer ships its bundled ripgrep binary or its bin directory.
+      # Create the directory so that the nixpkgs symlink to ripgrep works.
       package = pkgs.vscode.overrideAttrs (old: {
         postPatch =
           builtins.replaceStrings
           ["rm resources/app/node_modules/@vscode/ripgrep/bin/rg"]
-          ["rm -f resources/app/node_modules/@vscode/ripgrep/bin/rg"]
+          ["mkdir -p resources/app/node_modules/@vscode/ripgrep/bin\nrm -f resources/app/node_modules/@vscode/ripgrep/bin/rg"]
           old.postPatch;
       });
       mutableExtensionsDir = true;
