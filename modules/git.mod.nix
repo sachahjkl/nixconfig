@@ -240,6 +240,12 @@
               };
               pull.rebase = true;
               http.sslVerify = true;
+              # Push with the SSH key, also for repositories cloned over HTTPS.
+              # Fetches stay on HTTPS, which needs no key for public repositories.
+              "url \"git@github.com:\"".pushInsteadOf = "https://github.com/";
+              "url \"git@gitlab.com:\"".pushInsteadOf = "https://gitlab.com/";
+              # HTTPS fallback for GitHub, for example private fetches: use the gh token.
+              "credential \"https://github.com\"".helper = "!gh auth git-credential";
               merge.tool = "mergiraf";
               mergetool.keepBackup = false;
               "mergetool \"mergiraf\"" = {
