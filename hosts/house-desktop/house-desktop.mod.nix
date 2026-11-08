@@ -75,13 +75,5 @@ lib.systems.nixosSystem "house-desktop" {
       # 1080p. Hyprland then sets 4K, and this change works.
       "video=HDMI-A-1:1920x1080@60"
     ];
-
-    system.autoUpgrade = {
-      enable = true;
-      flake = "${config.nixConfigPath}#house-desktop";
-      operation = "boot";
-      dates = "daily";
-      randomizedDelaySec = "45min";
-    };
   };
 }
