@@ -198,6 +198,8 @@
                     force_default_wallpaper = -1,
                     disable_hyprland_logo   = true,
                     enable_swallow          = true,
+                    key_press_enables_dpms  = true,
+                    mouse_move_enables_dpms = true,
                 },
                 ecosystem = {
                     no_update_news = true,
