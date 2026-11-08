@@ -111,6 +111,13 @@
 
     mt7927.url = "github:cmspam/mt7927-nixos";
 
+    hex = {
+      url = "github:anomalyco/hex";
+      # Hex needs rustc 1.97, and nixpkgs 26.05 has rustc 1.95.
+      # The Hex nixpkgs pin has a glibc that is not older than the system glibc.
+      inputs.home-manager.follows = "home-manager";
+    };
+
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     skills = {

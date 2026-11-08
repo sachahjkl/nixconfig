@@ -46,7 +46,7 @@
 
     ai = {
       enable = true;
-      handy.enable = false;
+      hex.enable = false;
       herdr.enable = true;
     };
 

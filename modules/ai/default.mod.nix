@@ -11,7 +11,7 @@
     imports = [
       self.nixosModules.claudeCode
       self.nixosModules.codex
-      self.nixosModules.handy
+      self.nixosModules.hex
       self.nixosModules.herdr
       self.nixosModules.omp
       self.nixosModules.skills
@@ -27,7 +27,7 @@
       {
         ai = {
           claudeCode.enable = lib.mkDefault cfg.enable;
-          handy.enable = lib.mkDefault cfg.enable;
+          hex.enable = lib.mkDefault cfg.enable;
           omp.enable = lib.mkDefault cfg.enable;
         };
         codex.enable = lib.mkDefault (cfg.enable && cfg.codex.enable);

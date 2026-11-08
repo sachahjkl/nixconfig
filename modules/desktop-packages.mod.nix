@@ -18,6 +18,22 @@ _: {
       qalculate-gtk
     ];
   in {
+    # What programs built for other Linux systems open (nix-ld): a window, a GPU device, fonts, sound.
+    programs.nix-ld.libraries = with pkgs; [
+      alsa-lib
+      dbus
+      fontconfig
+      freetype
+      libglvnd
+      libopus
+      libx11
+      libxcb
+      libxcb-cursor
+      libxkbcommon
+      vulkan-loader
+      wayland
+    ];
+
     environment.systemPackages =
       desktopEssentials
       ++ (with pkgs; [

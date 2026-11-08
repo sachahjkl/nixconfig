@@ -30,38 +30,12 @@
         },
       '')
       hyprCfg.display.monitors;
-    startupModes = lib.concatStringsSep "\n" (lib.imap1 (index: monitor:
-      lib.optionalString (monitor.startupMode != null)
-      "[${toString index}] = ${builtins.toJSON monitor.startupMode},")
-    hyprCfg.display.monitors);
     monitorConfig = ''
       local monitors = {
       ${monitorRules}
       }
       for _, monitor in ipairs(monitors) do
           hl.monitor(monitor)
-      end
-
-      local startup_modes = {
-      ${startupModes}
-      }
-      local function retrain_monitor_links()
-          if next(startup_modes) == nil then
-              return
-          end
-          for index, mode in pairs(startup_modes) do
-              local monitor = {}
-              for key, value in pairs(monitors[index]) do
-                  monitor[key] = value
-              end
-              monitor.mode = mode
-              hl.monitor(monitor)
-          end
-          hl.timer(function()
-              for index in pairs(startup_modes) do
-                  hl.monitor(monitors[index])
-              end
-          end, { timeout = 2000, type = "oneshot" })
       end
     '';
   in {
@@ -136,11 +110,6 @@
                 default = null;
                 description = "Override HDR support. Null uses automatic detection.";
               };
-              startupMode = lib.mkOption {
-                type = lib.types.nullOr lib.types.str;
-                default = null;
-                description = "Temporary mode to apply when Hyprland starts. Hyprland applies the normal mode 2 seconds later. Use this when the output has no signal after boot.";
-              };
             };
           });
           default = [{}];
@@ -182,7 +151,6 @@
             ${monitorConfig}
 
             hl.on("hyprland.start", function()
-                retrain_monitor_links()
                 hl.exec_cmd("uwsm app -- nm-applet")
                 hl.exec_cmd("uwsm app -- thunar --daemon")
                 hl.exec_cmd("uwsm app -- udiskie")
@@ -278,14 +246,6 @@
                 allows_input = true,
                 opaque = true,
                 force_rgbx = true,
-            })
-            hl.window_rule({
-                match = { class = "Handy", title = "^(Recording|Transcribing|Processing)$" },
-                float = true,
-                pin = true,
-                no_focus = true,
-                size = "400 200",
-                move = "50%-w/2 20",
             })
             hl.window_rule({
                 match = { class = "(satty|org.satty.Satty)" },
@@ -397,7 +357,7 @@
             hl.bind("PRINT", hl.dsp.exec_cmd("${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.hyprland-screenshot}"))
             hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
-            hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("${lib.getExe' pkgs.procps "pkill"} -USR2 -n handy"))
+            hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("hex dictation toggle"))
             hl.bind("SUPER + V", hl.dsp.exec_cmd("copyq menu"))
             hl.bind("SUPER + semicolon", hl.dsp.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile}"))
             hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe powerMenuLauncher}"))

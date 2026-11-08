@@ -23,7 +23,6 @@
         kernelParams = [
           "quiet"
           "splash"
-          "pcie_aspm=off"
         ];
         supportedFilesystems.ntfs = true;
         plymouth.enable = true;

@@ -18,6 +18,7 @@ lib.systems.nixosSystem "house-desktop" {
     gaming.steam.gamescopeSession.enable = true;
     gaming.streaming.sunshine = {
       enable = true;
+      autoStart = false;
       cudaSupport = true;
     };
     programs.corectrl.enable = true;
@@ -47,7 +48,6 @@ lib.systems.nixosSystem "house-desktop" {
         {
           output = "HDMI-A-1";
           mode = "3840x2160@60";
-          startupMode = "1920x1080@60";
           position = "2048x0";
           scale = 1.875;
           colorManagement = "srgb";
@@ -63,6 +63,7 @@ lib.systems.nixosSystem "house-desktop" {
     system.autoUpgrade = {
       enable = true;
       flake = "${config.nixConfigPath}#house-desktop";
+      operation = "boot";
       dates = "daily";
       randomizedDelaySec = "45min";
     };
