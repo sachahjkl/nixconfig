@@ -10,7 +10,14 @@ _: {
   in {
     home-manager.users.${config.userName}.programs.vscode = {
       enable = enabled;
-      package = pkgs.vscode;
+      # VS Code 1.144.0 no longer ships its bundled ripgrep binary. Remove it only if it exists.
+      package = pkgs.vscode.overrideAttrs (old: {
+        postPatch =
+          builtins.replaceStrings
+          ["rm resources/app/node_modules/@vscode/ripgrep/bin/rg"]
+          ["rm -f resources/app/node_modules/@vscode/ripgrep/bin/rg"]
+          old.postPatch;
+      });
       mutableExtensionsDir = true;
       profiles.default = {
         enableExtensionUpdateCheck = false;
