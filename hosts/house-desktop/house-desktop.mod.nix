@@ -65,7 +65,13 @@ lib.systems.nixosSystem "house-desktop" {
 
     services.xserver.videoDrivers = ["nvidia"];
 
-    boot.kernelParams = ["nvidia_drm.fbdev=1"];
+    boot.kernelParams = [
+      "nvidia_drm.fbdev=1"
+      # The LG loses the signal when the console starts it directly in 4K,
+      # because HDMI 2.0 scrambling fails this early. Start the console in
+      # 1080p. Hyprland then sets 4K, and this change works.
+      "video=HDMI-A-1:1920x1080@60"
+    ];
 
     system.autoUpgrade = {
       enable = true;
