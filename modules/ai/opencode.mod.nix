@@ -11,38 +11,57 @@
       update = "disable";
       share = "disabled";
       skills = ["${extensionDirectory}/skills"];
-      permissions = [
-        {
+      # The last matching rule wins. Allow shell commands, and ask before
+      # commands that delete data, discard Git work, or change the system.
+      permissions =
+        [
+          {
+            action = "shell";
+            resource = "*";
+            effect = "allow";
+          }
+        ]
+        ++ map (resource: {
           action = "shell";
-          resource = "*";
+          inherit resource;
           effect = "ask";
-        }
-        {
-          action = "shell";
-          resource = "git*";
-          effect = "allow";
-        }
-        {
-          action = "external_directory";
-          resource = "${homeDirectory}/Projects/*";
-          effect = "allow";
-        }
-        {
-          action = "webfetch";
-          resource = "*";
-          effect = "allow";
-        }
-        {
-          action = "websearch";
-          resource = "*";
-          effect = "allow";
-        }
-        {
-          action = "skill";
-          resource = "*";
-          effect = "allow";
-        }
-      ];
+        }) [
+          "rm *"
+          "sudo *"
+          "dd *"
+          "mkfs*"
+          "shutdown *"
+          "reboot *"
+          "poweroff *"
+          "systemctl poweroff *"
+          "systemctl reboot *"
+          "git reset --hard*"
+          "git clean *"
+          "git push --force*"
+          "git push -f*"
+        ]
+        ++ [
+          {
+            action = "external_directory";
+            resource = "${homeDirectory}/Projects/*";
+            effect = "allow";
+          }
+          {
+            action = "webfetch";
+            resource = "*";
+            effect = "allow";
+          }
+          {
+            action = "websearch";
+            resource = "*";
+            effect = "allow";
+          }
+          {
+            action = "skill";
+            resource = "*";
+            effect = "allow";
+          }
+        ];
       watcher.ignore = [
         ".direnv/**"
         ".git/**"
