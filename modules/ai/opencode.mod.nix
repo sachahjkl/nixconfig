@@ -7,88 +7,42 @@
   flake.lib.opencode = {
     defaultSettings = homeDirectory: let
       extensionDirectory = "${homeDirectory}/.local/share/opencode/nix-extensions";
-      readOnlyJjCommands = [
-        "jj bookmark list*"
-        "jj config get*"
-        "jj config list*"
-        "jj config path*"
-        "jj diff*"
-        "jj evolog*"
-        "jj file annotate*"
-        "jj file list*"
-        "jj file search*"
-        "jj file show*"
-        "jj git colocation status*"
-        "jj git remote list*"
-        "jj git root*"
-        "jj help*"
-        "jj interdiff*"
-        "jj log*"
-        "jj op diff*"
-        "jj op log*"
-        "jj op show*"
-        "jj operation diff*"
-        "jj operation log*"
-        "jj operation show*"
-        "jj resolve --list"
-        "jj root*"
-        "jj show*"
-        "jj sparse list*"
-        "jj st*"
-        "jj status*"
-        "jj tag list*"
-        "jj util completion*"
-        "jj util config-schema*"
-        "jj util markdown-help*"
-        "jj version*"
-        "jj workspace list*"
-        "jj workspace root*"
-      ];
     in {
       update = "disable";
       share = "disabled";
       skills = ["${extensionDirectory}/skills"];
-      permissions =
-        [
-          {
-            action = "shell";
-            resource = "*";
-            effect = "ask";
-          }
-        ]
-        ++ map (command: {
+      permissions = [
+        {
           action = "shell";
-          resource = command;
+          resource = "*";
+          effect = "ask";
+        }
+        {
+          action = "shell";
+          resource = "git*";
           effect = "allow";
-        })
-        readOnlyJjCommands
-        ++ [
-          {
-            action = "shell";
-            resource = "git*";
-            effect = "allow";
-          }
-          {
-            action = "external_directory";
-            resource = "${homeDirectory}/Projects/*";
-            effect = "allow";
-          }
-          {
-            action = "webfetch";
-            resource = "*";
-            effect = "allow";
-          }
-          {
-            action = "websearch";
-            resource = "*";
-            effect = "allow";
-          }
-          {
-            action = "skill";
-            resource = "*";
-            effect = "allow";
-          }
-        ];
+        }
+        {
+          action = "external_directory";
+          resource = "${homeDirectory}/Projects/*";
+          effect = "allow";
+        }
+        {
+          action = "webfetch";
+          resource = "*";
+          effect = "allow";
+        }
+        {
+          action = "websearch";
+          resource = "*";
+          effect = "allow";
+        }
+        {
+          action = "skill";
+          resource = "*";
+          effect = "allow";
+        }
+      ];
       watcher.ignore = [
         ".direnv/**"
         ".git/**"
