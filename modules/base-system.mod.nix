@@ -17,7 +17,7 @@
             secureBoot.enable = true;
           };
         };
-        kernelPackages = pkgs.linuxPackages_latest;
+        kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
         binfmt.emulatedSystems = ["aarch64-linux"];
         kernel.sysctl."fs.inotify.max_user_watches" = 524288;
         kernelParams = [

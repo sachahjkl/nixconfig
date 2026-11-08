@@ -19,14 +19,7 @@
         open = true;
         nvidiaPersistenced = true;
         powerManagement.enable = true;
-        package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-          version = "620.70.06";
-          sha256_64bit = "sha256-KRGOOr0IwHVZvMo9nHYjjQOUkK8DYqLlvPy+cgSv1LE=";
-          sha256_aarch64 = "sha256-P6ZaknHg3eKk5YxJZcOIhaAqOkKszcsm/IF0EGB/PgM=";
-          openSha256 = "sha256-dV8vzniUl3UJoG2Q3KdoUJigLRuQeTniUfB670gb1Mw=";
-          settingsSha256 = "sha256-CFBRmXFJ9eAf5BRlHMBolahz1Pshr9giI7zcZC29oZ8=";
-          persistencedSha256 = "sha256-FpGzhArrvR1nEt8lKDzNEnbvHvGP36gL1dINvpDAkpA=";
-        };
+        package = config.boot.kernelPackages.nvidiaPackages.stable;
       };
 
       mediatek-mt7927 = {
@@ -48,6 +41,9 @@
     };
 
     boot = {
+      # Use the LTS kernel. The NixOS stable NVIDIA driver supports it, and the
+      # driver does not need a manual pin after each new kernel release.
+      kernelPackages = pkgs.linuxPackages;
       initrd = {
         availableKernelModules = ["nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod"];
         kernelModules = ["nvidia" "nvidia_modeset" "nvidia_drm"];
