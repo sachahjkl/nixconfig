@@ -93,7 +93,7 @@
       pkgs,
       settings ? {},
     }:
-      pkgs.writeText "opencode.json" (
+      pkgs.writeText "opencode-managed.json" (
         builtins.toJSON (
           {
             "$schema" = "https://opencode.ai/config.json";
@@ -125,7 +125,7 @@
     opencodeConfig = self.lib.opencode.mkOpenCodeConfig {
       inherit (config) homeDirectory;
       inherit pkgs;
-      settings = cfg.initialSettings;
+      inherit (cfg) settings;
     };
     opencodeAgents = self.lib.opencode.mkOpenCodeAgents pkgs;
     opencodeCliConfig = self.lib.opencode.mkOpenCodeCliConfig {
@@ -190,10 +190,10 @@
         description = "Whether to initialize writable OpenCode configuration files.";
       };
 
-      initialSettings = mkOption {
+      settings = mkOption {
         type = types.attrs;
         default = {};
-        description = "Settings used only when the writable OpenCode configuration is first created.";
+        description = "Settings merged into opencode.jsonc at each activation. They replace the same keys in the file and keep the other keys.";
       };
 
       initialCliSettings = mkOption {
@@ -241,12 +241,29 @@
         systemPackages = [wrappedOpenCode opencodeCompletions];
       };
 
+      # Merge the Nix settings into opencode.jsonc at each activation.
+      # Nix settings replace the same keys. Other keys in the file stay.
+      system.userActivationScripts.opencodeConfig = ''
+        if [ "$HOME" = ${lib.escapeShellArg config.homeDirectory} ]; then
+          opencodeConfigFile="$HOME/.config/opencode/opencode.jsonc"
+          mkdir -p "$HOME/.config/opencode"
+          if [ ! -e "$opencodeConfigFile" ]; then
+            ${lib.getExe pkgs.jq} . ${opencodeConfig} > "$opencodeConfigFile"
+          elif ${lib.getExe pkgs.jq} --slurpfile managed ${opencodeConfig} '. * $managed[0]' \
+            "$opencodeConfigFile" > "$opencodeConfigFile.tmp"; then
+            mv "$opencodeConfigFile.tmp" "$opencodeConfigFile"
+          else
+            rm -f "$opencodeConfigFile.tmp"
+            echo "warning: cannot read $opencodeConfigFile as JSON (comments?). The Nix OpenCode settings were not applied." >&2
+          fi
+        fi
+      '';
+
       systemd.user.tmpfiles.users.${config.userName}.rules = [
         "d ${config.homeDirectory}/.config/opencode 0700 - - -"
         "d ${extensionDirectory} 0700 - - -"
         "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
         "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
-        "C ${config.homeDirectory}/.config/opencode/opencode.json 0644 - - - ${opencodeConfig}"
         "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
       ];
 
