@@ -277,17 +277,17 @@
             })
 
             hl.window_rule({
-                match = { class = "^(brave|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
+                match = { class = "^(brave|chrome|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
                 float = true,
                 center = true,
                 size = "60% 70%",
             })
             hl.window_rule({
-                match = { class = "^(brave|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
+                match = { class = "^(brave|chrome|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
                 suppress_event = "maximize",
             })
             hl.window_rule({
-                match = { class = "^(brave|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
+                match = { class = "^(brave|chrome|chromium|google-chrome|google-chrome-stable)-[a-z]{32}-Default$" },
                 suppress_event = "fullscreen",
             })
 

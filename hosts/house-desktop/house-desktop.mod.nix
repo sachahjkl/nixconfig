@@ -32,7 +32,10 @@ lib.systems.nixosSystem "house-desktop" {
 
     ai.codex.enable = false;
 
-    shojiwm.enable = true;
+    shojiwm = {
+      enable = true;
+      checkout = "${config.homeDirectory}/Projects/shojiwm-win7";
+    };
 
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
