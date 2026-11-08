@@ -23,6 +23,13 @@ lib.systems.nixosSystem "house-desktop" {
     };
     programs.corectrl.enable = true;
 
+    # scx_lavd gives priority to latency-sensitive tasks, such as games,
+    # the compositor, and audio, when background work loads the CPU.
+    services.scx = {
+      enable = true;
+      scheduler = "scx_lavd";
+    };
+
     ai.codex.enable = false;
 
     shojiwm.enable = true;
