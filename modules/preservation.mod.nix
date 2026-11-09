@@ -92,14 +92,17 @@ _: {
             ++ config.persist.system.files;
 
           users.${user} = {
+            # $HOME is on the tmpfs and these folders are bind mounts from
+            # the persistent filesystem. GLib uses ~/.local/share/Trash only
+            # for files on $HOME's own device; for the others it uses a
+            # .Trash-<uid> at the top of their mount, which it allows only on
+            # mounts marked x-gvfs-trash. trash:/// shows them all.
+            commonMountOptions = ["x-gvfs-trash"];
             directories = lib.unique ([
                 ".cache"
                 ".gnupg"
                 ".local/share/applications"
                 ".local/share/keyrings"
-                # The trash: on the same filesystem as the files above, so
-                # GLib uses it (on the tmpfs it refused them), and kept.
-                ".local/share/Trash"
                 ".local/state"
                 ".ssh"
                 "Desktop"
