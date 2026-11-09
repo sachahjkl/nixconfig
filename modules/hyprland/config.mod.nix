@@ -138,7 +138,7 @@
         };
 
         hjem.users.${userName}.xdg.config.files = {
-          "hypr/scripts/screenshot.sh".source = "${self.packages.${pkgs.stdenv.hostPlatform.system}.hyprland-screenshot}/bin/hyprland-screenshot";
+          "hypr/scripts/screenshot.sh".source = "${self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot}/bin/screenshot";
           "hypr/hyprland.lua".text = ''
             local terminal = "${config.terminal.command}"
             local scratchpadTerminal = "[workspace special:magic silent; float; size 1200 1000; move 80 80] ${config.terminal.command} --class=${config.terminal.scratchpadClass} --title Scratchpad"
@@ -356,7 +356,7 @@
             hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.close())
             hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen())
             hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("pidof hyprlock || ${lib.getExe pkgs.hyprlock}"))
-            hl.bind("PRINT", hl.dsp.exec_cmd("${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.hyprland-screenshot}"))
+            hl.bind("PRINT", hl.dsp.exec_cmd("${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot}"))
             hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("hex dictation toggle"))

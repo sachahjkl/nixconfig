@@ -1,19 +1,28 @@
 #!/usr/bin/env bash
+# Pick a region or a window, copy it, and open it in satty.
+# Under Hyprland, a click picks a window and satty opens on the screen of the
+# selection. Elsewhere, the selection is a region dragged with slurp.
 set -uo pipefail
+
+hyprland=""
+[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && hyprland=1
 
 outdir="${XDG_PICTURES_DIR:-$HOME/Pictures}/Screenshots"
 mkdir -p "$outdir" || exit 1
 out="$outdir/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"
 
 # Read window boxes from visible workspaces for click selection.
-ws_ids=$(hyprctl monitors -j | jq -c '
-    [.[] | .activeWorkspace.id, .specialWorkspace.id]
-    | map(select(. != null and . != 0))') || exit 1
-boxes=$(hyprctl clients -j | jq -r --argjson ids "$ws_ids" '
-    .[]
-    | select(.mapped and (.hidden | not))
-    | select(.workspace.id as $w | $ids | index($w))
-    | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"') || exit 1
+boxes=""
+if [ -n "$hyprland" ]; then
+    ws_ids=$(hyprctl monitors -j | jq -c '
+        [.[] | .activeWorkspace.id, .specialWorkspace.id]
+        | map(select(. != null and . != 0))') || exit 1
+    boxes=$(hyprctl clients -j | jq -r --argjson ids "$ws_ids" '
+        .[]
+        | select(.mapped and (.hidden | not))
+        | select(.workspace.id as $w | $ids | index($w))
+        | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"') || exit 1
+fi
 
 freeze_pid=""
 rule_name=""
@@ -39,18 +48,24 @@ freeze_pid=$!
 sleep 0.2
 
 # Piped stdin enables window selection. Dragging selects an arbitrary region.
-geom=$(printf '%s\n' "$boxes" | slurp -d 2>/dev/null) || exit 0
+if [ -n "$boxes" ]; then
+    geom=$(printf '%s\n' "$boxes" | slurp -d 2>/dev/null) || exit 0
+else
+    geom=$(slurp -d 2>/dev/null) || exit 0
+fi
 [ -n "$geom" ] || exit 0
 
 # Save the selection monitor before launching the annotation window.
-cursor=$(hyprctl cursorpos | tr -d ' ') || exit 1
 satty_mon=""
 satty_ws=""
-read -r satty_mon satty_ws < <(hyprctl monitors -j | jq -r \
-    --argjson x "${cursor%,*}" --argjson y "${cursor#*,}" '
-    [ .[] | select(.x <= $x and $x < (.x + .width / .scale))
-          | select(.y <= $y and $y < (.y + .height / .scale)) ][0]
-    | select(. != null) | "\(.name) \(.activeWorkspace.name)"') || true
+if [ -n "$hyprland" ]; then
+    cursor=$(hyprctl cursorpos | tr -d ' ') || exit 1
+    read -r satty_mon satty_ws < <(hyprctl monitors -j | jq -r \
+        --argjson x "${cursor%,*}" --argjson y "${cursor#*,}" '
+        [ .[] | select(.x <= $x and $x < (.x + .width / .scale))
+              | select(.y <= $y and $y < (.y + .height / .scale)) ][0]
+        | select(. != null) | "\(.name) \(.activeWorkspace.name)"') || true
+fi
 
 # Resolve point selections to the smallest window box containing the point.
 read -r pos size <<<"$geom"
@@ -85,6 +100,10 @@ if [ -n "$satty_mon" ]; then
         + (if $workspace == "" then "" else ", workspace = " + ($workspace | tojson) end)')
     rule_name="satty-placement-$$"
     hyprctl eval "hl.window_rule({ name = \"$rule_name\", match = { class = \"com.gabm.satty\" }, float = true, center = true, $placement })" >/dev/null || exit 1
+fi
+
+if [ -z "$hyprland" ]; then
+    exec satty -f "$out" -o "$out" --copy-command=wl-copy --resize smart
 fi
 
 before=$(hyprctl clients -j | jq -r '.[]|select(.class=="com.gabm.satty")|.address')

@@ -1,4 +1,8 @@
-{inputs, ...}: {
+{
+  inputs,
+  self,
+  ...
+}: {
   flake.nixosModules.shojiwm = {
     config,
     lib,
@@ -76,6 +80,10 @@
           XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
           XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
           XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
+        }
+        // {
+          # Print Screen in the Windows 7 configuration.
+          SHOJIWM_WIN7_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
         }
         // lib.optionalAttrs (outputRules != "") {
           SHOJIWM_WIN7_OUTPUTS = outputRules;
