@@ -70,7 +70,21 @@
       # nixos-fake-graphical-session.target before uwsm, which then refuses to
       # start. programs.uwsm.waylandCompositors writes no DesktopNames, so the
       # session file is written here.
-      programs.uwsm.enable = true;
+      programs = {
+        uwsm.enable = true;
+
+        # The session's dconf profile: the same user database as Hyprland's, so
+        # the settings stay shared, and before the system ones a database that
+        # chooses the Aero icon theme, the desktop's icons, for Thunar and the
+        # other GTK programs. A value written to the user database would still
+        # come first, in both sessions.
+        dconf.profiles.shojiwm = {
+          enableUserDb = true;
+          databases =
+            [{settings."org/gnome/desktop/interface".icon-theme = "Aero";}]
+            ++ config.programs.dconf.profiles.user.databases;
+        };
+      };
       services.displayManager.sessionPackages = [
         ((pkgs.writeTextDir "share/wayland-sessions/shojiwm-uwsm.desktop" ''
             [Desktop Entry]
@@ -104,6 +118,8 @@
             SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
             # Ctrl+Shift+Escape and the clock's menu: Mission Center.
             SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- missioncenter";
+            # The dconf profile below: the Aero icon theme in this session.
+            DCONF_PROFILE = "shojiwm";
             # Keys for programs that would register them through a
             # GlobalShortcuts portal, which ShojiWM does not have.
             # Hex binds its own keys through the GlobalShortcuts portal below.
@@ -121,12 +137,14 @@
         systemPackages =
           (with pkgs; [
             mission-center
+            # The Aero icon theme inherits Oxygen.
+            kdePackages.oxygen-icons
             inter
             kitty
             quickshell
             wl-clipboard
           ])
-          ++ [hokumCommand]
+          ++ [hokumCommand inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.icon-theme]
           # shojiwm-win7's Vicinae: the latest, without smooth scrolling.
           ++ lib.optional (config.shojiwm.checkout != null)
           inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.vicinae;
