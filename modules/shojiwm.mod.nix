@@ -102,6 +102,8 @@
             SHOJIWM_WIN7_OUTPUTS = outputRules;
             # The terminal the keys and the desktop open: the system's own.
             SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
+            # Ctrl+Shift+Escape: btop in Ghostty, as the task manager.
+            SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- ghostty -e btop";
             # Keys for programs that would register them through a
             # GlobalShortcuts portal, which ShojiWM does not have.
             SHOJIWM_WIN7_KEYS = builtins.toJSON (lib.optionalAttrs (lib.attrByPath ["ai" "hex" "enable"] false config) {
