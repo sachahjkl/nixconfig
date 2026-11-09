@@ -20,7 +20,10 @@ _: {
       # The daemon, started with every session as the unit's [Install] section
       # asks (NixOS does not apply it). Its unit passes --initial-window=false,
       # so it starts with no window; each launch then opens one.
-      systemd.user.services."app-com.mitchellh.ghostty".wantedBy = ["graphical-session.target"];
+      # Declared on the target, not on the service: a service option makes
+      # NixOS write an override with its own minimal PATH, which Ghostty
+      # passes on to every shell it opens.
+      systemd.user.targets.graphical-session.wants = ["app-com.mitchellh.ghostty.service"];
 
       hjem.users.${userName} = {
         rum.programs.ghostty = {
