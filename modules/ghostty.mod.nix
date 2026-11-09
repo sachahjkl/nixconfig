@@ -62,6 +62,9 @@ _: {
               "15=${terminalTheme.brightWhite}"
             ];
             "window-theme" = "ghostty";
+            "window-titlebar-background" = terminalTheme.background;
+            "window-titlebar-foreground" = terminalTheme.foreground;
+            "window-title-font-family" = config.theme.fonts.sans;
             "window-padding-x" = config.theme.padding;
             "window-padding-y" = config.theme.padding;
             "window-save-state" = "always";
@@ -70,14 +73,11 @@ _: {
             "split-inherit-working-directory" = true;
             "notify-on-command-finish" = "unfocused";
             "notify-on-command-finish-action" = "no-bell,notify";
-            # The compositor's frame (ShojiWM's Aero frame), not a GTK header
-            # bar: one title bar and one close button. The tab bar shows
-            # from two tabs on.
-            "window-decoration" = "server";
-            "gtk-titlebar" = false;
+            "gtk-titlebar" = true;
+            "gtk-titlebar-style" = "tabs";
             "gtk-tabs-location" = "top";
             "gtk-wide-tabs" = false;
-            "window-show-tab-bar" = "auto";
+            "window-show-tab-bar" = "always";
             "gtk-single-instance" = true;
             # A launch from a .desktop file or a shell passes this on to the
             # daemon: false made it open no window. The daemon's own unit
