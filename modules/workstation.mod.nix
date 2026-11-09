@@ -69,6 +69,13 @@
       distributedBuilds = true;
     };
 
+    # The Nix daemon connects to the build machine as root, and /root is not persistent.
+    # Declare the Tailscale SSH host key of homelab so that root can verify it.
+    programs.ssh.knownHosts.homelab = {
+      hostNames = ["homelab" "homelab.panthera-python.ts.net" "100.106.51.80"];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+2UxmrXUSQ6n+7g9TxNeE1+jMyaeSl/ykFJvvSYRPl";
+    };
+
     editor.vscode.enable = true;
   };
 }
