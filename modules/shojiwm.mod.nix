@@ -120,22 +120,21 @@
             SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- missioncenter";
             # The CPU Meter gadget's button: btop in Ghostty.
             SHOJIWM_WIN7_SYSTEM_MONITOR = "uwsm app -- ghostty -e btop";
+            # Super+V: Papier too.
+            SHOJIWM_WIN7_CLIPBOARD = "papier toggle";
             # The dconf profile below: the Aero icon theme in this session.
             DCONF_PROFILE = "shojiwm";
             # Keys for programs that would register them through a
             # GlobalShortcuts portal, which ShojiWM does not have.
             # Hex binds its own keys through the GlobalShortcuts portal below.
             SHOJIWM_WIN7_KEYS = builtins.toJSON {
-              # Ctrl+Shift+ù: the clipboard's history, Vicinae's until Papier
-              # is finished.
-              "Ctrl+Shift+ugrave" = "vicinae vicinae://extensions/vicinae/clipboard/history";
+              # Ctrl+Shift+ù: Papier, the clipboard's history.
+              "Ctrl+Shift+ugrave" = "papier toggle";
             };
           }));
 
-        # The Windows 7 configuration needs these at run time. The package
-        # writes the store path of Vicinae into the configuration; a checkout
-        # calls `vicinae` through PATH. Hokum is its command and launcher
-        # only (see hokumCommand).
+        # The Windows 7 configuration needs these at run time. Hokum is its
+        # command and launcher only (see hokumCommand).
         systemPackages =
           (with pkgs; [
             mission-center
@@ -146,10 +145,7 @@
             quickshell
             wl-clipboard
           ])
-          ++ [hokumCommand inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.icon-theme]
-          # shojiwm-win7's Vicinae: the latest, without smooth scrolling.
-          ++ lib.optional (config.shojiwm.checkout != null)
-          inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.vicinae;
+          ++ [hokumCommand inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.icon-theme];
       };
 
       # The GlobalShortcuts portal of shojiwm-win7: programs such as Hex bind
