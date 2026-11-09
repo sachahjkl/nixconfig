@@ -196,19 +196,26 @@
       };
 
       # Hokum shows the notifications in the ShojiWM session; dunst keeps
-      # them in Hyprland. The service starts with the session, stops dunst and
-      # takes the name.
-      systemd.user.services.hokum-shojiwm = {
-        description = "Hokum notifications in the ShojiWM session";
-        wantedBy = ["wayland-session@shojiwm.desktop.target"];
-        partOf = ["wayland-session@shojiwm.desktop.target"];
-        after = ["wayland-session@shojiwm.desktop.target" "dunst.service"];
-        # dunst, D-Bus activated, holds the name and does not give it up.
-        conflicts = ["dunst.service"];
-        serviceConfig = {
-          ExecStart = "${lib.getExe hokum} service --replace";
-          Restart = "on-failure";
+      # them in Hyprland. The service starts with the session, stops a dunst
+      # left from a Hyprland session (it holds the name and does not give it
+      # up), and takes the name.
+      #
+      # No Conflicts= with dunst: it works both ways, so the first
+      # notification that D-Bus-activated dunst stopped Hokum. dunst does not
+      # start in a ShojiWM session instead.
+      systemd.user.services = {
+        hokum-shojiwm = {
+          description = "Hokum notifications in the ShojiWM session";
+          wantedBy = ["wayland-session@shojiwm.desktop.target"];
+          partOf = ["wayland-session@shojiwm.desktop.target"];
+          after = ["wayland-session@shojiwm.desktop.target" "dunst.service"];
+          serviceConfig = {
+            ExecStartPre = "${pkgs.systemd}/bin/systemctl --user stop dunst.service";
+            ExecStart = "${lib.getExe hokum} service --replace";
+            Restart = "on-failure";
+          };
         };
+        dunst.unitConfig.ConditionEnvironment = "!XDG_CURRENT_DESKTOP=ShojiWM";
       };
 
       # The log-on screen keeps the last session chosen in the greeter's
