@@ -210,12 +210,18 @@
           partOf = ["wayland-session@shojiwm.desktop.target"];
           after = ["wayland-session@shojiwm.desktop.target" "dunst.service"];
           serviceConfig = {
-            ExecStartPre = "${pkgs.systemd}/bin/systemctl --user stop dunst.service";
+            # "-": without dunst installed, the stop fails and that is fine.
+            ExecStartPre = "-${pkgs.systemd}/bin/systemctl --user stop dunst.service";
             ExecStart = "${lib.getExe hokum} service --replace";
             Restart = "on-failure";
           };
         };
-        dunst.unitConfig.ConditionEnvironment = "!XDG_CURRENT_DESKTOP=ShojiWM";
+        # A drop-in on the unit dunst's package installs; a whole unit here
+        # would have no ExecStart.
+        dunst = {
+          overrideStrategy = "asDropin";
+          unitConfig.ConditionEnvironment = "!XDG_CURRENT_DESKTOP=ShojiWM";
+        };
       };
 
       # The log-on screen keeps the last session chosen in the greeter's
