@@ -66,7 +66,7 @@
           supportedFeatures = ["benchmark" "big-parallel" "kvm" "nixos-test"];
         }
       ];
-      distributedBuilds = true;
+      distributedBuilds = lib.mkDefault true;
     };
 
     # The Nix daemon connects to the build machine as root, and /root is not persistent.

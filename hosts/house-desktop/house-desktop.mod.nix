@@ -33,6 +33,10 @@ lib.systems.nixosSystem "house-desktop" {
 
     ai.codex.enable = false;
 
+    # This machine is faster than homelab, and homelab runs other services.
+    # Build locally instead of on the homelab build machine from the workstation module.
+    nix.distributedBuilds = false;
+
     shojiwm = {
       enable = true;
       checkout = "${config.homeDirectory}/Projects/shojiwm-win7";
