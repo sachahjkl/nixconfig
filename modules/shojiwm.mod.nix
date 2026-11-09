@@ -117,9 +117,12 @@
         # only (see hokumCommand).
         systemPackages =
           (with pkgs; [
+            # Super+V: the clipboard history.
+            cliphist
             inter
             kitty
             quickshell
+            wl-clipboard
           ])
           ++ [hokumCommand]
           ++ lib.optional (config.shojiwm.checkout != null) pkgs.vicinae;
