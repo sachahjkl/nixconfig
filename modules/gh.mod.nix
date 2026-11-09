@@ -10,8 +10,12 @@
     hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
     tokenPath = "/run/secrets/github-far-from-home-pat";
+    # The shared token from sops is the fallback: a login stored with
+    # `gh auth login` comes first. The fine-grained token cannot open issues
+    # or pull requests on other people's public repositories.
     wrappedGh = pkgs.writeShellScriptBin "gh" ''
-      if [ -r ${lib.escapeShellArg tokenPath} ]; then
+      if ! env -u GH_TOKEN -u GITHUB_TOKEN ${lib.getExe pkgs.gh} auth token --hostname github.com >/dev/null 2>&1 \
+        && [ -r ${lib.escapeShellArg tokenPath} ]; then
         export GH_TOKEN="$(cat ${lib.escapeShellArg tokenPath})"
         export GITHUB_TOKEN="$GH_TOKEN"
       fi

@@ -17,6 +17,17 @@ _: {
       p7zip
       qalculate-gtk
     ];
+
+    # The libvesktop native module and the tray need libstdc++.so.6.
+    # The nixpkgs 26.05 wrapper no longer puts it in LD_LIBRARY_PATH (nixpkgs PR #490307).
+    equibop = pkgs.equibop.overrideAttrs (old: {
+      postFixup =
+        old.postFixup
+        + ''
+          wrapProgram $out/bin/equibop \
+            --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath [(pkgs.lib.getLib pkgs.stdenv.cc.cc)]}
+        '';
+    });
   in {
     # What programs built for other Linux systems open (nix-ld): a window, a GPU device, fonts, sound.
     programs.nix-ld.libraries = with pkgs; [
@@ -36,10 +47,10 @@ _: {
 
     environment.systemPackages =
       desktopEssentials
+      ++ [equibop]
       ++ (with pkgs; [
         alsa-utils
         audacity
-        equibop
         efibootmgr
         file-roller
         fff

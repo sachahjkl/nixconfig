@@ -127,7 +127,9 @@
             wl-clipboard
           ])
           ++ [hokumCommand]
-          ++ lib.optional (config.shojiwm.checkout != null) pkgs.vicinae;
+          # shojiwm-win7's Vicinae: the latest, without smooth scrolling.
+          ++ lib.optional (config.shojiwm.checkout != null)
+          inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.vicinae;
       };
 
       # The GlobalShortcuts portal of shojiwm-win7: programs such as Hex bind
