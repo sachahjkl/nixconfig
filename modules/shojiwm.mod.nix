@@ -74,20 +74,22 @@
           // {providedSessions = ["shojiwm-uwsm"];})
       ];
 
-      environment.sessionVariables =
-        # ShojiWM sets no keymap; libxkbcommon then reads these.
-        lib.filterAttrs (_: value: value != "") {
+      # The session's environment, through uwsm's env file for ShojiWM
+      # (XDG_CURRENT_DESKTOP lowercased): uwsm exports it to the systemd user
+      # manager, which starts the compositor. environment.sessionVariables
+      # does not reach it: the manager already has __NIXOS_SET_ENVIRONMENT_DONE,
+      # so the login profile skips /etc/set-environment.
+      environment.etc."xdg/uwsm/env-shojiwm".text = lib.concatStrings (lib.mapAttrsToList
+        (name: value: "export ${name}=${lib.escapeShellArg value}\n")
+        (lib.filterAttrs (_: value: value != "") {
+          # ShojiWM sets no keymap; libxkbcommon then reads these.
           XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
           XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
           XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
-        }
-        // {
           # Print Screen in the Windows 7 configuration.
           SHOJIWM_WIN7_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
-        }
-        // lib.optionalAttrs (outputRules != "") {
           SHOJIWM_WIN7_OUTPUTS = outputRules;
-        };
+        }));
 
       # The Windows 7 configuration needs these at run time.
       # The package writes the store path of Vicinae into the configuration.
