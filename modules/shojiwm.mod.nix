@@ -118,6 +118,8 @@
             SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
             # Ctrl+Shift+Escape and the clock's menu: Mission Center.
             SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- missioncenter";
+            # The CPU Meter gadget's button: btop in Ghostty.
+            SHOJIWM_WIN7_SYSTEM_MONITOR = "uwsm app -- ghostty -e btop";
             # The dconf profile below: the Aero icon theme in this session.
             DCONF_PROFILE = "shojiwm";
             # Keys for programs that would register them through a
