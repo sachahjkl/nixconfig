@@ -70,9 +70,16 @@
           // {providedSessions = ["shojiwm-uwsm"];})
       ];
 
-      environment.sessionVariables = lib.mkIf (outputRules != "") {
-        SHOJIWM_WIN7_OUTPUTS = outputRules;
-      };
+      environment.sessionVariables =
+        # ShojiWM sets no keymap; libxkbcommon then reads these.
+        lib.filterAttrs (_: value: value != "") {
+          XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
+          XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
+          XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
+        }
+        // lib.optionalAttrs (outputRules != "") {
+          SHOJIWM_WIN7_OUTPUTS = outputRules;
+        };
 
       # The Windows 7 configuration needs these at run time.
       # The package writes the store path of Vicinae into the configuration.

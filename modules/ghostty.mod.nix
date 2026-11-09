@@ -17,6 +17,10 @@ _: {
 
       services.dbus.packages = [pkgs.ghostty];
       systemd.packages = [pkgs.ghostty];
+      # initial-window = false makes the first Ghostty process a daemon with no
+      # window. With the daemon started here, as the unit's [Install] section
+      # asks, a launch from a .desktop file opens a window in every session.
+      systemd.user.services."app-com.mitchellh.ghostty".wantedBy = ["graphical-session.target"];
 
       hjem.users.${userName} = {
         rum.programs.ghostty = {
