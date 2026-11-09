@@ -17,9 +17,9 @@ _: {
 
       services.dbus.packages = [pkgs.ghostty];
       systemd.packages = [pkgs.ghostty];
-      # initial-window = false makes the first Ghostty process a daemon with no
-      # window. With the daemon started here, as the unit's [Install] section
-      # asks, a launch from a .desktop file opens a window in every session.
+      # The daemon, started with every session as the unit's [Install] section
+      # asks (NixOS does not apply it). Its unit passes --initial-window=false,
+      # so it starts with no window; each launch then opens one.
       systemd.user.services."app-com.mitchellh.ghostty".wantedBy = ["graphical-session.target"];
 
       hjem.users.${userName} = {
@@ -77,7 +77,10 @@ _: {
             "gtk-wide-tabs" = false;
             "window-show-tab-bar" = "always";
             "gtk-single-instance" = true;
-            "initial-window" = false;
+            # A launch from a .desktop file or a shell passes this on to the
+            # daemon: false made it open no window. The daemon's own unit
+            # starts it windowless whatever this says.
+            "initial-window" = true;
             "quit-after-last-window-closed" = false;
           };
         };
