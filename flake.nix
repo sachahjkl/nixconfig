@@ -118,6 +118,10 @@
       inputs.home-manager.follows = "home-manager";
     };
 
+    # Hokum builds with nixos-unstable's Rust, newer than nixpkgs 26.05's, so
+    # it keeps its own nixpkgs, as Hex does.
+    hokum.url = "github:anomalyco/hokum";
+
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     skills = {

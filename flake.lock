@@ -438,6 +438,24 @@
         "type": "github"
       }
     },
+    "hokum": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1793506764,
+        "narHash": "sha256-SCGQ1CQgrVNwtyAOI6cQIgKC2EGqRdnRJmE9dVhuaQw=",
+        "owner": "anomalyco",
+        "repo": "hokum",
+        "rev": "f30af6ae2762bf9a3b41b9cbccac6e01cbed08ab",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "repo": "hokum",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -463,7 +481,7 @@
       "inputs": {
         "bun2nix": "bun2nix",
         "flake-parts": "flake-parts_3",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_5",
         "systems": "systems_2",
         "treefmt-nix": "treefmt-nix"
       },
@@ -500,7 +518,7 @@
     "mt7927": {
       "inputs": {
         "mediatek-mt7927-dkms": "mediatek-mt7927-dkms",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_6"
       },
       "locked": {
         "lastModified": 1794067853,
@@ -673,6 +691,22 @@
     },
     "nixpkgs_4": {
       "locked": {
+        "lastModified": 1793110635,
+        "narHash": "sha256-dhoW6VgFWlaodSY5jrBn+CF2FLmaUvDVgM7+C7T2+NM=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "31ecbaca1bdefa45dffc409f0250bd8039ea0010",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_5": {
+      "locked": {
         "lastModified": 1793826729,
         "narHash": "sha256-D5H7H+qMoTGI/jJtxKP4u7BdjkFnUyhOovTrf3pTOr0=",
         "owner": "NixOS",
@@ -687,7 +721,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1793876309,
         "narHash": "sha256-Wojg9lIH/hDH91iDVH2/EPw8oDSpxjxhXONbU1yf4Zg=",
@@ -703,7 +737,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_6": {
+    "nixpkgs_7": {
       "locked": {
         "lastModified": 1793865203,
         "narHash": "sha256-/cpdPHaySDIyCgZI6EWngiM6jK3YLUNzv1b7lTzy6Bk=",
@@ -769,12 +803,13 @@
         "hex": "hex",
         "hjem": "hjem",
         "hjem-rum": "hjem-rum",
+        "hokum": "hokum",
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
         "mt7927": "mt7927",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_6",
+        "nixpkgs": "nixpkgs_7",
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
         "shojiwm": "shojiwm",

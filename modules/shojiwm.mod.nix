@@ -10,6 +10,15 @@
     ...
   }: let
     configHome = "${config.homeDirectory}/.config/shojiwm";
+    hokum = inputs.hokum.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    # Hokum's package also carries a D-Bus activation file for
+    # org.freedesktop.Notifications, which would race dunst's in Hyprland:
+    # only the command and the launcher are installed.
+    hokumCommand = pkgs.runCommand "hokum-command" {} ''
+      mkdir -p "$out/bin" "$out/share/applications"
+      ln -s ${lib.getExe hokum} "$out/bin/hokum"
+      ln -s ${hokum}/share/applications/hokum.desktop "$out/share/applications/hokum.desktop"
+    '';
     # A checkout is linked as is: its files change without a rebuild.
     configSource =
       if config.shojiwm.checkout == null
@@ -74,33 +83,59 @@
           // {providedSessions = ["shojiwm-uwsm"];})
       ];
 
-      # The session's environment, through uwsm's env file for ShojiWM
-      # (XDG_CURRENT_DESKTOP lowercased): uwsm exports it to the systemd user
-      # manager, which starts the compositor. environment.sessionVariables
-      # does not reach it: the manager already has __NIXOS_SET_ENVIRONMENT_DONE,
-      # so the login profile skips /etc/set-environment.
-      environment.etc."xdg/uwsm/env-shojiwm".text = lib.concatStrings (lib.mapAttrsToList
-        (name: value: "export ${name}=${lib.escapeShellArg value}\n")
-        (lib.filterAttrs (_: value: value != "") {
-          # ShojiWM sets no keymap; libxkbcommon then reads these.
-          XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
-          XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
-          XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
-          # Print Screen in the Windows 7 configuration.
-          SHOJIWM_WIN7_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
-          SHOJIWM_WIN7_OUTPUTS = outputRules;
-        }));
+      environment = {
+        # The session's environment, through uwsm's env file for ShojiWM
+        # (XDG_CURRENT_DESKTOP lowercased): uwsm exports it to the systemd
+        # user manager, which starts the compositor.
+        # environment.sessionVariables does not reach it: the manager already
+        # has __NIXOS_SET_ENVIRONMENT_DONE, so the login profile skips
+        # /etc/set-environment.
+        etc."xdg/uwsm/env-shojiwm".text = lib.concatStrings (lib.mapAttrsToList
+          (name: value: "export ${name}=${lib.escapeShellArg value}\n")
+          (lib.filterAttrs (_: value: value != "") {
+            # ShojiWM sets no keymap; libxkbcommon then reads these.
+            XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
+            XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
+            XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
+            # Print Screen in the Windows 7 configuration.
+            SHOJIWM_WIN7_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
+            SHOJIWM_WIN7_OUTPUTS = outputRules;
+            # The terminal the keys and the desktop open: the system's own.
+            SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
+            # Keys for programs that would register them through a
+            # GlobalShortcuts portal, which ShojiWM does not have.
+            SHOJIWM_WIN7_KEYS = builtins.toJSON (lib.optionalAttrs (lib.attrByPath ["ai" "hex" "enable"] false config) {
+              "Ctrl+Shift+Space" = "hex dictation toggle";
+            });
+          }));
 
-      # The Windows 7 configuration needs these at run time.
-      # The package writes the store path of Vicinae into the configuration.
-      # A checkout calls `vicinae` through PATH.
-      environment.systemPackages =
-        (with pkgs; [
-          inter
-          kitty
-          quickshell
-        ])
-        ++ lib.optional (config.shojiwm.checkout != null) pkgs.vicinae;
+        # The Windows 7 configuration needs these at run time. The package
+        # writes the store path of Vicinae into the configuration; a checkout
+        # calls `vicinae` through PATH. Hokum is its command and launcher
+        # only (see hokumCommand).
+        systemPackages =
+          (with pkgs; [
+            inter
+            kitty
+            quickshell
+          ])
+          ++ [hokumCommand]
+          ++ lib.optional (config.shojiwm.checkout != null) pkgs.vicinae;
+      };
+
+      # Hokum shows the notifications in the ShojiWM session; dunst keeps
+      # them in Hyprland. The service starts with the session and takes the
+      # name with --replace.
+      systemd.user.services.hokum-shojiwm = {
+        description = "Hokum notifications in the ShojiWM session";
+        wantedBy = ["wayland-session@shojiwm.desktop.target"];
+        partOf = ["wayland-session@shojiwm.desktop.target"];
+        after = ["wayland-session@shojiwm.desktop.target"];
+        serviceConfig = {
+          ExecStart = "${lib.getExe hokum} service --replace";
+          Restart = "on-failure";
+        };
+      };
 
       systemd.user.tmpfiles.users.${config.userName}.rules = map (name: "L+ ${configHome}/${name} - - - - ${configSource}/${name}") [
         "src"
