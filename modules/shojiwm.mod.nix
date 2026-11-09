@@ -132,9 +132,18 @@
 
       # The GlobalShortcuts portal of shojiwm-win7: programs such as Hex bind
       # their keys through it. ShojiWM's own portal has only ScreenCast.
+      #
+      # xdg-desktop-portal reads <desktop>-portals.conf with the desktop name
+      # in lowercase: shojiwm-portals.conf. ShojiWM's module writes its
+      # choices under "ShojiWM", a file it never reads, so they are repeated
+      # here.
       xdg.portal = {
         extraPortals = [inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.portal];
-        config.ShojiWM."org.freedesktop.impl.portal.GlobalShortcuts" = "shojiwm-win7";
+        config.shojiwm = {
+          default = ["gtk"];
+          "org.freedesktop.impl.portal.ScreenCast" = ["shojiwm"];
+          "org.freedesktop.impl.portal.GlobalShortcuts" = ["shojiwm-win7"];
+        };
       };
 
       # Hokum shows the notifications in the ShojiWM session; dunst keeps
