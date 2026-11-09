@@ -43,9 +43,6 @@ _: {
             inherit (terminalTheme) background;
             "cursor-color" = terminalTheme.cursorColor;
             "selection-background" = terminalTheme.selectionBackground;
-            "background-opacity" = 0.9;
-            "background-opacity-cells" = true;
-            "background-blur" = true;
             palette = [
               "0=${terminalTheme.black}"
               "1=${terminalTheme.red}"
