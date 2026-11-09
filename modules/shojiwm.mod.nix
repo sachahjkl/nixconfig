@@ -220,6 +220,11 @@
           message = "shojiwm.greeter and display.autoLoginUser do not go together: greetd's log-on screen has no automatic log-on.";
         }
       ];
+      # settings.json, beside the links below: what the Control Panel, the
+      # pins and the notification area change. The root's tmpfs would lose it
+      # at each boot.
+      persist.user.directories = [".config/shojiwm"];
+
       persist.system.directories = lib.mkIf config.shojiwm.greeter.enable [
         {
           directory = "/var/lib/greeter";

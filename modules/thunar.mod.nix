@@ -41,10 +41,14 @@
     thunarTargetDir = "${configDir}/Thunar";
     thunarTargetFile = "${thunarTargetDir}/uca.xml";
   in {
-    persist.user.files = lib.mkIf hasPreservation [
-      ".config/xfce4/helpers.rc"
-      ".config/Thunar/uca.xml"
-    ];
+    persist.user = lib.mkIf hasPreservation {
+      files = [
+        ".config/xfce4/helpers.rc"
+        ".config/Thunar/uca.xml"
+      ];
+      # Thunar's own settings (view, sort, side pane): xfconf writes them.
+      directories = [".config/xfce4/xfconf"];
+    };
 
     system.activationScripts.thunarHelpers.text = ''
       install -d -m 0755 -o ${config.userName} -g users ${helpersTargetDir}

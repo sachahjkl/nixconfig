@@ -12,6 +12,10 @@
   in {
     environment.systemPackages = [papier];
 
+    # The history itself (history.db), which the root's tmpfs would lose at
+    # each boot.
+    persist.user.directories = [".local/share/papier"];
+
     systemd.user.services.papier = {
       description = "Papier, the clipboard's history";
       wantedBy = ["graphical-session.target"];
