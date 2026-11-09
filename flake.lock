@@ -892,11 +892,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794231771,
-        "narHash": "sha256-OyoieduGfff0X2xBxx3ulD+mEsfhIotzxH9h5vmoSzk=",
+        "lastModified": 1794233488,
+        "narHash": "sha256-M068mhY3wjur5IlGHFsjYs7X+Ct9fUD4wX7YQbPmoxk=",
         "owner": "sachahjkl",
         "repo": "shojiwm-win7",
-        "rev": "8be0d5f16a68c176460ecccf4011a4e7503cf6fd",
+        "rev": "9bb5e462c071c3832ddca54847466a787c7e55dc",
         "type": "github"
       },
       "original": {

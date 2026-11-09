@@ -33,7 +33,8 @@ _: {
           };
 
           ly = {
-            enable = true;
+            # The ShojiWM log-on screen replaces it (shojiwm.greeter).
+            enable = lib.mkDefault true;
             settings = {
               session_log = null;
               animate = true;

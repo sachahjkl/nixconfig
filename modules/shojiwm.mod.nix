@@ -28,9 +28,55 @@
     # The Hyprland monitor rules, `name,mode,position,scale` separated by
     # `;`, read by src/index.tsx of shojiwm-win7. The value holds no quotes:
     # the session environment files do not escape them.
-    outputRules = lib.concatMapStringsSep ";" (monitor: "${monitor.output},${monitor.mode},${monitor.position},${toString monitor.scale}") (
-      builtins.filter (monitor: monitor.output != "") (lib.attrByPath ["hyprland" "display" "monitors"] [] config)
-    );
+    monitors = builtins.filter (monitor: monitor.output != "") (lib.attrByPath ["hyprland" "display" "monitors"] [] config);
+    outputRules = lib.concatMapStringsSep ";" (monitor: "${monitor.output},${monitor.mode},${monitor.position},${toString monitor.scale}") monitors;
+
+    # The log-on screen: shojiwm-win7's greeter.qml in a Hyprland of its
+    # own, with the same screens as the sessions. It always comes from the
+    # package: the greeter account cannot read a checkout in a home.
+    greeterShell = "${inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.default}/shell/greeter.qml";
+    greeterSession = pkgs.writeShellScript "shojiwm-win7-greeter" ''
+      export SHOJIWM_GREETER_USER=${lib.escapeShellArg config.userName}
+      export SHOJIWM_GREETER_SESSIONS=${config.services.displayManager.sessionData.desktops}/share/wayland-sessions
+      export SHOJIWM_GREETER_DEFAULT_SESSION=${lib.escapeShellArg config.shojiwm.greeter.defaultSession}
+      export SHOJIWM_WIN7_PRIMARY_SCREEN=${lib.escapeShellArg config.shojiwm.greeter.mainScreen}
+      ${lib.getExe pkgs.quickshell} -p ${greeterShell}
+      # The session starts once the compositor has left the screen. The
+      # configuration is Lua: dispatch takes a Lua call.
+      ${pkgs.hyprland}/bin/hyprctl dispatch 'hl.dsp.exit()'
+    '';
+    greeterHyprland = pkgs.writeText "shojiwm-win7-greeter.lua" ''
+      ${lib.concatMapStrings (monitor: ''
+          hl.monitor({
+              output   = ${builtins.toJSON monitor.output},
+              mode     = ${builtins.toJSON monitor.mode},
+              position = ${builtins.toJSON monitor.position},
+              scale    = ${toString monitor.scale},
+          })
+        '')
+        monitors}
+      hl.on("hyprland.start", function()
+          hl.exec_cmd("${greeterSession}")
+      end)
+
+      hl.config({
+          misc = {
+              disable_hyprland_logo   = true,
+              force_default_wallpaper = 0,
+          },
+          animations = {
+              enabled = false,
+          },
+          ecosystem = {
+              no_update_news = true,
+          },
+          input = {
+              kb_layout  = ${builtins.toJSON config.services.xserver.xkb.layout},
+              kb_variant = ${builtins.toJSON config.services.xserver.xkb.variant},
+              kb_options = ${builtins.toJSON config.services.xserver.xkb.options},
+          },
+      })
+    '';
   in {
     imports = [inputs.shojiwm.nixosModules.default];
 
@@ -45,6 +91,32 @@
           Path of a shojiwm-win7 checkout. If set, ~/.config/shojiwm links to
           this checkout instead of the packaged configuration.
         '';
+      };
+
+      greeter = {
+        enable = lib.mkEnableOption ''
+          the Windows 7 log-on screen of shojiwm-win7 as the display manager,
+          through greetd, instead of ly. It logs userName on, into the session
+          chosen in its corner (the last one used, first defaultSession)
+        '';
+
+        defaultSession = lib.mkOption {
+          type = lib.types.str;
+          default = config.display.defaultSession;
+          defaultText = lib.literalExpression "config.display.defaultSession";
+          example = "shojiwm-uwsm";
+          description = "The session chosen the first time, by its .desktop file name.";
+        };
+
+        mainScreen = lib.mkOption {
+          type = lib.types.str;
+          default = "";
+          example = "HDMI-A-1";
+          description = ''
+            Connector of the screen that shows the log-on box; the others stay
+            black. Empty: the first screen.
+          '';
+        };
       };
     };
 
@@ -85,17 +157,27 @@
             ++ config.programs.dconf.profiles.user.databases;
         };
       };
-      services.displayManager.sessionPackages = [
-        ((pkgs.writeTextDir "share/wayland-sessions/shojiwm-uwsm.desktop" ''
-            [Desktop Entry]
-            Name=ShojiWM (UWSM)
-            Comment=ShojiWM managed by UWSM
-            Exec=${lib.getExe config.programs.uwsm.package} start -e -D ShojiWM shojiwm.desktop
-            DesktopNames=ShojiWM;X-NIXOS-SYSTEMD-AWARE
-            Type=Application
-          '')
-          // {providedSessions = ["shojiwm-uwsm"];})
-      ];
+      services = {
+        displayManager = {
+          sessionPackages = [
+            ((pkgs.writeTextDir "share/wayland-sessions/shojiwm-uwsm.desktop" ''
+                [Desktop Entry]
+                Name=ShojiWM (UWSM)
+                Comment=ShojiWM managed by UWSM
+                Exec=${lib.getExe config.programs.uwsm.package} start -e -D ShojiWM shojiwm.desktop
+                DesktopNames=ShojiWM;X-NIXOS-SYSTEMD-AWARE
+                Type=Application
+              '')
+              // {providedSessions = ["shojiwm-uwsm"];})
+          ];
+          # The log-on screen below replaces it.
+          ly.enable = lib.mkIf config.shojiwm.greeter.enable false;
+        };
+        greetd = lib.mkIf config.shojiwm.greeter.enable {
+          enable = true;
+          settings.default_session.command = "${pkgs.hyprland}/bin/start-hyprland -- --config ${greeterHyprland}";
+        };
+      };
 
       environment = {
         # The session's environment, through uwsm's env file for ShojiWM
@@ -171,6 +253,13 @@
           ExecStart = "${lib.getExe hokum} service --replace";
           Restart = "on-failure";
         };
+      };
+
+      # The greeter keeps the last session chosen in its state folder
+      # (~/.local/state), and Quickshell its cache.
+      users.users.greeter = lib.mkIf config.shojiwm.greeter.enable {
+        home = "/var/lib/greeter";
+        createHome = true;
       };
 
       systemd.user.tmpfiles.users.${config.userName}.rules = map (name: "L+ ${configHome}/${name} - - - - ${configSource}/${name}") [
