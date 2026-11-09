@@ -753,6 +753,31 @@
         "type": "github"
       }
     },
+    "papier": {
+      "inputs": {
+        "git-hooks": [
+          "git-hooks"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794210836,
+        "narHash": "sha256-diBE9jbbvurYGUrKzRT3uxxSK6fJUMmRw4HOkZeQ0Eo=",
+        "ref": "refs/heads/master",
+        "rev": "864db957aa6c2f9c46fc68bd4a27653d9d4f72dd",
+        "revCount": 7,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/sachahjkl/papier"
+      },
+      "original": {
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/sachahjkl/papier"
+      }
+    },
     "plasma-manager": {
       "inputs": {
         "home-manager": [
@@ -810,6 +835,7 @@
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_7",
+        "papier": "papier",
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
         "shojiwm": "shojiwm",

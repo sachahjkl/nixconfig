@@ -154,7 +154,6 @@
                 hl.exec_cmd("uwsm app -- nm-applet")
                 hl.exec_cmd("uwsm app -- thunar --daemon")
                 hl.exec_cmd("uwsm app -- udiskie")
-                hl.exec_cmd("uwsm app -- copyq --start-server")
                 hl.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile} --start-hidden")
                 hl.exec_cmd("dbus-update-activation-environment --systemd --all")
                 hl.exec_cmd("hyprpaper")
@@ -233,7 +232,7 @@
             })
 
             hl.window_rule({
-                match = { class = "com.github.hluk.copyq" },
+                match = { class = "^papier$" },
                 float = true,
             })
             hl.window_rule({
@@ -360,12 +359,12 @@
             hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("hex dictation toggle"))
-            hl.bind("SUPER + V", hl.dsp.exec_cmd("copyq menu"))
+            hl.bind("SUPER + V", hl.dsp.exec_cmd("papier toggle"))
             hl.bind("SUPER + semicolon", hl.dsp.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile}"))
             hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("${lib.getExe powerMenuLauncher}"))
             hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
             hl.bind(mainMod .. " + SHIFT + SPACE", hl.dsp.window.float({ action = "toggle" }))
-            hl.bind("CTRL + SHIFT + ugrave", hl.dsp.exec_cmd("copyq toggle"))
+            hl.bind("CTRL + SHIFT + ugrave", hl.dsp.exec_cmd("papier toggle"))
             hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
             hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
             hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))

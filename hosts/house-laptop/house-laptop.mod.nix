@@ -9,6 +9,7 @@ lib.systems.nixosSystem "house-laptop" {
       self.diskoConfigurations.house-laptop
       self.nixosModules.workstation
       self.nixosModules.hyprland
+      self.nixosModules.papier
       self.nixosModules.mt7927
       self.nixosModules.house-laptop-hardware
     ];

@@ -13,8 +13,6 @@ _: {
     environment.systemPackages = with pkgs; [
       arc-theme
       brightnessctl
-      cliphist
-      copyq
       dunst
       grim
       hyprpaper

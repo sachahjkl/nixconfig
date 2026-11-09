@@ -122,6 +122,12 @@
     # it keeps its own nixpkgs, as Hex does.
     hokum.url = "github:anomalyco/hokum";
 
+    papier = {
+      url = "git+https://github.com/sachahjkl/papier?submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.git-hooks.follows = "git-hooks";
+    };
+
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     skills = {

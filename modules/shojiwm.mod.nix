@@ -106,9 +106,13 @@
             SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- ghostty -e btop";
             # Keys for programs that would register them through a
             # GlobalShortcuts portal, which ShojiWM does not have.
-            SHOJIWM_WIN7_KEYS = builtins.toJSON (lib.optionalAttrs (lib.attrByPath ["ai" "hex" "enable"] false config) {
-              "Ctrl+Shift+Space" = "hex dictation toggle";
-            });
+            SHOJIWM_WIN7_KEYS = builtins.toJSON ({
+                # Ctrl+Shift+ù: Papier, the clipboard's history.
+                "Ctrl+Shift+ugrave" = "papier toggle";
+              }
+              // lib.optionalAttrs (lib.attrByPath ["ai" "hex" "enable"] false config) {
+                "Ctrl+Shift+Space" = "hex dictation toggle";
+              });
           }));
 
         # The Windows 7 configuration needs these at run time. The package
