@@ -79,12 +79,23 @@
       # active after a crash, and uwsm then refuses to start Hyprland.
       # ShojiWM puts WAYLAND_DISPLAY into the systemd activation environment
       # itself, which is what uwsm waits for.
-      programs.uwsm.waylandCompositors.shojiwm = {
-        prettyName = "ShojiWM";
-        comment = "ShojiWM managed by UWSM";
-        binPath = "/run/current-system/sw/bin/shoji_wm";
-        extraArgs = ["--tty"];
-      };
+      #
+      # X-NIXOS-SYSTEMD-AWARE stops the NixOS session wrapper from starting
+      # nixos-fake-graphical-session.target before uwsm, which then refuses to
+      # start. programs.uwsm.waylandCompositors writes no DesktopNames, so the
+      # session file is written here.
+      programs.uwsm.enable = true;
+      services.displayManager.sessionPackages = [
+        ((pkgs.writeTextDir "share/wayland-sessions/shojiwm-uwsm.desktop" ''
+            [Desktop Entry]
+            Name=ShojiWM (UWSM)
+            Comment=ShojiWM managed by UWSM
+            Exec=${lib.getExe config.programs.uwsm.package} start -e -D ShojiWM shojiwm.desktop
+            DesktopNames=ShojiWM;X-NIXOS-SYSTEMD-AWARE
+            Type=Application
+          '')
+          // {providedSessions = ["shojiwm-uwsm"];})
+      ];
 
       # Read by src/index.tsx of shojiwm-win7.
       environment.sessionVariables = lib.mkIf (outputs != {}) {
