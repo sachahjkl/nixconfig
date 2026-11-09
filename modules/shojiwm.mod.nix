@@ -236,7 +236,10 @@
       # settings.json, beside the links below: what the Control Panel, the
       # pins and the notification area change. The root's tmpfs would lose it
       # at each boot.
-      persist.user.directories = [".config/shojiwm"];
+      #
+      # Hokum's config.kdl too: its theme (assets/hokum/aero.kdl), its corner
+      # and its modules, and Do not disturb, which it writes there.
+      persist.user.directories = [".config/shojiwm" ".config/hokum"];
 
       persist.system.directories = lib.mkIf config.shojiwm.greeter.enable [
         {
