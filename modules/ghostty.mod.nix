@@ -31,7 +31,9 @@ _: {
           package = null;
           settings = {
             "font-family" = config.theme.fonts.mono;
-            "font-size" = config.theme.fonts.size.normal;
+            # Two steps (points) under the shared size: Ghostty's cells read
+            # larger than kitty's at the same size.
+            "font-size" = config.theme.fonts.size.normal - 2;
             "shell-integration" = "detect";
             "cursor-click-to-move" = true;
             "mouse-hide-while-typing" = true;

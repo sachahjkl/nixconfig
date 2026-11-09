@@ -102,14 +102,15 @@
             SHOJIWM_WIN7_OUTPUTS = outputRules;
             # The terminal the keys and the desktop open: the system's own.
             SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
-            # Ctrl+Shift+Escape: btop in Ghostty, as the task manager.
-            SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- ghostty -e btop";
+            # Ctrl+Shift+Escape and the clock's menu: Mission Center.
+            SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- missioncenter";
             # Keys for programs that would register them through a
             # GlobalShortcuts portal, which ShojiWM does not have.
             # Hex binds its own keys through the GlobalShortcuts portal below.
             SHOJIWM_WIN7_KEYS = builtins.toJSON {
-              # Ctrl+Shift+ù: Papier, the clipboard's history.
-              "Ctrl+Shift+ugrave" = "papier toggle";
+              # Ctrl+Shift+ù: the clipboard's history, Vicinae's until Papier
+              # is finished.
+              "Ctrl+Shift+ugrave" = "vicinae vicinae://extensions/vicinae/clipboard/history";
             };
           }));
 
@@ -119,8 +120,7 @@
         # only (see hokumCommand).
         systemPackages =
           (with pkgs; [
-            # Super+V: the clipboard history.
-            cliphist
+            mission-center
             inter
             kitty
             quickshell
@@ -133,19 +133,12 @@
       };
 
       # The GlobalShortcuts portal of shojiwm-win7: programs such as Hex bind
-      # their keys through it. ShojiWM's own portal has only ScreenCast.
-      #
-      # xdg-desktop-portal reads <desktop>-portals.conf with the desktop name
-      # in lowercase: shojiwm-portals.conf. ShojiWM's module writes its
-      # choices under "ShojiWM", a file it never reads, so they are repeated
-      # here.
+      # their keys through it. ShojiWM's own portal has only ScreenCast. The
+      # name is the desktop's in lowercase: xdg-desktop-portal reads
+      # shojiwm-portals.conf, where ShojiWM's module puts its own choices.
       xdg.portal = {
         extraPortals = [inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.portal];
-        config.shojiwm = {
-          default = ["gtk"];
-          "org.freedesktop.impl.portal.ScreenCast" = ["shojiwm"];
-          "org.freedesktop.impl.portal.GlobalShortcuts" = ["shojiwm-win7"];
-        };
+        config.shojiwm."org.freedesktop.impl.portal.GlobalShortcuts" = ["shojiwm-win7"];
       };
 
       # Hokum shows the notifications in the ShojiWM session; dunst keeps

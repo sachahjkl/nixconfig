@@ -30,8 +30,10 @@
 
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
 
+    # sachahjkl's fork: upstream main with the fixes that wait for review,
+    # listed in FORK.md on its integration branch.
     shojiwm = {
-      url = "github:bea4dev/ShojiWM";
+      url = "github:sachahjkl/ShojiWM/integration";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
