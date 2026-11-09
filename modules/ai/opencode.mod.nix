@@ -254,6 +254,8 @@
       persist.user.directories = [
         ".config/opencode"
         ".local/share/opencode"
+        # the browse MCP server (opencode.jsonc: ~/.local/bin/browse mcp), which updates itself there
+        ".local/bin"
       ];
 
       environment = {
