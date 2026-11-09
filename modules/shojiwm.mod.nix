@@ -30,55 +30,8 @@
     # the session environment files do not escape them.
     monitors = builtins.filter (monitor: monitor.output != "") (lib.attrByPath ["hyprland" "display" "monitors"] [] config);
     outputRules = lib.concatMapStringsSep ";" (monitor: "${monitor.output},${monitor.mode},${monitor.position},${toString monitor.scale}") monitors;
-
-    # The log-on screen: shojiwm-win7's greeter.qml in a Hyprland of its
-    # own, with the same screens as the sessions. It always comes from the
-    # package: the greeter account cannot read a checkout in a home.
-    greeterShell = "${inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.default}/shell/greeter.qml";
-    greeterSession = pkgs.writeShellScript "shojiwm-win7-greeter" ''
-      export SHOJIWM_GREETER_USER=${lib.escapeShellArg config.userName}
-      export SHOJIWM_GREETER_SESSIONS=${config.services.displayManager.sessionData.desktops}/share/wayland-sessions
-      export SHOJIWM_GREETER_DEFAULT_SESSION=${lib.escapeShellArg config.shojiwm.greeter.defaultSession}
-      export SHOJIWM_WIN7_PRIMARY_SCREEN=${lib.escapeShellArg config.shojiwm.greeter.mainScreen}
-      ${lib.getExe pkgs.quickshell} -p ${greeterShell}
-      # The session starts once the compositor has left the screen. The
-      # configuration is Lua: dispatch takes a Lua call.
-      ${pkgs.hyprland}/bin/hyprctl dispatch 'hl.dsp.exit()'
-    '';
-    greeterHyprland = pkgs.writeText "shojiwm-win7-greeter.lua" ''
-      ${lib.concatMapStrings (monitor: ''
-          hl.monitor({
-              output   = ${builtins.toJSON monitor.output},
-              mode     = ${builtins.toJSON monitor.mode},
-              position = ${builtins.toJSON monitor.position},
-              scale    = ${toString monitor.scale},
-          })
-        '')
-        monitors}
-      hl.on("hyprland.start", function()
-          hl.exec_cmd("${greeterSession}")
-      end)
-
-      hl.config({
-          misc = {
-              disable_hyprland_logo   = true,
-              force_default_wallpaper = 0,
-          },
-          animations = {
-              enabled = false,
-          },
-          ecosystem = {
-              no_update_news = true,
-          },
-          input = {
-              kb_layout  = ${builtins.toJSON config.services.xserver.xkb.layout},
-              kb_variant = ${builtins.toJSON config.services.xserver.xkb.variant},
-              kb_options = ${builtins.toJSON config.services.xserver.xkb.options},
-          },
-      })
-    '';
   in {
-    imports = [inputs.shojiwm.nixosModules.default];
+    imports = [inputs.shojiwm.nixosModules.default inputs.shojiwm-win7.nixosModules.greeter];
 
     options.shojiwm = {
       enable = lib.mkEnableOption "the ShojiWM Wayland compositor session with the Windows 7 configuration";
@@ -173,9 +126,12 @@
           # The log-on screen below replaces it.
           ly.enable = lib.mkIf config.shojiwm.greeter.enable false;
         };
-        greetd = lib.mkIf config.shojiwm.greeter.enable {
+        # shojiwm-win7's log-on screen, with the sessions' screens.
+        shojiwm-win7-greeter = lib.mkIf config.shojiwm.greeter.enable {
           enable = true;
-          settings.default_session.command = "${pkgs.hyprland}/bin/start-hyprland -- --config ${greeterHyprland}";
+          user = config.userName;
+          inherit (config.shojiwm.greeter) defaultSession mainScreen;
+          monitors = map (monitor: {inherit (monitor) output mode position scale;}) monitors;
         };
       };
 
@@ -255,12 +211,15 @@
         };
       };
 
-      # The greeter keeps the last session chosen in its state folder
-      # (~/.local/state), and Quickshell its cache.
-      users.users.greeter = lib.mkIf config.shojiwm.greeter.enable {
-        home = "/var/lib/greeter";
-        createHome = true;
-      };
+      # The log-on screen keeps the last session chosen in the greeter's
+      # home, which the root's tmpfs would lose at each boot. greetd has no
+      # automatic log-on of display.autoLoginUser.
+      assertions = [
+        {
+          assertion = !(config.shojiwm.greeter.enable && config.services.displayManager.autoLogin.enable);
+          message = "shojiwm.greeter and display.autoLoginUser do not go together: greetd's log-on screen has no automatic log-on.";
+        }
+      ];
       persist.system.directories = lib.mkIf config.shojiwm.greeter.enable [
         {
           directory = "/var/lib/greeter";
