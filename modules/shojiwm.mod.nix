@@ -124,13 +124,15 @@
       };
 
       # Hokum shows the notifications in the ShojiWM session; dunst keeps
-      # them in Hyprland. The service starts with the session and takes the
-      # name with --replace.
+      # them in Hyprland. The service starts with the session, stops dunst and
+      # takes the name.
       systemd.user.services.hokum-shojiwm = {
         description = "Hokum notifications in the ShojiWM session";
         wantedBy = ["wayland-session@shojiwm.desktop.target"];
         partOf = ["wayland-session@shojiwm.desktop.target"];
-        after = ["wayland-session@shojiwm.desktop.target"];
+        after = ["wayland-session@shojiwm.desktop.target" "dunst.service"];
+        # dunst, D-Bus activated, holds the name and does not give it up.
+        conflicts = ["dunst.service"];
         serviceConfig = {
           ExecStart = "${lib.getExe hokum} service --replace";
           Restart = "on-failure";
