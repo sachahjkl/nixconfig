@@ -35,8 +35,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # The branch the checkout of house-desktop follows: its portal must speak
+    # the same protocol as the configuration that runs.
     shojiwm-win7 = {
-      url = "github:sachahjkl/shojiwm-win7";
+      url = "github:sachahjkl/shojiwm-win7/aero-rework";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

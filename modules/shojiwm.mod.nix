@@ -106,13 +106,11 @@
             SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- ghostty -e btop";
             # Keys for programs that would register them through a
             # GlobalShortcuts portal, which ShojiWM does not have.
-            SHOJIWM_WIN7_KEYS = builtins.toJSON ({
-                # Ctrl+Shift+ù: Papier, the clipboard's history.
-                "Ctrl+Shift+ugrave" = "papier toggle";
-              }
-              // lib.optionalAttrs (lib.attrByPath ["ai" "hex" "enable"] false config) {
-                "Ctrl+Shift+Space" = "hex dictation toggle";
-              });
+            # Hex binds its own keys through the GlobalShortcuts portal below.
+            SHOJIWM_WIN7_KEYS = builtins.toJSON {
+              # Ctrl+Shift+ù: Papier, the clipboard's history.
+              "Ctrl+Shift+ugrave" = "papier toggle";
+            };
           }));
 
         # The Windows 7 configuration needs these at run time. The package
@@ -130,6 +128,13 @@
           ])
           ++ [hokumCommand]
           ++ lib.optional (config.shojiwm.checkout != null) pkgs.vicinae;
+      };
+
+      # The GlobalShortcuts portal of shojiwm-win7: programs such as Hex bind
+      # their keys through it. ShojiWM's own portal has only ScreenCast.
+      xdg.portal = {
+        extraPortals = [inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.portal];
+        config.ShojiWM."org.freedesktop.impl.portal.GlobalShortcuts" = "shojiwm-win7";
       };
 
       # Hokum shows the notifications in the ShojiWM session; dunst keeps

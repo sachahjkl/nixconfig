@@ -659,6 +659,20 @@
         "type": "github"
       }
     },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1793876309,
+        "narHash": "sha256-Wojg9lIH/hDH91iDVH2/EPw8oDSpxjxhXONbU1yf4Zg=",
+        "rev": "f9a75f41be3a74eab55d3a7679d34ad6cc0da977",
+        "revCount": 1108983,
+        "type": "tarball",
+        "url": "https://api.flakehub.com/f/pinned/NixOS/nixpkgs/0.1.1108983%2Brev-f9a75f41be3a74eab55d3a7679d34ad6cc0da977/01a1b714-e939-7380-826e-cac109044611/source.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://flakehub.com/f/NixOS/nixpkgs/0.1"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1792773339,
@@ -888,18 +902,20 @@
         "nixpkgs": [
           "nixpkgs"
         ],
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794008256,
-        "narHash": "sha256-oTJvjw3nTANxMxGZnOsJthhdhaaYnrupYakIxs2NHFk=",
+        "lastModified": 1794213683,
+        "narHash": "sha256-8HUGi2MA2sF1UiutO6n/RTrHZUvWEYTiwUgyHVFFbuU=",
         "owner": "sachahjkl",
         "repo": "shojiwm-win7",
-        "rev": "fb605091158f552fc6560ecc0b8597764a758d58",
+        "rev": "0d0e91aeecebd6b0a459e46c4de31c4be8330487",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
+        "ref": "aero-rework",
         "repo": "shojiwm-win7",
         "type": "github"
       }
