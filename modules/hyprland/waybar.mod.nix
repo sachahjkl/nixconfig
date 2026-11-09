@@ -206,9 +206,10 @@
 
     systemd.user.services.waybar = {
       description = "Waybar status bar";
-      wantedBy = ["graphical-session.target"];
-      after = ["graphical-session.target"];
-      partOf = ["graphical-session.target"];
+      # The Hyprland session only: other compositors have their own bar.
+      wantedBy = ["wayland-session@hyprland.desktop.target"];
+      after = ["wayland-session@hyprland.desktop.target"];
+      partOf = ["wayland-session@hyprland.desktop.target"];
       serviceConfig = {
         ExecStart = lib.getExe pkgs.waybar;
         Restart = "on-failure";
