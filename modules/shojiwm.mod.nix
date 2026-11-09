@@ -261,6 +261,14 @@
         home = "/var/lib/greeter";
         createHome = true;
       };
+      persist.system.directories = lib.mkIf config.shojiwm.greeter.enable [
+        {
+          directory = "/var/lib/greeter";
+          user = "greeter";
+          group = "greeter";
+          mode = "0700";
+        }
+      ];
 
       systemd.user.tmpfiles.users.${config.userName}.rules = map (name: "L+ ${configHome}/${name} - - - - ${configSource}/${name}") [
         "src"

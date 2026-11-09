@@ -97,6 +97,9 @@ _: {
                 ".gnupg"
                 ".local/share/applications"
                 ".local/share/keyrings"
+                # The trash: on the same filesystem as the files above, so
+                # GLib uses it (on the tmpfs it refused them), and kept.
+                ".local/share/Trash"
                 ".local/state"
                 ".ssh"
                 "Desktop"
