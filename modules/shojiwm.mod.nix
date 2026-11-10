@@ -226,6 +226,18 @@
           overrideStrategy = "asDropin";
           unitConfig.ConditionEnvironment = "!XDG_CURRENT_DESKTOP=ShojiWM";
         };
+        # The portal reads the desktop (XDG_CURRENT_DESKTOP) once, as it
+        # starts. At a log-out uwsm stops it and clears the session's
+        # environment; a program still running then woke it by D-Bus
+        # between the two sessions, without the desktop, and that portal
+        # stayed for the next session: no GlobalShortcuts, so Hex had no
+        # keys. It starts only inside a graphical session now; a call
+        # before fails, and the next one, in the session, starts it right.
+        xdg-desktop-portal = {
+          overrideStrategy = "asDropin";
+          requisite = ["graphical-session.target"];
+          after = ["graphical-session.target"];
+        };
       };
 
       # The log-on screen keeps the last session chosen in the greeter's
