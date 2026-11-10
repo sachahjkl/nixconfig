@@ -477,6 +477,31 @@
         "type": "github"
       }
     },
+    "inspecteur": {
+      "inputs": {
+        "git-hooks": [
+          "git-hooks"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794309478,
+        "narHash": "sha256-C4fgKLC6dx8z2HknKjD1L0ms/Vw8am3Je/YV0jcfe6c=",
+        "ref": "refs/heads/main",
+        "rev": "07502c6e89366b0cca3a9084fdd1ca685386194b",
+        "revCount": 41,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/sachahjkl/inspecteur"
+      },
+      "original": {
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/sachahjkl/inspecteur"
+      }
+    },
     "llm-agents": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -830,6 +855,7 @@
         "hjem-rum": "hjem-rum",
         "hokum": "hokum",
         "home-manager": "home-manager",
+        "inspecteur": "inspecteur",
         "llm-agents": "llm-agents",
         "mt7927": "mt7927",
         "nix-index-database": "nix-index-database",

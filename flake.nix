@@ -132,6 +132,15 @@
       inputs.git-hooks.follows = "git-hooks";
     };
 
+    # inspecteur, the task manager of the Windows 7 configuration
+    # (github:sachahjkl/inspecteur). git+https: a github: URL leaves its
+    # gui_toolkit submodule out.
+    inspecteur = {
+      url = "git+https://github.com/sachahjkl/inspecteur?submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.git-hooks.follows = "git-hooks";
+    };
+
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     skills = {

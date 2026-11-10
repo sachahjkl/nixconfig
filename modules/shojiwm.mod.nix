@@ -154,8 +154,8 @@
             SHOJIWM_WIN7_OUTPUTS = outputRules;
             # The terminal the keys and the desktop open: the system's own.
             SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
-            # Ctrl+Shift+Escape and the clock's menu: Mission Center.
-            SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- missioncenter";
+            # Ctrl+Shift+Escape, the bar's and the clock's menus: inspecteur.
+            SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- inspecteur";
             # The CPU Meter gadget's button: btop in Ghostty.
             SHOJIWM_WIN7_SYSTEM_MONITOR = "uwsm app -- ghostty -e btop";
             # Super+V: Papier too.
@@ -174,8 +174,12 @@
         # The Windows 7 configuration needs these at run time. Hokum is its
         # command and launcher only (see hokumCommand).
         systemPackages =
-          (with pkgs; [
-            mission-center
+          [
+            # The task manager; its package installs its desktop entry and
+            # its icons.
+            inputs.inspecteur.packages.${pkgs.stdenv.hostPlatform.system}.default
+          ]
+          ++ (with pkgs; [
             # The Aero icon theme inherits Oxygen.
             kdePackages.oxygen-icons
             inter
