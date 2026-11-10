@@ -41,7 +41,7 @@ _: {
         "x-scheme-handler/http"
         "x-scheme-handler/https"
       ];
-      "thunar.desktop" = ["inode/directory"];
+      "classeur.desktop" = ["inode/directory"];
       "org.gnome.gThumb.desktop" = [
         "image/avif"
         "image/bmp"

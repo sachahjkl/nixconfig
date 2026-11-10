@@ -10,6 +10,7 @@ lib.systems.nixosSystem "house-laptop" {
       self.nixosModules.workstation
       self.nixosModules.hyprland
       self.nixosModules.papier
+      self.nixosModules.classeur
       self.nixosModules.mt7927
       self.nixosModules.house-laptop-hardware
     ];

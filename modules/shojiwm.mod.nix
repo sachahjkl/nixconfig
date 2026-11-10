@@ -154,6 +154,8 @@
             SHOJIWM_WIN7_OUTPUTS = outputRules;
             # The terminal the keys and the desktop open: the system's own.
             SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
+            # The file manager the keys and the desktop open: Classeur.
+            SHOJIWM_WIN7_FILE_MANAGER = "uwsm app -- classeur";
             # Ctrl+Shift+Escape, the bar's and the clock's menus: inspecteur.
             SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- inspecteur";
             # The CPU Meter gadget's button: inspecteur, on its Performance section.

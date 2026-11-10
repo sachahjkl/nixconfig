@@ -126,6 +126,11 @@
     # it keeps its own nixpkgs, as Hex does.
     hokum.url = "github:anomalyco/hokum";
 
+    classeur = {
+      url = "git+https://github.com/sachahjkl/classeur?submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     papier = {
       url = "git+https://github.com/sachahjkl/papier?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
