@@ -919,11 +919,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794310541,
-        "narHash": "sha256-hey/n/GSyPQY03S2RNcWMiu2/lsFpXsYP8/WFzq6vp8=",
+        "lastModified": 1794344239,
+        "narHash": "sha256-1IHAddvse9jmrkiBsV1rVucvrPx17Z6Gkt7a/UPKMvc=",
         "owner": "sachahjkl",
         "repo": "shojiwm-win7",
-        "rev": "3e85c074612cb80142a660e2b0296ad0c53612ba",
+        "rev": "15fb97a5785d69d44b64ff5b7fed2144898f1ed8",
         "type": "github"
       },
       "original": {
