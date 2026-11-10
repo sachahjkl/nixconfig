@@ -980,11 +980,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794344810,
-        "narHash": "sha256-IzZfNjLi6ek/2XTqx7Y+pFvOAWC6C5v0gfIKxqdGzRE=",
+        "lastModified": 1794346133,
+        "narHash": "sha256-86md6VEFxK1CAIsGjl/JXPlq7nQ8UGAg33uP8Q6h1c8=",
         "owner": "sachahjkl",
         "repo": "shojiwm-win7",
-        "rev": "4097697611b9617bf6465de8add19ac9ef298b46",
+        "rev": "d97288a1a4677d3aa87875528f25dc8186d855c2",
         "type": "github"
       },
       "original": {
