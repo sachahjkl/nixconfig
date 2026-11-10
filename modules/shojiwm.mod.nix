@@ -201,61 +201,76 @@
         config.shojiwm."org.freedesktop.impl.portal.GlobalShortcuts" = ["shojiwm-win7"];
       };
 
-      # Hokum shows the notifications in the ShojiWM session; dunst keeps
-      # them in Hyprland. The service starts with the session, stops a dunst
-      # left from a Hyprland session (it holds the name and does not give it
-      # up), and takes the name.
-      #
-      # No Conflicts= with dunst: it works both ways, so the first
-      # notification that D-Bus-activated dunst stopped Hokum. dunst does not
-      # start in a ShojiWM session instead.
-      systemd.user.services = {
-        hokum-shojiwm = {
-          description = "Hokum notifications in the ShojiWM session";
-          wantedBy = ["wayland-session@shojiwm.desktop.target"];
-          partOf = ["wayland-session@shojiwm.desktop.target"];
-          after = ["wayland-session@shojiwm.desktop.target" "dunst.service"];
-          serviceConfig = {
-            # "-": without dunst installed, the stop fails and that is fine.
-            ExecStartPre = "-${pkgs.systemd}/bin/systemctl --user stop dunst.service";
-            ExecStart = "${lib.getExe hokum} service --replace";
-            Restart = "on-failure";
+      systemd = {
+        # Hokum shows the notifications in the ShojiWM session; dunst keeps
+        # them in Hyprland. The service starts with the session, stops a dunst
+        # left from a Hyprland session (it holds the name and does not give it
+        # up), and takes the name.
+        #
+        # No Conflicts= with dunst: it works both ways, so the first
+        # notification that D-Bus-activated dunst stopped Hokum. dunst does not
+        # start in a ShojiWM session instead.
+        user.services = {
+          hokum-shojiwm = {
+            description = "Hokum notifications in the ShojiWM session";
+            wantedBy = ["wayland-session@shojiwm.desktop.target"];
+            partOf = ["wayland-session@shojiwm.desktop.target"];
+            after = ["wayland-session@shojiwm.desktop.target" "dunst.service"];
+            serviceConfig = {
+              # "-": without dunst installed, the stop fails and that is fine.
+              ExecStartPre = "-${pkgs.systemd}/bin/systemctl --user stop dunst.service";
+              ExecStart = "${lib.getExe hokum} service --replace";
+              Restart = "on-failure";
+            };
           };
-        };
-        # xdg-desktop-portal reads the desktop's portals.conf at its start, by
-        # XDG_CURRENT_DESKTOP. Between two sessions (the user manager lives on:
-        # another login keeps it), a call over D-Bus starts it without that
-        # variable, and it then offers no GlobalShortcuts: Hex binds no key.
-        # Once the session's variables are in, before graphical-session.target
-        # (Hex starts after it), it is started again if it runs.
-        portal-for-shojiwm = {
-          description = "xdg-desktop-portal again with the ShojiWM session's variables";
-          wantedBy = ["wayland-session@shojiwm.desktop.target"];
-          after = ["wayland-wm@shojiwm.desktop.service"];
-          before = ["graphical-session.target" "wayland-session@shojiwm.desktop.target"];
-          serviceConfig = {
-            Type = "oneshot";
-            ExecStart = "${pkgs.systemd}/bin/systemctl --user try-restart xdg-desktop-portal.service";
+          # xdg-desktop-portal reads the desktop's portals.conf at its start, by
+          # XDG_CURRENT_DESKTOP. Between two sessions (the user manager lives on:
+          # another login keeps it), a call over D-Bus starts it without that
+          # variable, and it then offers no GlobalShortcuts: Hex binds no key.
+          # Once the session's variables are in, before graphical-session.target
+          # (Hex starts after it), it is started again if it runs.
+          portal-for-shojiwm = {
+            description = "xdg-desktop-portal again with the ShojiWM session's variables";
+            wantedBy = ["wayland-session@shojiwm.desktop.target"];
+            after = ["wayland-wm@shojiwm.desktop.service"];
+            before = ["graphical-session.target" "wayland-session@shojiwm.desktop.target"];
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${pkgs.systemd}/bin/systemctl --user try-restart xdg-desktop-portal.service";
+            };
           };
+          # A drop-in on the unit dunst's package installs; a whole unit here
+          # would have no ExecStart.
         };
-        # A drop-in on the unit dunst's package installs; a whole unit here
-        # would have no ExecStart.
-        dunst = {
-          overrideStrategy = "asDropin";
-          unitConfig.ConditionEnvironment = "!XDG_CURRENT_DESKTOP=ShojiWM";
-        };
-        # The portal reads the desktop (XDG_CURRENT_DESKTOP) once, as it
-        # starts. At a log-out uwsm stops it and clears the session's
-        # environment; a program still running then woke it by D-Bus
-        # between the two sessions, without the desktop, and that portal
-        # stayed for the next session: no GlobalShortcuts, so Hex had no
-        # keys. It starts only inside a graphical session now; a call
-        # before fails, and the next one, in the session, starts it right.
-        xdg-desktop-portal = {
-          overrideStrategy = "asDropin";
-          requisite = ["graphical-session.target"];
-          after = ["graphical-session.target"];
-        };
+
+        # Drop-ins on units that packages install, as plain files: NixOS's
+        # service options would write each with a PATH of its own (coreutils,
+        # grep, sed, systemd), which the program then lives with. The portal had
+        # it, and GIO, finding no browser on it, offered no app for a link.
+        #
+        # - dunst: not in a ShojiWM session, where Hokum has the notifications.
+        # - xdg-desktop-portal: only inside a graphical session. It reads the
+        #   desktop (XDG_CURRENT_DESKTOP) once, as it starts; woken by D-Bus
+        #   between two sessions it had none, and kept no GlobalShortcuts for
+        #   the next one (Hex had no keys). A call before fails; the next one,
+        #   in the session, starts it right.
+        packages = [
+          (pkgs.writeTextDir "lib/systemd/user/dunst.service.d/shojiwm.conf" ''
+            [Unit]
+            ConditionEnvironment=!XDG_CURRENT_DESKTOP=ShojiWM
+          '')
+          (pkgs.writeTextDir "lib/systemd/user/xdg-desktop-portal.service.d/session.conf" ''
+            [Unit]
+            Requisite=graphical-session.target
+            After=graphical-session.target
+          '')
+        ];
+
+        user.tmpfiles.users.${config.userName}.rules = map (name: "L+ ${configHome}/${name} - - - - ${configSource}/${name}") [
+          "src"
+          "assets"
+          "shell"
+        ];
       };
 
       # The log-on screen keeps the last session chosen in the greeter's
@@ -282,12 +297,6 @@
           group = "greeter";
           mode = "0700";
         }
-      ];
-
-      systemd.user.tmpfiles.users.${config.userName}.rules = map (name: "L+ ${configHome}/${name} - - - - ${configSource}/${name}") [
-        "src"
-        "assets"
-        "shell"
       ];
     };
   };
