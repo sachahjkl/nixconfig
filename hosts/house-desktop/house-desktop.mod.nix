@@ -11,6 +11,7 @@ lib.systems.nixosSystem "house-desktop" {
       self.nixosModules.hyprland
       self.nixosModules.papier
       self.nixosModules.classeur
+      self.nixosModules.bootvine
       self.nixosModules.shojiwm
       self.nixosModules.gaming
       self.nixosModules.mt7927

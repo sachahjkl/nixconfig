@@ -126,6 +126,11 @@
     # it keeps its own nixpkgs, as Hex does.
     hokum.url = "github:anomalyco/hokum";
 
+    bootvine = {
+      url = "git+https://codeberg.org/wvhulle/bootvine";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     classeur = {
       url = "git+https://github.com/sachahjkl/classeur?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
