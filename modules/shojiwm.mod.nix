@@ -156,8 +156,8 @@
             SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
             # Ctrl+Shift+Escape, the bar's and the clock's menus: inspecteur.
             SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- inspecteur";
-            # The CPU Meter gadget's button: btop in Ghostty.
-            SHOJIWM_WIN7_SYSTEM_MONITOR = "uwsm app -- ghostty -e btop";
+            # The CPU Meter gadget's button: inspecteur, on its Performance section.
+            SHOJIWM_WIN7_SYSTEM_MONITOR = "uwsm app -- inspecteur --section performance";
             # Super+V: Papier too.
             SHOJIWM_WIN7_CLIPBOARD = "papier toggle";
             # The dconf profile below: the Aero icon theme in this session.
@@ -218,6 +218,22 @@
             ExecStartPre = "-${pkgs.systemd}/bin/systemctl --user stop dunst.service";
             ExecStart = "${lib.getExe hokum} service --replace";
             Restart = "on-failure";
+          };
+        };
+        # xdg-desktop-portal reads the desktop's portals.conf at its start, by
+        # XDG_CURRENT_DESKTOP. Between two sessions (the user manager lives on:
+        # another login keeps it), a call over D-Bus starts it without that
+        # variable, and it then offers no GlobalShortcuts: Hex binds no key.
+        # Once the session's variables are in, before graphical-session.target
+        # (Hex starts after it), it is started again if it runs.
+        portal-for-shojiwm = {
+          description = "xdg-desktop-portal again with the ShojiWM session's variables";
+          wantedBy = ["wayland-session@shojiwm.desktop.target"];
+          after = ["wayland-wm@shojiwm.desktop.service"];
+          before = ["graphical-session.target" "wayland-session@shojiwm.desktop.target"];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.systemd}/bin/systemctl --user try-restart xdg-desktop-portal.service";
           };
         };
         # A drop-in on the unit dunst's package installs; a whole unit here

@@ -487,11 +487,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794340524,
-        "narHash": "sha256-oU1nhMfhmFiOk9qvIQhfij1SBBB3MpcrN25rVKk+tXU=",
+        "lastModified": 1794344211,
+        "narHash": "sha256-k5zOInp9vPlsfG1zMp+C2qWykwnz4yFU9aDoQzq2qQ8=",
         "ref": "refs/heads/main",
-        "rev": "0199bbabc047a9ff8204138e88e764a16aa56b6c",
-        "revCount": 51,
+        "rev": "c0f25a829aef50e1a4225bae2dc0b14cc77439ca",
+        "revCount": 57,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/inspecteur"
@@ -919,11 +919,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794344239,
-        "narHash": "sha256-1IHAddvse9jmrkiBsV1rVucvrPx17Z6Gkt7a/UPKMvc=",
+        "lastModified": 1794344334,
+        "narHash": "sha256-5J7AdBKj0aMcTQxTUllt6bzQL72c1nrcQoj9N91wrJM=",
         "owner": "sachahjkl",
         "repo": "shojiwm-win7",
-        "rev": "15fb97a5785d69d44b64ff5b7fed2144898f1ed8",
+        "rev": "fb2a6bf16a1922293dcd7ab8873111410673a319",
         "type": "github"
       },
       "original": {
