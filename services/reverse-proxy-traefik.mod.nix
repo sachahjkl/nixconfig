@@ -74,7 +74,11 @@
             };
             websecure = {
               address = "${cfg.address}:443";
-              http.tls.certResolver = "cloudflare";
+              http = {
+                tls.certResolver = "cloudflare";
+                # Every route on this entry point, from every provider, compresses its responses.
+                middlewares = ["compress@file"];
+              };
             };
           };
           certificatesResolvers = {
@@ -163,7 +167,29 @@
 
             routers = {}
             services = {}
-            middlewares = {}
+            # Applied to the whole websecure entry point. Server-sent events must stream
+            # unbuffered, and already-compressed media gains nothing.
+            middlewares = {
+                "compress": {
+                    "compress": {
+                        "encodings": ["zstd", "br", "gzip"],
+                        "excludedContentTypes": [
+                            "text/event-stream",
+                            "image/png",
+                            "image/jpeg",
+                            "image/webp",
+                            "image/avif",
+                            "image/gif",
+                            "font/woff2",
+                            "video/mp4",
+                            "video/webm",
+                            "application/zip",
+                            "application/gzip",
+                            "application/zstd",
+                        ],
+                    }
+                }
+            }
             uses_insecure_transport = False
 
             for host in spec["hosts"].values():
