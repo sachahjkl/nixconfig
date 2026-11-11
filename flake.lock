@@ -474,16 +474,16 @@
     "gui-toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1794418185,
-        "narHash": "sha256-Whyf7VJ6nWXCcIN142NmJRLu4V5SSQZIQJGrAgfGQ20=",
+        "lastModified": 1794430201,
+        "narHash": "sha256-4Ci76ksy+73irZaVRRlIzQ9bBwARFCMcJhwuWLQiC/o=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "4b9c21353fac120d19d981a86f199ceabd7afc17",
+        "rev": "931117f6586a35ed5c00b2ec7c87c15a2b55e4fa",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
-        "ref": "v0.190.1",
+        "ref": "v0.191.1",
         "repo": "gui_toolkit",
         "type": "github"
       }
@@ -601,11 +601,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794420462,
-        "narHash": "sha256-JiCN0cVphvHRmshr9RcIx08zoX4VkBJywsbTm3UivTg=",
+        "lastModified": 1794430706,
+        "narHash": "sha256-1kjTbJasHmA9EfdQS64JqEBiGuxyaig9s2mO8UQs20Q=",
         "ref": "refs/heads/master",
-        "rev": "c1172ad0edb8cfccce79e5416d023af4fb2c30cd",
-        "revCount": 82,
+        "rev": "7391cc0c6099577040803c4ca5313bad49a4f8c5",
+        "revCount": 86,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/inspecteur"
@@ -902,11 +902,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794417621,
-        "narHash": "sha256-VQqDNc/YUo5H02KrWlzIGfRqKWXA1nJ2r9ecXXhuTYc=",
+        "lastModified": 1794430702,
+        "narHash": "sha256-lYimwVoJZ99t/3gfsEO36gkfqfYDMMoryWe2Z19m4zc=",
         "ref": "refs/heads/master",
-        "rev": "7c13715d96338f75cf5b53e69ca8d0af290253c6",
-        "revCount": 87,
+        "rev": "bd1a3394287e7f62f33771dc9f4ddc82c132dd22",
+        "revCount": 94,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/papier"
@@ -1040,11 +1040,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794423730,
-        "narHash": "sha256-nQpo/Neds9mxXxytJsGsEzp0tCYAIoU75nv9vLwKUm4=",
+        "lastModified": 1794433404,
+        "narHash": "sha256-5GuKhDHXugj3pav6fprsyLzqyxSaE04GMkAFDd40FFE=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "37acfb7790be136d90fae814e71a8b3a485ec009",
+        "rev": "13d5a936a73931b8a9637d099d9a06c310d9eb72",
         "type": "github"
       },
       "original": {
