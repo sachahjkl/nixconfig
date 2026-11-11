@@ -5,20 +5,20 @@ _: {
     ...
   }: {
     # Cloudflare's unified CLI (`cf`, not Wrangler), packaged from the npm release.
-    # Update: bump `version`, regenerate ./package-lock.json from the release's
-    # runtime dependencies, then refresh both hashes from the build errors.
+    # Update with `nix run .#update -- cf`. It bumps `version`, regenerates
+    # ./package-lock.json and refreshes both hashes.
     packages.cf = pkgs.buildNpmPackage rec {
       pname = "cf";
-      version = "1.0.0-beta.28";
+      version = "1.0.0-beta.29";
 
       src = pkgs.fetchurl {
         url = "https://registry.npmjs.org/cf/-/cf-${version}.tgz";
-        hash = "sha256-GVAu+BzoufP+6e/CsIfoqD/4ZN7sBV7ZurQ5oQ8l+Ss=";
+        hash = "sha256-kU8D738RYGExOtD2pcghlrzOPTETsIj5mJEz+o3JsKI=";
       };
 
       sourceRoot = "package";
       nodejs = pkgs.nodejs_22;
-      npmDepsHash = "sha256-i5M+zJTIXFJggaWWfmKDmSAT4c6iInhgL195y5u4KIc=";
+      npmDepsHash = "sha256-88M2uJzhTV4Ee48vtKnhliKpFG3CTcIYwySM4YacBSA=";
       npmFlags = ["--ignore-scripts"];
       dontNpmBuild = true;
 

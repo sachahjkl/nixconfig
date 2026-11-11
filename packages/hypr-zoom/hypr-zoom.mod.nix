@@ -1,12 +1,12 @@
 _: {
   perSystem = {pkgs, ...}: {
-    packages.hypr-zoom = pkgs.stdenv.mkDerivation {
+    packages.hypr-zoom = pkgs.stdenv.mkDerivation rec {
       pname = "hypr-zoom";
       version = "0.0.3";
 
       src = pkgs.fetchurl {
-        url = "https://github.com/FShou/hypr-zoom/releases/download/v0.0.3/hypr-zoom";
-        sha256 = "0dv447wz1rwgs2w0r34wa19ahrxya4w8g1xc24lvw75yc3kfamkh";
+        url = "https://github.com/FShou/hypr-zoom/releases/download/v${version}/hypr-zoom";
+        hash = "sha256-cFbl5mC+HL4pEayHhzhRvmeoUlCcjAy40I/n8PkhZDc=";
       };
 
       dontUnpack = true;
