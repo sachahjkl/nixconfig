@@ -1040,11 +1040,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794435933,
-        "narHash": "sha256-iGs2D9Ab2HVO9UgRqjD8pFq0ZfDHnwGGjMRqFsS3wTw=",
+        "lastModified": 1794439194,
+        "narHash": "sha256-fthDFGc97rBlvvXIgyeLai9Zv/PEU2gOvy/fJQOCT2E=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "b6caf4cd830d9a9bca0f132b9e71e99c073de9b9",
+        "rev": "04ad4e38cf483b68a756c035b1232a27f503eb2d",
         "type": "github"
       },
       "original": {
