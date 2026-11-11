@@ -999,11 +999,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794411928,
-        "narHash": "sha256-MTRfv0PE0DkBb5vGt9a+BVTGEudiOdEUsWXtHekQHxY=",
+        "lastModified": 1794416702,
+        "narHash": "sha256-2RtLvWLUvG5x8Vj9xejPoYMt33DjLti8NBb8MIaLjfY=",
         "owner": "sachahjkl",
         "repo": "ShojiWM",
-        "rev": "1393c392514028f92e2e5026d046c98d68c9f27f",
+        "rev": "e0f61dea995ab928c3f11bd7c3fc64bea64f2a4f",
         "type": "github"
       },
       "original": {
@@ -1022,11 +1022,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794406416,
-        "narHash": "sha256-aDgfnDASsCZ4Jxym41D5DIcewTDNtJOJJHnISWqikgg=",
+        "lastModified": 1794419040,
+        "narHash": "sha256-dh6N7PJYI9duqvkQ8mBgosmbbh4En+AAIHQIvP41fRQ=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "4a9646e5907477028d878a8d3b11220bcc84505d",
+        "rev": "7c369de90018f69631f88601fffe1d11cc3efcb4",
         "type": "github"
       },
       "original": {
@@ -1039,11 +1039,11 @@
     "shojiwm-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1794397580,
-        "narHash": "sha256-Q6niGlInYaBHvwCC8kEzRa3FoESagRiIkIZMSY/Ri78=",
+        "lastModified": 1794416702,
+        "narHash": "sha256-2RtLvWLUvG5x8Vj9xejPoYMt33DjLti8NBb8MIaLjfY=",
         "owner": "sachahjkl",
         "repo": "ShojiWM",
-        "rev": "00fa090d9e05e670f6adc263b3ed2e06249275d7",
+        "rev": "e0f61dea995ab928c3f11bd7c3fc64bea64f2a4f",
         "type": "github"
       },
       "original": {
