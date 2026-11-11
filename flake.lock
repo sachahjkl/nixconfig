@@ -471,6 +471,23 @@
         "url": "https://flakehub.com/f/cachix/git-hooks.nix/0.1"
       }
     },
+    "gui-toolkit": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794418185,
+        "narHash": "sha256-Whyf7VJ6nWXCcIN142NmJRLu4V5SSQZIQJGrAgfGQ20=",
+        "owner": "sachahjkl",
+        "repo": "gui_toolkit",
+        "rev": "4b9c21353fac120d19d981a86f199ceabd7afc17",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sachahjkl",
+        "ref": "v0.190.1",
+        "repo": "gui_toolkit",
+        "type": "github"
+      }
+    },
     "hex": {
       "inputs": {
         "home-manager": [
@@ -1016,18 +1033,18 @@
     "shojiwm-desktop": {
       "inputs": {
         "git-hooks": "git-hooks_3",
+        "gui-toolkit": "gui-toolkit",
         "nixpkgs": [
           "nixpkgs"
         ],
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794422379,
-        "narHash": "sha256-s3hCd9tHMnnRlTq0UvARH2m5KBvQctGAjTHCPoPEagU=",
+        "lastModified": 1794422484,
+        "narHash": "sha256-JVwba+2KyYv32/UTHjyXKULr4l6e7IewIs8Z5fAOkWc=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "d34e6aabce156b0bc385ae4679208121b2383805",
-        "submodules": true,
+        "rev": "f7f065340487b13735ec94f8cda6cdb84bacea2f",
         "type": "github"
       },
       "original": {
