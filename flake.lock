@@ -885,11 +885,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794414096,
-        "narHash": "sha256-Lt6ikb4+tepWd9BZ14eE0tsgzVdeRejjiKABY8CVdU0=",
+        "lastModified": 1794414623,
+        "narHash": "sha256-aB/EASGBgC1WsmuLpw8cLDODCRFnDaHDw1IMB+Ek2js=",
         "ref": "refs/heads/master",
-        "rev": "f9ef01153114c5dcf24766c97e524121ff1c6c43",
-        "revCount": 83,
+        "rev": "7b4f9cfaa5aa757f3d90360e51b6242c50b3db39",
+        "revCount": 84,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/papier"
