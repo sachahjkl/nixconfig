@@ -121,8 +121,31 @@ _: {
           };
         };
       };
-      # The service is useless on ephemeral rootfs (already handled by preservation).
-      systemd.services.systemd-machine-id-commit.enable = false;
+      systemd = {
+        # The service is useless on ephemeral rootfs (already handled by preservation).
+        services.systemd-machine-id-commit.enable = false;
+
+        # /tmp is on the tmpfs root: a file there uses memory, and the root is
+        # small. /tmp/disk is a folder of the persistent disk, for large
+        # temporary files (builds, virtual machine disks): TMPDIR=/tmp/disk.
+        # systemd-tmpfiles removes what is older than 7 days.
+        tmpfiles.rules = [
+          "d ${toString config.persist.persistentStoragePath}/tmp-disk 1777 root root 7d"
+        ];
+        mounts = [
+          {
+            description = "Large temporary files, on the persistent disk";
+            what = "${toString config.persist.persistentStoragePath}/tmp-disk";
+            where = "/tmp/disk";
+            type = "none";
+            options = "bind";
+            # The source folder is made by systemd-tmpfiles.
+            after = ["systemd-tmpfiles-setup.service"];
+            requires = ["systemd-tmpfiles-setup.service"];
+            wantedBy = ["multi-user.target"];
+          }
+        ];
+      };
     };
   };
 }
