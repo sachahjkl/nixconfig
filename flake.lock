@@ -1040,16 +1040,15 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794422484,
-        "narHash": "sha256-JVwba+2KyYv32/UTHjyXKULr4l6e7IewIs8Z5fAOkWc=",
+        "lastModified": 1794423730,
+        "narHash": "sha256-nQpo/Neds9mxXxytJsGsEzp0tCYAIoU75nv9vLwKUm4=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "f7f065340487b13735ec94f8cda6cdb84bacea2f",
+        "rev": "37acfb7790be136d90fae814e71a8b3a485ec009",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
-        "ref": "aero-rework",
         "repo": "shojiwm-desktop",
         "type": "github"
       }
