@@ -1022,11 +1022,12 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794419040,
-        "narHash": "sha256-dh6N7PJYI9duqvkQ8mBgosmbbh4En+AAIHQIvP41fRQ=",
+        "lastModified": 1794422379,
+        "narHash": "sha256-s3hCd9tHMnnRlTq0UvARH2m5KBvQctGAjTHCPoPEagU=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "7c369de90018f69631f88601fffe1d11cc3efcb4",
+        "rev": "d34e6aabce156b0bc385ae4679208121b2383805",
+        "submodules": true,
         "type": "github"
       },
       "original": {
