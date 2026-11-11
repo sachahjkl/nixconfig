@@ -1,26 +1,26 @@
 _: {
   perSystem = {pkgs, ...}: let
-    version = "0.4.50";
+    version = "0.4.53";
     platform =
       if pkgs.stdenv.hostPlatform.system == "x86_64-linux"
       then {
         asset = "moshi-hook_Linux_x86_64.tar.gz";
-        hash = "sha256-eTxWsvAsPjQ24vglI7tuFTi//03j7Ji2seknDW8WfaM=";
+        hash = "sha256-kKs5brM+rY0u6Wei3BUI0HrbdJTYsLZKS58PCjWoI0Y=";
       }
       else if pkgs.stdenv.hostPlatform.system == "aarch64-linux"
       then {
         asset = "moshi-hook_Linux_arm64.tar.gz";
-        hash = "sha256-aBmJihE15UVLVNM+7/KDJl3ToRJXFChjJZ3PCK0g530=";
+        hash = "sha256-RdbZ9o2Yo8oVZ7LYFqNcdSPln3ulbALCJa9djBC8BEY=";
       }
       else if pkgs.stdenv.hostPlatform.system == "x86_64-darwin"
       then {
         asset = "moshi-hook_Darwin_x86_64.tar.gz";
-        hash = "sha256-7n/i9tA2/p1sAy6InRVq+FZ+215UhqaH3Q24KSLIFGI=";
+        hash = "sha256-O47WfXSD7tWukskbMFW3xfGREOWJGbbsNZXxTLQh2rA=";
       }
       else if pkgs.stdenv.hostPlatform.system == "aarch64-darwin"
       then {
         asset = "moshi-hook_Darwin_arm64.tar.gz";
-        hash = "sha256-9A08XrCmv4XZOOx4Z197oERt2+LrJz9jGHqL27hZF6U=";
+        hash = "sha256-A+3A8n9c4hm7HPR85xMRGpddhtGw2r2hgWq7Ssjanbs=";
       }
       else throw "Unsupported platform for moshi-hook: ${pkgs.stdenv.hostPlatform.system}";
   in {
