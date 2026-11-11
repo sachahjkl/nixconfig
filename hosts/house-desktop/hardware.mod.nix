@@ -54,5 +54,9 @@
 
     nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
     hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    # ryzen_smu: the SMU's power table, readable by every user, where
+    # Inspecteur finds each core's temperature (k10temp gives only the
+    # package's and the CCD's). Only root can send commands to the SMU.
+    hardware.cpu.amd.ryzen-smu.enable = true;
   };
 }
