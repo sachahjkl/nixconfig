@@ -22,16 +22,16 @@
     # A checkout is linked as is: its files change without a rebuild.
     configSource =
       if config.shojiwm.checkout == null
-      then inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.default
+      then inputs.shojiwm-desktop.packages.${pkgs.stdenv.hostPlatform.system}.default
       else config.shojiwm.checkout;
 
     # The Hyprland monitor rules, `name,mode,position,scale` separated by
-    # `;`, read by src/index.tsx of shojiwm-win7. The value holds no quotes:
+    # `;`, read by src/index.tsx of shojiwm-desktop. The value holds no quotes:
     # the session environment files do not escape them.
     monitors = builtins.filter (monitor: monitor.output != "") (lib.attrByPath ["hyprland" "display" "monitors"] [] config);
     outputRules = lib.concatMapStringsSep ";" (monitor: "${monitor.output},${monitor.mode},${monitor.position},${toString monitor.scale}") monitors;
   in {
-    imports = [inputs.shojiwm.nixosModules.default inputs.shojiwm-win7.nixosModules.greeter];
+    imports = [inputs.shojiwm.nixosModules.default inputs.shojiwm-desktop.nixosModules.greeter];
 
     options.shojiwm = {
       enable = lib.mkEnableOption "the ShojiWM Wayland compositor session with the Windows 7 configuration";
@@ -39,16 +39,16 @@
       checkout = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
-        example = "/home/sacha/Projects/shojiwm-win7";
+        example = "/home/sacha/Projects/shojiwm-desktop";
         description = ''
-          Path of a shojiwm-win7 checkout. If set, ~/.config/shojiwm links to
+          Path of a shojiwm-desktop checkout. If set, ~/.config/shojiwm links to
           this checkout instead of the packaged configuration.
         '';
       };
 
       greeter = {
         enable = lib.mkEnableOption ''
-          the Windows 7 log-on screen of shojiwm-win7 as the display manager,
+          the Windows 7 log-on screen of shojiwm-desktop as the display manager,
           through greetd, instead of ly. It logs userName on, into the session
           chosen in its corner (the last one used, first defaultSession)
         '';
@@ -126,8 +126,8 @@
           # The log-on screen below replaces it.
           ly.enable = lib.mkIf config.shojiwm.greeter.enable false;
         };
-        # shojiwm-win7's log-on screen, with the sessions' screens.
-        shojiwm-win7-greeter = lib.mkIf config.shojiwm.greeter.enable {
+        # shojiwm-desktop's log-on screen, with the sessions' screens.
+        shojiwm-desktop-greeter = lib.mkIf config.shojiwm.greeter.enable {
           enable = true;
           user = config.userName;
           inherit (config.shojiwm.greeter) defaultSession mainScreen;
@@ -150,24 +150,24 @@
             XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
             XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
             # Print Screen in the Windows 7 configuration.
-            SHOJIWM_WIN7_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
-            SHOJIWM_WIN7_OUTPUTS = outputRules;
+            SHOJIWM_DESKTOP_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
+            SHOJIWM_DESKTOP_OUTPUTS = outputRules;
             # The terminal the keys and the desktop open: the system's own.
-            SHOJIWM_WIN7_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
+            SHOJIWM_DESKTOP_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
             # The file manager the keys and the desktop open: Classeur.
-            SHOJIWM_WIN7_FILE_MANAGER = "uwsm app -- classeur";
+            SHOJIWM_DESKTOP_FILE_MANAGER = "uwsm app -- classeur";
             # Ctrl+Shift+Escape, the bar's and the clock's menus: inspecteur.
-            SHOJIWM_WIN7_TASK_MANAGER = "uwsm app -- inspecteur";
+            SHOJIWM_DESKTOP_TASK_MANAGER = "uwsm app -- inspecteur";
             # The CPU Meter gadget's button: inspecteur, on its Performance section.
-            SHOJIWM_WIN7_SYSTEM_MONITOR = "uwsm app -- inspecteur --section performance";
+            SHOJIWM_DESKTOP_SYSTEM_MONITOR = "uwsm app -- inspecteur --section performance";
             # Super+V: Papier too.
-            SHOJIWM_WIN7_CLIPBOARD = "papier toggle";
+            SHOJIWM_DESKTOP_CLIPBOARD = "papier toggle";
             # The dconf profile below: the Aero icon theme in this session.
             DCONF_PROFILE = "shojiwm";
             # Keys for programs that would register them through a
             # GlobalShortcuts portal, which ShojiWM does not have.
             # Hex binds its own keys through the GlobalShortcuts portal below.
-            SHOJIWM_WIN7_KEYS = builtins.toJSON {
+            SHOJIWM_DESKTOP_KEYS = builtins.toJSON {
               # Ctrl+Shift+ù: Papier, the clipboard's history.
               "Ctrl+Shift+ugrave" = "papier toggle";
             };
@@ -186,19 +186,23 @@
             kdePackages.oxygen-icons
             inter
             kitty
-            quickshell
             wl-clipboard
           ])
-          ++ [hokumCommand inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.icon-theme];
+          ++ (with inputs.shojiwm-desktop.packages.${pkgs.stdenv.hostPlatform.system}; [
+            hokumCommand
+            icon-theme
+            # The shell: taskbar, Start menu, desktop, panels, lock screen.
+            shell
+          ]);
       };
 
-      # The GlobalShortcuts portal of shojiwm-win7: programs such as Hex bind
+      # The GlobalShortcuts portal of shojiwm-desktop: programs such as Hex bind
       # their keys through it. ShojiWM's own portal has only ScreenCast. The
       # name is the desktop's in lowercase: xdg-desktop-portal reads
       # shojiwm-portals.conf, where ShojiWM's module puts its own choices.
       xdg.portal = {
-        extraPortals = [inputs.shojiwm-win7.packages.${pkgs.stdenv.hostPlatform.system}.portal];
-        config.shojiwm."org.freedesktop.impl.portal.GlobalShortcuts" = ["shojiwm-win7"];
+        extraPortals = [inputs.shojiwm-desktop.packages.${pkgs.stdenv.hostPlatform.system}.portal];
+        config.shojiwm."org.freedesktop.impl.portal.GlobalShortcuts" = ["shojiwm-desktop"];
       };
 
       systemd = {

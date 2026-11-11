@@ -454,7 +454,7 @@
       "inputs": {
         "flake-compat": "flake-compat_6",
         "nixpkgs": [
-          "shojiwm-win7",
+          "shojiwm-desktop",
           "nixpkgs"
         ]
       },
@@ -964,7 +964,7 @@
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
         "shojiwm": "shojiwm",
-        "shojiwm-win7": "shojiwm-win7",
+        "shojiwm-desktop": "shojiwm-desktop",
         "skills": "skills",
         "sops-nix": "sops-nix",
         "wrapper-modules": "wrapper-modules",
@@ -1013,24 +1013,7 @@
         "type": "github"
       }
     },
-    "shojiwm-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794243673,
-        "narHash": "sha256-0j1pCxeWvirlpDrRqXAxPaXr9F9XjfpBLuVBaPNKeOU=",
-        "owner": "sachahjkl",
-        "repo": "ShojiWM",
-        "rev": "3b130e60f5a447207a881ad0d9647ba5621272e1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "sachahjkl",
-        "ref": "integration",
-        "repo": "ShojiWM",
-        "type": "github"
-      }
-    },
-    "shojiwm-win7": {
+    "shojiwm-desktop": {
       "inputs": {
         "git-hooks": "git-hooks_3",
         "nixpkgs": [
@@ -1039,17 +1022,34 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794399351,
-        "narHash": "sha256-RSwBQDYjSwDRqDBAROinij5H+LnozSDhg0P7TTP6JZc=",
+        "lastModified": 1794406416,
+        "narHash": "sha256-aDgfnDASsCZ4Jxym41D5DIcewTDNtJOJJHnISWqikgg=",
         "owner": "sachahjkl",
-        "repo": "shojiwm-win7",
-        "rev": "04e8f202f465c95d47387ec42d8fd5abf6cb3092",
+        "repo": "shojiwm-desktop",
+        "rev": "4a9646e5907477028d878a8d3b11220bcc84505d",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "ref": "aero-rework",
-        "repo": "shojiwm-win7",
+        "repo": "shojiwm-desktop",
+        "type": "github"
+      }
+    },
+    "shojiwm-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794397580,
+        "narHash": "sha256-Q6niGlInYaBHvwCC8kEzRa3FoESagRiIkIZMSY/Ri78=",
+        "owner": "sachahjkl",
+        "repo": "ShojiWM",
+        "rev": "00fa090d9e05e670f6adc263b3ed2e06249275d7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sachahjkl",
+        "ref": "integration",
+        "repo": "ShojiWM",
         "type": "github"
       }
     },

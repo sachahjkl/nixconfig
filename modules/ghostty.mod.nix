@@ -10,7 +10,7 @@ _: {
     inherit (config) userName;
     terminalTheme = lib.attrByPath ["ghostty" "theme"] config.theme.terminalPalette terminalPreferences;
     # Under ShojiWM the compositor draws Ghostty's frame and its tabs: each
-    # tab is a window of one group (shojiwm-win7, src/groups.ts).
+    # tab is a window of one group (shojiwm-desktop, src/groups.ts).
     shojiwmTabs = lib.attrByPath ["shojiwm" "enable"] false config;
   in {
     config = lib.mkIf enabled {

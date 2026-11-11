@@ -41,7 +41,7 @@ lib.systems.nixosSystem "house-desktop" {
 
     shojiwm = {
       enable = true;
-      checkout = "${config.homeDirectory}/Projects/shojiwm-win7";
+      checkout = "${config.homeDirectory}/Projects/shojiwm-desktop";
       greeter = {
         enable = true;
         mainScreen = "HDMI-A-1";
