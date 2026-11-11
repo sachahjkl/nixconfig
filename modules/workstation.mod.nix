@@ -67,6 +67,10 @@
         }
       ];
       distributedBuilds = lib.mkDefault true;
+      # Local builds are background work: the desktop, its compositor and its programs get the
+      # CPU and the disk first.
+      daemonCPUSchedPolicy = "batch";
+      daemonIOSchedClass = "idle";
     };
 
     # The Nix daemon connects to the build machine as root, and /root is not persistent.
