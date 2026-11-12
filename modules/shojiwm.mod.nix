@@ -140,50 +140,61 @@
       };
 
       environment = {
-        # Folders open in Classeur in this session only. GIO and xdg-mime read
-        # <desktop>-mimeapps.list (XDG_CURRENT_DESKTOP lowercased) before
-        # mimeapps.list; the other sessions keep Thunar.
-        etc."xdg/shojiwm-mimeapps.list".text = ''
-          [Default Applications]
-          inode/directory=classeur.desktop
-        '';
+        etc = {
+          # Folders open in Classeur in this session only. GIO and xdg-mime read
+          # <desktop>-mimeapps.list (XDG_CURRENT_DESKTOP lowercased) before
+          # mimeapps.list; the other sessions keep Thunar.
+          "xdg/shojiwm-mimeapps.list".text = ''
+            [Default Applications]
+            inode/directory=classeur.desktop
+          '';
 
-        # The session's environment, through uwsm's env file for ShojiWM
-        # (XDG_CURRENT_DESKTOP lowercased): uwsm exports it to the systemd
-        # user manager, which starts the compositor.
-        # environment.sessionVariables does not reach it: the manager already
-        # has __NIXOS_SET_ENVIRONMENT_DONE, so the login profile skips
-        # /etc/set-environment.
-        etc."xdg/uwsm/env-shojiwm".text = lib.concatStrings (lib.mapAttrsToList
-          (name: value: "export ${name}=${lib.escapeShellArg value}\n")
-          (lib.filterAttrs (_: value: value != "") {
-            # ShojiWM sets no keymap; libxkbcommon then reads these.
-            XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
-            XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
-            XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
-            # Print Screen in the Windows 7 configuration.
-            SHOJIWM_DESKTOP_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
-            SHOJIWM_DESKTOP_OUTPUTS = outputRules;
-            # The terminal the keys and the desktop open: the system's own.
-            SHOJIWM_DESKTOP_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
-            # The file manager the keys and the desktop open: Classeur.
-            SHOJIWM_DESKTOP_FILE_MANAGER = "uwsm app -- classeur";
-            # Ctrl+Shift+Escape, the bar's and the clock's menus: inspecteur.
-            SHOJIWM_DESKTOP_TASK_MANAGER = "uwsm app -- inspecteur";
-            # The CPU Meter gadget's button: inspecteur, on its Performance section.
-            SHOJIWM_DESKTOP_SYSTEM_MONITOR = "uwsm app -- inspecteur --section performance";
-            # Super+V: Papier too.
-            SHOJIWM_DESKTOP_CLIPBOARD = "papier toggle";
-            # The dconf profile below: the Aero icon theme in this session.
-            DCONF_PROFILE = "shojiwm";
-            # Keys for programs that would register them through a
-            # GlobalShortcuts portal, which ShojiWM does not have.
-            # Hex binds its own keys through the GlobalShortcuts portal below.
-            SHOJIWM_DESKTOP_KEYS = builtins.toJSON {
-              # Ctrl+Shift+ù: Papier, the clipboard's history.
-              "Ctrl+Shift+ugrave" = "papier toggle";
-            };
-          }));
+          # The shell has its own network icon and panel: nm-applet stays out of this session,
+          # in the others it still starts. /etc/xdg comes first in XDG_CONFIG_DIRS, so this copy
+          # of its autostart entry hides the package's.
+          "xdg/autostart/nm-applet.desktop".source = pkgs.runCommand "nm-applet-not-in-shojiwm.desktop" {} ''
+            sed 's/^NotShowIn=\(.*\)$/NotShowIn=\1ShojiWM;/' \
+              ${pkgs.networkmanagerapplet}/etc/xdg/autostart/nm-applet.desktop > $out
+            grep -q '^NotShowIn=.*ShojiWM;' $out
+          '';
+
+          # The session's environment, through uwsm's env file for ShojiWM
+          # (XDG_CURRENT_DESKTOP lowercased): uwsm exports it to the systemd
+          # user manager, which starts the compositor.
+          # environment.sessionVariables does not reach it: the manager already
+          # has __NIXOS_SET_ENVIRONMENT_DONE, so the login profile skips
+          # /etc/set-environment.
+          "xdg/uwsm/env-shojiwm".text = lib.concatStrings (lib.mapAttrsToList
+            (name: value: "export ${name}=${lib.escapeShellArg value}\n")
+            (lib.filterAttrs (_: value: value != "") {
+              # ShojiWM sets no keymap; libxkbcommon then reads these.
+              XKB_DEFAULT_LAYOUT = config.services.xserver.xkb.layout;
+              XKB_DEFAULT_VARIANT = config.services.xserver.xkb.variant;
+              XKB_DEFAULT_OPTIONS = config.services.xserver.xkb.options;
+              # Print Screen in the Windows 7 configuration.
+              SHOJIWM_DESKTOP_SCREENSHOT = lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot;
+              SHOJIWM_DESKTOP_OUTPUTS = outputRules;
+              # The terminal the keys and the desktop open: the system's own.
+              SHOJIWM_DESKTOP_TERMINAL = lib.attrByPath ["terminal" "command"] "" config;
+              # The file manager the keys and the desktop open: Classeur.
+              SHOJIWM_DESKTOP_FILE_MANAGER = "uwsm app -- classeur";
+              # Ctrl+Shift+Escape, the bar's and the clock's menus: inspecteur.
+              SHOJIWM_DESKTOP_TASK_MANAGER = "uwsm app -- inspecteur";
+              # The CPU Meter gadget's button: inspecteur, on its Performance section.
+              SHOJIWM_DESKTOP_SYSTEM_MONITOR = "uwsm app -- inspecteur --section performance";
+              # Super+V: Papier too.
+              SHOJIWM_DESKTOP_CLIPBOARD = "papier toggle";
+              # The dconf profile below: the Aero icon theme in this session.
+              DCONF_PROFILE = "shojiwm";
+              # Keys for programs that would register them through a
+              # GlobalShortcuts portal, which ShojiWM does not have.
+              # Hex binds its own keys through the GlobalShortcuts portal below.
+              SHOJIWM_DESKTOP_KEYS = builtins.toJSON {
+                # Ctrl+Shift+ù: Papier, the clipboard's history.
+                "Ctrl+Shift+ugrave" = "papier toggle";
+              };
+            }));
+        };
 
         # The Windows 7 configuration needs these at run time. Hokum is its
         # command and launcher only (see hokumCommand).
