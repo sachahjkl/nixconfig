@@ -101,11 +101,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794477315,
-        "narHash": "sha256-uGug4eOtdEZRikRepaZnXjJKkJGin1GpPviEGjhKUDk=",
+        "lastModified": 1794480401,
+        "narHash": "sha256-X/ynGPPFb3UuguPLtOg+TPqR61jRewt8O4+Jq+dY/10=",
         "ref": "refs/heads/master",
-        "rev": "31927745790dbb8c2f9175efc2a5c3e06f9edfb5",
-        "revCount": 180,
+        "rev": "9bb4fdbc9972d1bf747730b421b5fd8c33d7363e",
+        "revCount": 182,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/classeur"
@@ -1040,11 +1040,11 @@
         "shojiwm-src": "shojiwm-src"
       },
       "locked": {
-        "lastModified": 1794475266,
-        "narHash": "sha256-3xFNT0LX/tG2af71+WZoDHkHiBwPp61MWShT0X366oc=",
+        "lastModified": 1794480979,
+        "narHash": "sha256-znxXCRHNvSyukQZcX6EyvChEPnFiFRhc3B+kChPH6T4=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "9b9073d642433ffa011ff3cd986d8ab090dd7ca5",
+        "rev": "f4a99b78e2291e653efb3d0e37e706bdce897400",
         "type": "github"
       },
       "original": {
