@@ -78,7 +78,12 @@ _: {
               "notify-on-command-finish" = "unfocused";
               "notify-on-command-finish-action" = "no-bell,notify";
               "gtk-titlebar" = !shojiwmTabs;
-              "gtk-titlebar-style" = "tabs";
+              # "tabs" brings Ghostty's own bar back even without a title
+              # bar (1.3.1): under ShojiWM, our frame and our tabs alone.
+              "gtk-titlebar-style" =
+                if shojiwmTabs
+                then "native"
+                else "tabs";
               "gtk-tabs-location" = "top";
               "gtk-wide-tabs" = false;
               "window-show-tab-bar" =
