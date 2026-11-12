@@ -307,10 +307,11 @@
           # It runs the agents' sessions: a system switch must not cut them. A new version runs
           # from the next login, or after `systemctl --user restart opencode`.
           restartIfChanged = false;
+          # The session's PATH, which uwsm gives the user manager, not the few tools NixOS puts
+          # in a unit's own PATH: the agents' tools (git, nix, cargo...) come from it.
+          environment.PATH = lib.mkForce null;
           serviceConfig = {
-            # Through the login shell: the programs and environment of a server started from a
-            # terminal (the session's PATH, the user's profiles), which the agents' tools need.
-            ExecStart = "${lib.getExe config.users.users.${config.userName}.shell} -l -c ${lib.escapeShellArg "exec ${lib.getExe wrappedOpenCode} serve --service"}";
+            ExecStart = "${lib.getExe wrappedOpenCode} serve --service";
             WorkingDirectory = "%h";
             Restart = "on-failure";
             RestartSec = 5;
