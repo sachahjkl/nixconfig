@@ -1,5 +1,9 @@
 {lib, ...}: {
-  flake.nixosModules.thunar = {config, ...}: let
+  flake.nixosModules.thunar = {
+    config,
+    pkgs,
+    ...
+  }: let
     helpersRc = ''
       [Configuration]
       TerminalEmulator=${config.terminal.emulatorName}
@@ -41,6 +45,22 @@
     thunarTargetDir = "${configDir}/Thunar";
     thunarTargetFile = "${thunarTargetDir}/uca.xml";
   in {
+    programs = {
+      # Thunar keeps its settings in xfconf.
+      xfconf.enable = true;
+      thunar = {
+        enable = true;
+        plugins = with pkgs; [
+          thunar-archive-plugin
+          thunar-media-tags-plugin
+          thunar-volman
+        ];
+      };
+    };
+
+    # The file manager of every session but ShojiWM's, which has Classeur.
+    xdg.mime.defaultApplications."inode/directory" = "thunar.desktop";
+
     persist.user = lib.mkIf hasPreservation {
       files = [
         ".config/xfce4/helpers.rc"

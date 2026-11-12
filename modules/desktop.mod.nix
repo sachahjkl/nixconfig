@@ -6,6 +6,7 @@
     ...
   }: {
     imports = [
+      self.nixosModules.brave
       self.nixosModules.chromium
       self.nixosModules.face-icon
       self.nixosModules.firefox
@@ -19,8 +20,11 @@
       self.nixosModules.wireplumber
     ];
 
-    apps.chromium.enable = true;
-    apps.firefox.enable = true;
+    apps = {
+      brave.enable = true;
+      chromium.enable = true;
+      firefox.enable = true;
+    };
 
     security = {
       polkit = {
@@ -87,18 +91,6 @@
           default = ["gtk"];
           "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
         };
-      };
-    };
-
-    programs = {
-      xfconf.enable = true;
-      thunar = {
-        enable = true;
-        plugins = with pkgs; [
-          thunar-archive-plugin
-          thunar-media-tags-plugin
-          thunar-volman
-        ];
       };
     };
 

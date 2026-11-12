@@ -31,7 +31,11 @@
     monitors = builtins.filter (monitor: monitor.output != "") (lib.attrByPath ["hyprland" "display" "monitors"] [] config);
     outputRules = lib.concatMapStringsSep ";" (monitor: "${monitor.output},${monitor.mode},${monitor.position},${toString monitor.scale}") monitors;
   in {
-    imports = [inputs.shojiwm.nixosModules.default inputs.shojiwm-desktop.nixosModules.greeter];
+    imports = [
+      inputs.shojiwm.nixosModules.default
+      inputs.shojiwm-desktop.nixosModules.greeter
+      self.nixosModules.classeur
+    ];
 
     options.shojiwm = {
       enable = lib.mkEnableOption "the ShojiWM Wayland compositor session with the Windows 7 configuration";
@@ -136,6 +140,14 @@
       };
 
       environment = {
+        # Folders open in Classeur in this session only. GIO and xdg-mime read
+        # <desktop>-mimeapps.list (XDG_CURRENT_DESKTOP lowercased) before
+        # mimeapps.list; the other sessions keep Thunar.
+        etc."xdg/shojiwm-mimeapps.list".text = ''
+          [Default Applications]
+          inode/directory=classeur.desktop
+        '';
+
         # The session's environment, through uwsm's env file for ShojiWM
         # (XDG_CURRENT_DESKTOP lowercased): uwsm exports it to the systemd
         # user manager, which starts the compositor.

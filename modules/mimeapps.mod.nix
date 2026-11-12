@@ -34,14 +34,6 @@ _: {
         "text/x-shellscript"
         "text/xml"
       ];
-      "chromium-browser.desktop" = [
-        "application/xhtml+xml"
-        "text/html"
-        "x-scheme-handler/chrome"
-        "x-scheme-handler/http"
-        "x-scheme-handler/https"
-      ];
-      "classeur.desktop" = ["inode/directory"];
       "org.gnome.gThumb.desktop" = [
         "image/avif"
         "image/bmp"
