@@ -601,11 +601,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794500343,
-        "narHash": "sha256-5Vk4j0fFgbpS/2F463hfc14JKGaOJ21vjB/OM1PtAI0=",
+        "lastModified": 1794501391,
+        "narHash": "sha256-fX6L2rG++AGdQilXo5bGnAgDtBxHbOlGmYPIt9ehK7o=",
         "ref": "refs/heads/master",
-        "rev": "1fc6bdd83ad2482efbab09be7411dd51f6e48929",
-        "revCount": 99,
+        "rev": "76239e78d079cf4722b7a551baf98b36de177027",
+        "revCount": 100,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/inspecteur"
