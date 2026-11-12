@@ -980,7 +980,6 @@
         "papier": "papier",
         "plasma-manager": "plasma-manager",
         "preservation": "preservation",
-        "shojiwm": "shojiwm",
         "shojiwm-desktop": "shojiwm-desktop",
         "skills": "skills",
         "sops-nix": "sops-nix",
@@ -1012,6 +1011,7 @@
     "shojiwm": {
       "inputs": {
         "nixpkgs": [
+          "shojiwm-desktop",
           "nixpkgs"
         ]
       },
@@ -1032,41 +1032,27 @@
     },
     "shojiwm-desktop": {
       "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
         "git-hooks": "git-hooks_3",
         "gui-toolkit": "gui-toolkit",
         "nixpkgs": [
           "nixpkgs"
         ],
-        "shojiwm-src": "shojiwm-src"
+        "shojiwm": "shojiwm"
       },
       "locked": {
-        "lastModified": 1794504699,
-        "narHash": "sha256-wpKTnVRROPR+GDVNR+salOz1nKIFUbHffl0E618Iyww=",
+        "lastModified": 1794510384,
+        "narHash": "sha256-4l78oeQlwuA35UQhNcAJ1wS/i7t4kXpy3z2vf7RZHOg=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "05d0089193e2b36261450467ee587578a77faa28",
+        "rev": "0ffc52ee8ce69e94627ea167116770c85e79beb0",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "type": "github"
-      }
-    },
-    "shojiwm-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794466710,
-        "narHash": "sha256-0Gv/hXYn4xFXNwmbSOJb04OQXqceKg0rV8OrjIs43JE=",
-        "owner": "sachahjkl",
-        "repo": "ShojiWM",
-        "rev": "a80cf875b45c60a7566655880293164bd5773633",
-        "type": "github"
-      },
-      "original": {
-        "owner": "sachahjkl",
-        "ref": "integration",
-        "repo": "ShojiWM",
         "type": "github"
       }
     },

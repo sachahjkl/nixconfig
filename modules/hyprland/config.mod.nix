@@ -29,7 +29,7 @@
         },
         },
       '')
-      hyprCfg.display.monitors;
+      config.display.monitors;
     monitorConfig = ''
       local monitors = {
       ${monitorRules}
@@ -77,43 +77,6 @@
           type = lib.types.enum ["ignore" "lock" "suspend" "hibernate" "hybrid-sleep" "poweroff"];
           default = "ignore";
           description = "logind action to take when the laptop lid closes while docked.";
-        };
-      };
-
-      display = {
-        monitors = lib.mkOption {
-          type = lib.types.nonEmptyListOf (lib.types.submodule {
-            options = {
-              output = lib.mkOption {
-                type = lib.types.str;
-                default = "";
-              };
-              mode = lib.mkOption {
-                type = lib.types.str;
-                default = "preferred";
-              };
-              position = lib.mkOption {
-                type = lib.types.str;
-                default = "auto";
-              };
-              scale = lib.mkOption {
-                type = lib.types.number;
-                default = 1.875;
-              };
-              colorManagement = lib.mkOption {
-                type = lib.types.str;
-                default = "auto";
-                description = "Hyprland color management preset.";
-              };
-              hdr = lib.mkOption {
-                type = lib.types.nullOr lib.types.bool;
-                default = null;
-                description = "Override HDR support. Null uses automatic detection.";
-              };
-            };
-          });
-          default = [{}];
-          description = "Declarative Hyprland monitor rules.";
         };
       };
 

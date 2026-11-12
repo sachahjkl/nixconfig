@@ -25,11 +25,27 @@ lib.systems.nixosSystem "house-desktop" {
     };
     programs.corectrl.enable = true;
 
-    # scx_lavd gives priority to latency-sensitive tasks, such as games,
-    # the compositor, and audio, when background work loads the CPU.
-    services.scx = {
-      enable = true;
-      scheduler = "scx_lavd";
+    services = {
+      # scx_lavd gives priority to latency-sensitive tasks, such as games,
+      # the compositor, and audio, when background work loads the CPU.
+      scx = {
+        enable = true;
+        scheduler = "scx_lavd";
+      };
+
+      # The ShojiWM session (shojiwm-desktop's module), from the checkout, and
+      # its log-on screen.
+      shojiwm-desktop = {
+        enable = true;
+        checkout = "${config.homeDirectory}/Projects/shojiwm-desktop";
+      };
+      shojiwm-desktop-greeter = {
+        enable = true;
+        mainScreen = "HDMI-A-1";
+        defaultSession = "shojiwm-uwsm";
+      };
+
+      xserver.videoDrivers = ["nvidia"];
     };
 
     ai.codex.enable = false;
@@ -38,28 +54,13 @@ lib.systems.nixosSystem "house-desktop" {
     # Build locally instead of on the homelab build machine from the workstation module.
     nix.distributedBuilds = false;
 
-    shojiwm = {
-      enable = true;
-      checkout = "${config.homeDirectory}/Projects/shojiwm-desktop";
-      greeter = {
-        enable = true;
-        mainScreen = "HDMI-A-1";
-        defaultSession = "shojiwm-uwsm";
-      };
-    };
-
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
 
     terminal.default = "ghostty";
 
     display = {
-      defaultSession = "hyprland-uwsm";
-    };
-
-    hyprland = {
-      numLock.defaultState = true;
-      display.monitors = [
+      monitors = [
         {
           output = "DP-2";
           mode = "2560x1440@180";
@@ -75,9 +76,12 @@ lib.systems.nixosSystem "house-desktop" {
           hdr = false;
         }
       ];
+      defaultSession = "hyprland-uwsm";
     };
 
-    services.xserver.videoDrivers = ["nvidia"];
+    hyprland = {
+      numLock.defaultState = true;
+    };
 
     boot.kernelParams = [
       "nvidia_drm.fbdev=1"

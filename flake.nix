@@ -30,18 +30,15 @@
 
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
 
-    # sachahjkl's fork: upstream main with the fixes that wait for review,
-    # listed in FORK.md on its integration branch.
-    shojiwm = {
-      url = "github:sachahjkl/ShojiWM/integration";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # main, the branch the checkout of house-desktop follows: its portal must speak
-    # the same protocol as the configuration that runs.
+    # the same protocol as the configuration that runs. It brings ShojiWM (the
+    # author's fork, its fixes waiting for review in FORK.md) and its NixOS module.
     shojiwm-desktop = {
       url = "github:sachahjkl/shojiwm-desktop";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
     };
 
     git-hooks = {

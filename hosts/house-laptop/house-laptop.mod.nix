@@ -21,17 +21,17 @@ lib.systems.nixosSystem "house-laptop" {
     terminal.default = "ghostty";
 
     display = {
-      defaultSession = "hyprland-uwsm";
-    };
-    hyprland = {
-      numLock.defaultState = false;
-      laptopMode.enable = true;
-      display.monitors = [
+      monitors = [
         {
           output = "eDP-1";
           scale = 1.25;
         }
       ];
+      defaultSession = "hyprland-uwsm";
+    };
+    hyprland = {
+      numLock.defaultState = false;
+      laptopMode.enable = true;
     };
 
     boot.kernelParams = [
