@@ -53,6 +53,9 @@
     sharedSops.passwordHashSecretName = lib.mkDefault "shared/password-hash";
     network.tailscale.sopsSecretName = lib.mkDefault "tailscale/user-authkey";
 
+    # The OpenCode server starts with the session.
+    opencode.session.enable = true;
+
     nix = {
       buildMachines = [
         {

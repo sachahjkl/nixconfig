@@ -221,6 +221,8 @@
         description = "Settings used only when the writable OpenCode CLI configuration is first created.";
       };
 
+      session.enable = mkEnableOption "the OpenCode server (opencode2 serve --service) as a service of the user's graphical session";
+
       server = {
         enable = mkEnableOption "OpenCode API and web server";
 
@@ -280,14 +282,6 @@
         fi
       '';
 
-      systemd.user.tmpfiles.users.${config.userName}.rules = [
-        "d ${config.homeDirectory}/.config/opencode 0700 - - -"
-        "d ${extensionDirectory} 0700 - - -"
-        "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
-        "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
-        "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
-      ];
-
       assertions = [
         {
           assertion = !cfg.server.enable || cfg.server.passwordFile != null;
@@ -295,22 +289,51 @@
         }
       ];
 
-      systemd.services.opencode = mkIf cfg.server.enable {
-        description = "OpenCode API and web server";
-        wantedBy = ["multi-user.target"];
-        after = ["network-online.target"];
-        wants = ["network-online.target"];
-        environment = {
-          HOME = config.homeDirectory;
+      systemd = {
+        user.tmpfiles.users.${config.userName}.rules = [
+          "d ${config.homeDirectory}/.config/opencode 0700 - - -"
+          "d ${extensionDirectory} 0700 - - -"
+          "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
+          "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
+          "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
+        ];
+
+        # The server the OpenCode apps and terminals attach to, started with the session rather
+        # than by hand from a terminal.
+        user.services.opencode = mkIf cfg.session.enable {
+          description = "OpenCode server of the user's session";
+          wantedBy = ["graphical-session.target"];
+          after = ["graphical-session.target"];
+          # It runs the agents' sessions: a system switch must not cut them. A new version runs
+          # from the next login, or after `systemctl --user restart opencode`.
+          restartIfChanged = false;
+          serviceConfig = {
+            # Through the login shell: the programs and environment of a server started from a
+            # terminal (the session's PATH, the user's profiles), which the agents' tools need.
+            ExecStart = "${lib.getExe config.users.users.${config.userName}.shell} -l -c ${lib.escapeShellArg "exec ${lib.getExe wrappedOpenCode} serve --service"}";
+            WorkingDirectory = "%h";
+            Restart = "on-failure";
+            RestartSec = 5;
+          };
         };
-        serviceConfig = {
-          User = config.userName;
-          Group = "users";
-          WorkingDirectory = config.homeDirectory;
-          ExecStart = opencodeServer;
-          LoadCredential = "password:${cfg.server.passwordFile}";
-          Restart = "on-failure";
-          RestartSec = 5;
+
+        services.opencode = mkIf cfg.server.enable {
+          description = "OpenCode API and web server";
+          wantedBy = ["multi-user.target"];
+          after = ["network-online.target"];
+          wants = ["network-online.target"];
+          environment = {
+            HOME = config.homeDirectory;
+          };
+          serviceConfig = {
+            User = config.userName;
+            Group = "users";
+            WorkingDirectory = config.homeDirectory;
+            ExecStart = opencodeServer;
+            LoadCredential = "password:${cfg.server.passwordFile}";
+            Restart = "on-failure";
+            RestartSec = 5;
+          };
         };
       };
     };
