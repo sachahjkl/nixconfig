@@ -38,6 +38,11 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
+        git-hooks.follows = "git-hooks";
+        # The same programs as the rest of this system: one build of each.
+        inspecteur.follows = "inspecteur";
+        classeur.follows = "classeur";
+        papier.follows = "papier";
       };
     };
 
