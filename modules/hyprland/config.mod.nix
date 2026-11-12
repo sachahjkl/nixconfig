@@ -121,6 +121,9 @@
                 hl.exec_cmd("dbus-update-activation-environment --systemd --all")
                 hl.exec_cmd("hyprpaper")
                 hl.exec_cmd("hypridle")
+                -- The GTK theme is one dconf key for every session, and the
+                -- ShojiWM session writes its own look's there: take this one back.
+                hl.exec_cmd("${lib.getExe' pkgs.dconf "dconf"} write /org/gnome/desktop/interface/gtk-theme \"'${config.theme.gtkTheme}'\"")
             end)
 
             hl.config({
