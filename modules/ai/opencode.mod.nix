@@ -258,6 +258,10 @@
         ".local/share/opencode"
         # the browse MCP server (opencode.jsonc: ~/.local/bin/browse mcp), which updates itself there
         ".local/bin"
+        # its paired browsers and its relay's token: without them the extension must be paired
+        # again after each boot
+        ".config/browse"
+        ".local/share/browse"
       ];
 
       environment = {
@@ -290,31 +294,52 @@
       ];
 
       systemd = {
-        user.tmpfiles.users.${config.userName}.rules = [
-          "d ${config.homeDirectory}/.config/opencode 0700 - - -"
-          "d ${extensionDirectory} 0700 - - -"
-          "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
-          "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
-          "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
-        ];
+        user = {
+          tmpfiles.users.${config.userName}.rules = [
+            "d ${config.homeDirectory}/.config/opencode 0700 - - -"
+            "d ${extensionDirectory} 0700 - - -"
+            "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
+            "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
+            "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
+          ];
 
-        # The server the OpenCode apps and terminals attach to, started with the session rather
-        # than by hand from a terminal.
-        user.services.opencode = mkIf cfg.session.enable {
-          description = "OpenCode server of the user's session";
-          wantedBy = ["graphical-session.target"];
-          after = ["graphical-session.target"];
-          # It runs the agents' sessions: a system switch must not cut them. A new version runs
-          # from the next login, or after `systemctl --user restart opencode`.
-          restartIfChanged = false;
-          # The session's PATH, which uwsm gives the user manager, not the few tools NixOS puts
-          # in a unit's own PATH: the agents' tools (git, nix, cargo...) come from it.
-          environment.PATH = lib.mkForce null;
-          serviceConfig = {
-            ExecStart = "${lib.getExe wrappedOpenCode} serve --service";
-            WorkingDirectory = "%h";
-            Restart = "on-failure";
-            RestartSec = 5;
+          services = {
+            # The server the OpenCode apps and terminals attach to, started with the session rather
+            # than by hand from a terminal.
+            opencode = mkIf cfg.session.enable {
+              description = "OpenCode server of the user's session";
+              wantedBy = ["graphical-session.target"];
+              after = ["graphical-session.target"];
+              # It runs the agents' sessions: a system switch must not cut them. A new version runs
+              # from the next login, or after `systemctl --user restart opencode`.
+              restartIfChanged = false;
+              # The session's PATH, which uwsm gives the user manager, not the few tools NixOS puts
+              # in a unit's own PATH: the agents' tools (git, nix, cargo...) come from it.
+              environment.PATH = lib.mkForce null;
+              serviceConfig = {
+                ExecStart = "${lib.getExe wrappedOpenCode} serve --service";
+                WorkingDirectory = "%h";
+                Restart = "on-failure";
+                RestartSec = 5;
+              };
+            };
+
+            # The browse relay, which the browser's extension and the browse MCP servers connect to,
+            # running with the session instead of started by hand. browse updates itself in
+            # ~/.local/bin and exits for the new version: it comes back at once.
+            browse-relay = mkIf cfg.session.enable {
+              description = "browse relay of the user's session";
+              wantedBy = ["graphical-session.target"];
+              after = ["graphical-session.target"];
+              unitConfig.ConditionPathExists = "%h/.local/bin/browse";
+              # The session's PATH, not the few tools NixOS puts in a unit's own PATH.
+              environment.PATH = lib.mkForce null;
+              serviceConfig = {
+                ExecStart = "%h/.local/bin/browse serve";
+                Restart = "always";
+                RestartSec = 2;
+              };
+            };
           };
         };
 
