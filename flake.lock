@@ -116,6 +116,33 @@
         "url": "https://github.com/sachahjkl/classeur"
       }
     },
+    "cliche": {
+      "inputs": {
+        "git-hooks": [
+          "shojiwm-desktop",
+          "git-hooks"
+        ],
+        "nixpkgs": [
+          "shojiwm-desktop",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794516773,
+        "narHash": "sha256-HSDGLPzRj3wWt0/QvSRa6ynBZz0qng2go/A0DkpqY94=",
+        "ref": "refs/heads/master",
+        "rev": "e76a5326479ee072a4834318c38eb002f82acc3f",
+        "revCount": 14,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/sachahjkl/cliche"
+      },
+      "original": {
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/sachahjkl/cliche"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1790899423,
@@ -995,6 +1022,10 @@
     },
     "shojiwm-desktop": {
       "inputs": {
+        "classeur": [
+          "classeur"
+        ],
+        "cliche": "cliche",
         "flake-parts": [
           "flake-parts"
         ],
@@ -1002,17 +1033,23 @@
           "git-hooks"
         ],
         "gui-toolkit": "gui-toolkit",
+        "inspecteur": [
+          "inspecteur"
+        ],
         "nixpkgs": [
           "nixpkgs"
+        ],
+        "papier": [
+          "papier"
         ],
         "shojiwm": "shojiwm"
       },
       "locked": {
-        "lastModified": 1794514763,
-        "narHash": "sha256-bAE2uQoiNewyosBmsJu6/IMZ3zaOZ143UoHWt7s5HtA=",
+        "lastModified": 1794518929,
+        "narHash": "sha256-GQZlFmDyRN8YyNdSWsjlU+w1TzLiPWw8zoIJ4iaJFDs=",
         "owner": "sachahjkl",
         "repo": "shojiwm-desktop",
-        "rev": "1b51ceb7fb3f1a9ba2f8cc8f693e52c7120d253d",
+        "rev": "2db315b1017873b10897d8bd318220f61d8f6e7d",
         "type": "github"
       },
       "original": {
