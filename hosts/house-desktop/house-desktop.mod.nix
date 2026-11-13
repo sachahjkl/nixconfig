@@ -58,6 +58,8 @@ lib.systems.nixosSystem "house-desktop" {
     ssh.identityKey = "~/.ssh/far-from-home";
 
     terminal.default = "kitty";
+    # foot at hand too, configured like the default one.
+    terminal.foot.enable = true;
 
     display = {
       monitors = [

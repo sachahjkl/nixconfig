@@ -12,6 +12,17 @@
         scratchpadClass = "dropdown.ghostty";
       };
 
+      foot = {
+        id = "foot";
+        command = "uwsm app -- foot";
+        commandWithShell = "foot";
+        desktop = "foot.desktop";
+        emulatorName = "foot";
+        kdeApplication = "foot";
+        openDirCommand = "foot --working-directory %f";
+        scratchpadClass = "dropdown.foot";
+      };
+
       kitty = {
         id = "kitty";
         command = "uwsm app -- kitty";

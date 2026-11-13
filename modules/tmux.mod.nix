@@ -10,6 +10,7 @@ _: {
         set -as terminal-features ',xterm-256color:RGB'
         set -as terminal-features ',xterm-ghostty:RGB'
         set -as terminal-features ',xterm-kitty:RGB'
+        set -as terminal-features ',foot:RGB'
 
         set -g mouse on
         set -g focus-events on
