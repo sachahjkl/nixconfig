@@ -12,14 +12,16 @@
         scratchpadClass = "dropdown.ghostty";
       };
 
+      # footclient: a window of the foot server (foot-server.socket), which
+      # opens at once; -E gives its shell the environment it was started with.
       foot = {
         id = "foot";
-        command = "uwsm app -- foot";
-        commandWithShell = "foot";
+        command = "uwsm app -- footclient -E";
+        commandWithShell = "footclient -E";
         desktop = "foot.desktop";
         emulatorName = "foot";
         kdeApplication = "foot";
-        openDirCommand = "foot --working-directory %f";
+        openDirCommand = "footclient -E --working-directory %f";
         scratchpadClass = "dropdown.foot";
       };
 

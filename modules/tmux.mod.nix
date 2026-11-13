@@ -11,6 +11,8 @@ _: {
         set -as terminal-features ',xterm-ghostty:RGB'
         set -as terminal-features ',xterm-kitty:RGB'
         set -as terminal-features ',foot:RGB'
+        # Images (foot's Sixel) through to the terminal.
+        set -g allow-passthrough on
 
         set -g mouse on
         set -g focus-events on

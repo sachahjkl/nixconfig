@@ -14,6 +14,13 @@ _: {
     colour = lib.removePrefix "#";
   in {
     config = lib.mkIf enabled {
+      # The server (foot --server), started by its socket at the first
+      # footclient of a graphical session: new windows then open at once.
+      # foot's own units; only the socket gets a wantedBy, so the service
+      # keeps the session's PATH.
+      systemd.packages = [config.programs.foot.package];
+      systemd.user.sockets.foot-server.wantedBy = ["graphical-session.target"];
+
       programs.foot = {
         enable = true;
         # OSC 7 and 133: a new window (Ctrl+Shift+N) opens in the shell's
@@ -28,6 +35,9 @@ _: {
           };
           scrollback.lines = 10000;
           mouse.hide-when-typing = "yes";
+          # A new terminal in the shell's folder. Under ShojiWM it opens as a
+          # tab of this window (shojiwm-desktop, TABBED_PROGRAMS).
+          key-bindings.spawn-terminal = "Control+Shift+n Control+Shift+t";
           cursor = {
             style = "beam";
             blink = "no";
