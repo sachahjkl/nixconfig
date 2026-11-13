@@ -10,12 +10,24 @@ lib.systems.nixosSystem "house-desktop" {
       self.nixosModules.workstation
       self.nixosModules.hyprland
       self.nixosModules.papier
+      self.nixosModules.remoteDesktop
       self.nixosModules.bootvine
       self.nixosModules.shojiwm
       self.nixosModules.gaming
       self.nixosModules.mt7927
       self.nixosModules.house-desktop-hardware
     ];
+
+    # This session over VNC, and an XFCE desktop of its own in a browser:
+    # from the local network and Tailscale only.
+    remoteDesktop = {
+      lanInterfaces = ["enp10s0"];
+      wayvnc.enable = true;
+      voxl = {
+        enable = true;
+        hostNames = ["house-desktop" "house-desktop.panthera-python.ts.net"];
+      };
+    };
 
     gaming.steam.gamescopeSession.enable = true;
     gaming.streaming.sunshine = {
