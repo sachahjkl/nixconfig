@@ -57,7 +57,7 @@ lib.systems.nixosSystem "house-desktop" {
     git.signingKey = "~/.ssh/far-from-home.pub";
     ssh.identityKey = "~/.ssh/far-from-home";
 
-    terminal.default = "ghostty";
+    terminal.default = "kitty";
 
     display = {
       monitors = [
