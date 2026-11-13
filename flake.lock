@@ -101,11 +101,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794492222,
-        "narHash": "sha256-EeEPVhc8RpJnlTwiUpoEEWo27EUAsfhFu1jjE8alAHw=",
+        "lastModified": 1794530312,
+        "narHash": "sha256-KC5V3BmVj00fbycJYJw9THmRt8dhYTVmOgV3dUau98M=",
         "ref": "refs/heads/master",
-        "rev": "8ffffd07949ed74db8d17263545f8baa8cfa2b1a",
-        "revCount": 195,
+        "rev": "32f646767cedd6868e2bd6ba7e7f6d36d909b995",
+        "revCount": 197,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/classeur"
