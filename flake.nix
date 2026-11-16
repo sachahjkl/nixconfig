@@ -43,6 +43,7 @@
         inspecteur.follows = "inspecteur";
         classeur.follows = "classeur";
         papier.follows = "papier";
+        cliche.follows = "cliche";
       };
     };
 
@@ -149,6 +150,14 @@
     # gui_toolkit submodule out.
     inspecteur = {
       url = "git+https://github.com/sachahjkl/inspecteur?submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.git-hooks.follows = "git-hooks";
+    };
+
+    # cliche, the screen capture of the desktop (github:sachahjkl/cliche), which
+    # shojiwm-desktop installs: here so that its release is this system's.
+    cliche = {
+      url = "git+https://github.com/sachahjkl/cliche?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.git-hooks.follows = "git-hooks";
     };
