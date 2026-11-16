@@ -61,12 +61,14 @@ Apply these to every task, before you write code:
 
 ## Editing Files
 
-- Use the native file tools for every change of a file: `read`, `edit` and `write`. This rule targets Claude models in particular, which keep editing files with the shell and Python.
-- Do not edit a file with a shell command, `sed`, `awk`, `perl`, `python`, a heredoc or a redirect. That path hides the change, skips the exact-match check and breaks on quoting.
-- Do not write a Python or Node script to patch text. Use `edit` with enough surrounding context to match one location.
+- Use the native file tools for a change that you write by hand: `read`, `edit` and `write`. This rule targets Claude models in particular, which keep editing files with the shell and Python.
+- Do not make a hand edit with a shell command, `sed`, `awk`, `perl`, `python`, a heredoc or a redirect. That path hides the change, skips the exact-match check and breaks on quoting.
+- Do not write a Python or Node script to patch text in one location. Use `edit` with enough surrounding context to match one location.
 - Read a file with `read` before you change it. Change one location with `edit`. Replace a whole file with `write`.
 - Find text with `grep` and find paths with `glob`. Do not call the shell for a search.
-- Use the shell for commands that build, test, run or inspect the system. Do not use it to change a file.
+- Use the shell for commands that build, test, run or inspect the system.
+- If one mechanical transformation applies the same way to many files or locations, use a command that does it: a formatter, `git mv`, the language's rename or refactor tool, a code generator, `ast-grep`, or a precise `sed` over the file list. Do not repeat `edit` file by file for that.
+- Before a batch command, state what it changes. After it, read `git diff` and check each change. If a location needs judgement, change it with `edit`.
 - If a native tool cannot handle the file (a binary, a huge generated file, a file outside the workspace), say why in one sentence, then use the shell.
 
 ## Engineering Principles
@@ -87,6 +89,28 @@ Apply these to every task, before you write code:
 - Write project automation (builds, checks, releases, site, screenshots, CI steps) as commands of the project's Odin tool. Run it with `odin run tools/<tool> -- <command>`. A `build.sh` and a `build.bat` may stay as shortcuts: each only creates the build folder (the compiler does not) and passes its arguments to that command, with no other logic. Do not add other shell, batch, PowerShell, Python or Node scripts. Put the code that several tools share in gui_toolkit.
 - Check dependency documentation and types before deciding that a dependency lacks a capability.
 - Make architectural decisions for the long term. Do not accept temporary solutions that require later replacement.
+- Reorganise folders, files and the functions in them freely when another hierarchy fits better, in gui_toolkit and in the programs.
+- After a release of a program that nixconfig installs, once its CI is green: in nixconfig, run `git pull --rebase --autostash`, then `nix flake update <program>`, commit, push, then `nh os switch --hostname house-desktop --no-nom .`.
+
+## Interface Design
+
+- On one screen, say each piece of information once. A pill, a title, a sentence and a button must not repeat the same fact. Before you show a screen, check each line: if another element already says it, remove the line.
+- Add a sentence only when it says something that the other elements do not say.
+
+## Project Files
+
+Every project has the same set of files. This rule applies to every project, whatever its language or its size.
+
+- Before the first change in a project, check that it has each of these:
+  - `CHANGELOG.md` and `changelog.d/` with a `README.md` that gives the fragment format (see Changelog).
+  - `ROADMAP.md` (see Roadmap).
+  - The intent folder with its `README.md` (see Intent).
+  - The sections `## Changelog`, `## Roadmap` and `## Intent` in the `AGENTS.md` of the project.
+  - The Nix flake and its checks (see Project Nix Setup).
+- If one is missing, create it in the current work, in its own commit, before the commit of the requested change. Do not ask first.
+- A change that a user can see always gets its fragment. If `changelog.d/` does not exist yet, create the set first. Never skip a fragment because the project has no changelog.
+- Write these files in the language of the project's other documentation.
+- If the project has no tool that checks or assembles these files yet, add that work to its `ROADMAP.md`.
 
 ## Changelog
 
@@ -101,7 +125,7 @@ Apply these to every task, before you write code:
 ## Roadmap
 
 - Keep a `ROADMAP.md` at the root of each project, next to `CHANGELOG.md`. It holds the planned work of that project. Do not keep a project's plans in a global to-do file.
-- If the project has no roadmap, create it during the current work. Move the project's entries from `~/Desktop/TODO.txt` into it, then delete them there.
+- If the project has no roadmap, create it during the current work. There is no global to-do file: a plan that touches several programs goes in the roadmap of gui_toolkit.
 - Write plain Markdown that a reader understands without a tool: no YAML, no front matter, no metadata fields.
 - Use this shape: the title `# Roadmap`, then the sections `## Now`, `## Next` and `## Later`, in this order. Each section is a list. Give no dates.
 - Start each entry with a short bold summary, then one or two sentences on what it gives the user. If a design exists, link its intent file in `src/md`.
