@@ -4,8 +4,10 @@
   #   RSA-AES encryption and a password. A user service of the graphical
   #   session: it starts and stops with it.
   # - voxl: a desktop of its own (XFCE on a virtual X display), in a browser
-  #   over HTTPS with a password. System services, up from boot, with no
-  #   session needed.
+  #   over HTTPS with a password. System services with no session needed:
+  #   systemd listens on the port, and the first connection starts voxl, the
+  #   display and XFCE. They stop 30 minutes after the last connection ends,
+  #   so XFCE does not run while nobody uses it.
   # The passwords are SOPS secrets (secrets/shared.yaml, remote-desktop/*).
   flake.nixosModules.remoteDesktop = {
     config,
@@ -86,6 +88,21 @@
       Restart = "always";
       RestartSec = 3;
     };
+    # voxl itself listens here, on the loopback only; the socket on the
+    # public port hands connections to it.
+    voxlInnerPort = cfg.voxl.port + 1;
+    waitForVoxl = pkgs.writeShellScript "voxl-wait-for-port" ''
+      # The first connection waits in the socket until voxl takes connections,
+      # 15 s at most.
+      for _ in $(seq 1 150); do
+        ${pkgs.iproute2}/bin/ss -Htln "sport = :${toString voxlInnerPort}" | grep -q . && exit 0
+        sleep 0.1
+      done
+      echo "voxl does not listen on ${toString voxlInnerPort} after 15 s" >&2
+      exit 1
+    '';
+    # Without one, nothing keeps voxl and XFCE up: they stop with the proxy.
+    onDemand.StopWhenUnneeded = true;
   in {
     options.remoteDesktop = {
       lanInterfaces = lib.mkOption {
@@ -181,10 +198,26 @@
         };
         environment.systemPackages = xfce ++ [selfPackages.voxl];
 
+        systemd.sockets.voxl-proxy = {
+          description = "The port of voxl, which starts it on the first connection";
+          wantedBy = ["sockets.target"];
+          listenStreams = [(toString cfg.voxl.port)];
+        };
+
         systemd.services = {
+          voxl-proxy = {
+            description = "Hands the voxl port's connections to voxl, and ends when idle";
+            requires = ["voxl.service"];
+            after = ["voxl.service"];
+            serviceConfig = {
+              ExecStart = "${config.systemd.package}/lib/systemd/systemd-socket-proxyd --exit-idle-time=30min 127.0.0.1:${toString voxlInnerPort}";
+              DynamicUser = true;
+            };
+          };
+
           voxl-display = {
             description = "The virtual X display of the voxl desktop";
-            wantedBy = ["multi-user.target"];
+            unitConfig = onDemand;
             serviceConfig =
               {
                 User = userName;
@@ -197,7 +230,7 @@
 
           voxl-desktop = {
             description = "The XFCE desktop of voxl";
-            wantedBy = ["multi-user.target"];
+            unitConfig = onDemand;
             bindsTo = ["voxl-display.service"];
             after = ["voxl-display.service"];
             environment = voxlEnvironment;
@@ -215,8 +248,9 @@
 
           voxl = {
             description = "voxl, the voxl desktop in a browser";
-            wantedBy = ["multi-user.target"];
+            unitConfig = onDemand;
             bindsTo = ["voxl-display.service"];
+            wants = ["voxl-desktop.service"];
             after = ["voxl-display.service" "network.target"];
             environment =
               voxlEnvironment
@@ -228,10 +262,11 @@
                 User = userName;
                 Group = "users";
                 EnvironmentFile = config.sops.templates."voxl.env".path;
+                ExecStartPost = waitForVoxl;
                 ExecStart = lib.concatStringsSep " " [
                   (lib.getExe selfPackages.voxl)
-                  "--addr=0.0.0.0"
-                  "--port=${toString cfg.voxl.port}"
+                  "--addr=127.0.0.1"
+                  "--port=${toString voxlInnerPort}"
                   "--tls"
                   "--allowed-hosts=${lib.concatStringsSep "," cfg.voxl.hostNames}"
                   # The sound would be the user's session's, not this desktop's.
