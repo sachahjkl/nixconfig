@@ -101,11 +101,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794869621,
-        "narHash": "sha256-VMxUajtmwEFUTQECmLgwASs582KwI7NG3DtJAirOvTI=",
+        "lastModified": 1794919697,
+        "narHash": "sha256-9W3RxRWs8oCs/Z2CbtcqGRxRUJzYvo2WOzjCD62570Y=",
         "ref": "refs/heads/master",
-        "rev": "cf0189552cb5e43169a1c0f90f89c8ae5e28c2c3",
-        "revCount": 283,
+        "rev": "8315eb3639889247207b82532f2c8dd456903c33",
+        "revCount": 296,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/classeur"
@@ -126,11 +126,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794867777,
-        "narHash": "sha256-ph9h1SlHTb76yOyDtyM+uR2ZWjJ3rmFAQRFGkQ0vVYY=",
+        "lastModified": 1794920061,
+        "narHash": "sha256-gnKrOOJWfqwfCH5b6LQNOULXRTNhfM1WLGiEqEGTgjA=",
         "ref": "refs/heads/master",
-        "rev": "b889d02dc936ef78a5ac84ac6786bc1510473170",
-        "revCount": 118,
+        "rev": "9f4c811ad529ce6a9272505339700c4dd45c156c",
+        "revCount": 125,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/cliche"
@@ -589,11 +589,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794867254,
-        "narHash": "sha256-SQ5dr1PENN3l1Aq/Dxj0ji7+Whn37Ha02wlgcHhsb90=",
+        "lastModified": 1794919795,
+        "narHash": "sha256-C6CBk3W7QXtmw3+3luc0tGCBpVDCWwYNw0MzX+k/6z8=",
         "ref": "refs/heads/master",
-        "rev": "c471dfdd33fc0177758030aed5550e207ee075bc",
-        "revCount": 176,
+        "rev": "a2d23dac1f12a916954c1580553e430b55263ec4",
+        "revCount": 185,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/inspecteur"
@@ -890,11 +890,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794867032,
-        "narHash": "sha256-z6/2+vWTXRNqvnD1EqWTa/8JbPFhwOH0pr6tWxo9nNg=",
+        "lastModified": 1794919040,
+        "narHash": "sha256-Cn/luhhwm1krX33w4OPutix/1IvVwxrwYbnoLJhD5ck=",
         "ref": "refs/heads/master",
-        "rev": "3717ef300b649fcbd913b626f65d545542177d72",
-        "revCount": 201,
+        "rev": "5bf5582263ea71e0f8307cdf78b52a97071ca7d7",
+        "revCount": 209,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/papier"
