@@ -126,11 +126,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794920061,
-        "narHash": "sha256-gnKrOOJWfqwfCH5b6LQNOULXRTNhfM1WLGiEqEGTgjA=",
+        "lastModified": 1794925502,
+        "narHash": "sha256-4FFQ2nRQJOAdau9nczdMTqZ5BoqVvszmCV+7iiAue60=",
         "ref": "refs/heads/master",
-        "rev": "9f4c811ad529ce6a9272505339700c4dd45c156c",
-        "revCount": 125,
+        "rev": "cee026ddae52f51177b591a4fd3dd966c156badb",
+        "revCount": 129,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/cliche"
