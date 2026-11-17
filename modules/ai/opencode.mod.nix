@@ -158,6 +158,9 @@
 
     opencodeWrapper = pkgs.writeShellScriptBin "opencode" ''
       export PATH="${lib.makeBinPath [mcpNixos]}:$PATH"
+      # The Agent SDK labels requests sdk-ts when this is unset, and Anthropic then drains the
+      # 5-hour plan limit about twice as fast (anomalyco/opencode#61072).
+      export CLAUDE_CODE_ENTRYPOINT="''${CLAUDE_CODE_ENTRYPOINT:-opencode}"
       exec ${lib.getExe upstreamOpencode} "$@"
     '';
 
