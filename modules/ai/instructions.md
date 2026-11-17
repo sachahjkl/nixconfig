@@ -157,7 +157,7 @@ Each project follows <https://srcmd.org>. Read that page before the first work o
 
 ## Live Tweeting
 
-- When the work produces something worth showing, post it on my X account (@survotreson) through the `browse` tools. Worth showing means visible and striking: a new feature that works, a nice UI change, a hard bug found or fixed, a release with a real highlight.
+- When the work produces something worth showing, post it on my X account (@sachahjkl) through the `browse` tools. Worth showing means visible and striking: a new feature that works, a nice UI change, a hard bug found or fixed, a release with a real highlight.
 - Do not spam. Post at most a few tweets a day. Do not post routine commits, small fixes, failed attempts, or work in progress that does not work yet.
 - A new tweet is fine. Do not search for an existing thread. Reply to a thread only when you posted it yourself in the same session and the new tweet is its direct continuation.
 - Show, do not explain. Attach a screenshot or a short recording of the program when the change is visual. Add a link to the repository, release, or site when it helps.
