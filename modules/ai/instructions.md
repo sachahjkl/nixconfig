@@ -221,7 +221,7 @@ devShells.default = pkgs.mkShell {
 
 ## Subagent Work
 
-- A subagent that writes code only writes code. It does not build, test, lint, commit, or merge.
+- A subagent that writes code compiles it and runs the fast tests of what it changed before it reports, until both pass. It does not run the long tests (a machine, a full check), commit, or merge.
 - The parent session is the coordinator. It reviews the code of each subagent, or sends the review to a new review subagent for a fresh context.
 - The coordinator runs the final build and tests, then commits and merges.
 - If the review or the build finds problems, the coordinator starts a new round: it sends the corrections to a code subagent, then reviews and builds again.
