@@ -78,6 +78,7 @@ Apply these to every task, before you write code:
   full filters, passes over every item): compute it when the data changes, off the main thread, and keep it. This is
   obvious and not negotiable.
 - Do not preserve backward compatibility. Remove obsolete paths instead of adding compatibility layers, fallbacks, or migrations.
+- Before 1.0, nothing is kept for compatibility: a behaviour, a sentence, a format or an interface changes when a better one is designed. Do not copy an old behaviour only because it exists. A test that the change breaks is read to its cause; if the new behaviour is the right one, change the test, the guide and the changelog fragment, not the code.
 - Choose the simplest implementation that fully meets current requirements. Avoid speculative abstractions, configuration, and indirection.
 - Grow the system in layers. Start with the smallest end-to-end version that works.
 - Add each capability to a product that already works. Never replace working behavior with unfinished complexity.
