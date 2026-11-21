@@ -2,11 +2,13 @@ _: {
   flake.nixosModules.filebrowser = {
     config,
     lib,
+    options,
     pkgs,
     ...
   }: let
     cfg = config.services.filebrowser;
-    inherit (lib) mkIf mkOption types;
+    hasPersistDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
+    inherit (lib) mkIf mkMerge mkOption optionalAttrs types;
   in {
     options.services.filebrowser = {
       adminPasswordFile = mkOption {
@@ -15,20 +17,26 @@ _: {
       };
     };
 
-    config = mkIf cfg.enable {
-      systemd.services.filebrowser.preStart = let
-        database = cfg.settings.database;
-        filebrowser = lib.getExe pkgs.filebrowser;
-      in ''
-        password="$(cat ${lib.escapeShellArg cfg.adminPasswordFile})"
+    config = mkIf cfg.enable (mkMerge [
+      {
+        systemd.services.filebrowser.preStart = let
+          database = cfg.settings.database;
+          filebrowser = lib.getExe pkgs.filebrowser;
+        in ''
+          password="$(cat ${lib.escapeShellArg cfg.adminPasswordFile})"
 
-        if [[ ! -e ${lib.escapeShellArg database} ]]; then
-          ${filebrowser} config init --database ${lib.escapeShellArg database}
-          ${filebrowser} users add admin "$password" --perm.admin --database ${lib.escapeShellArg database}
-        else
-          ${filebrowser} users update admin --password "$password" --database ${lib.escapeShellArg database}
-        fi
-      '';
-    };
+          if [[ ! -e ${lib.escapeShellArg database} ]]; then
+            ${filebrowser} config init --database ${lib.escapeShellArg database}
+            ${filebrowser} users add admin "$password" --perm.admin --database ${lib.escapeShellArg database}
+          else
+            ${filebrowser} users update admin --password "$password" --database ${lib.escapeShellArg database}
+          fi
+        '';
+      }
+
+      (optionalAttrs hasPersistDirs {
+        persist.system.directories = ["/var/lib/filebrowser"];
+      })
+    ]);
   };
 }

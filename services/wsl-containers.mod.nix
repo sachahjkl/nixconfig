@@ -21,7 +21,7 @@ _: {
         description = "Prune rootless Podman resources";
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${pkgs.podman}/bin/podman system prune --force --all --volumes";
+          ExecStart = "${pkgs.podman}/bin/podman system prune --force --all";
         };
       };
 

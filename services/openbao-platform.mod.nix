@@ -14,10 +14,12 @@
   flake.nixosModules.openbaoPlatform = {
     config,
     lib,
+    options,
     pkgs,
     ...
   }: let
     cfg = config.services.openbaoPlatform;
+    hasPersistDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
     certificate = config.security.acme.certs.${cfg.domain}.directory;
     maintenance = pkgs.writeText "openbao-maintenance.py" (builtins.readFile ./openbao_maintenance.py);
   in {
@@ -59,154 +61,161 @@
       };
     };
 
-    config = lib.mkIf cfg.enable {
-      # Pinned like traefik: an automatic id can change and lock OpenBao out of its own raft data.
-      users.groups.openbao.gid = 993;
-      users.users.openbao = {
-        uid = 992;
-        isSystemUser = true;
-        group = "openbao";
-      };
-
-      sops.secrets."openbao/cloudflare-dns" = {
-        inherit (cfg) sopsFile;
-        key = "cloudflare/dns";
-      };
-      security.acme = {
-        acceptTerms = true;
-        certs.${cfg.domain} = {
-          email = cfg.acmeEmail;
-          dnsProvider = "cloudflare";
-          credentialFiles.CF_DNS_API_TOKEN_FILE = config.sops.secrets."openbao/cloudflare-dns".path;
+    config = lib.mkIf cfg.enable (lib.mkMerge [
+      {
+        # Pinned like traefik: an automatic id can change and lock OpenBao out of its own raft data.
+        users.groups.openbao.gid = 993;
+        users.users.openbao = {
+          uid = 992;
+          isSystemUser = true;
           group = "openbao";
-          reloadServices = ["openbao.service"];
         };
-      };
 
-      services.openbao = {
-        enable = true;
-        settings = {
-          ui = true;
-          audit = [
-            {
-              type = "file";
-              path = "host";
-              options.file_path = "${cfg.dataDir}/audit.json";
-            }
+        sops.secrets."openbao/cloudflare-dns" = {
+          inherit (cfg) sopsFile;
+          key = "cloudflare/dns";
+        };
+        security.acme = {
+          acceptTerms = true;
+          certs.${cfg.domain} = {
+            email = cfg.acmeEmail;
+            dnsProvider = "cloudflare";
+            credentialFiles.CF_DNS_API_TOKEN_FILE = config.sops.secrets."openbao/cloudflare-dns".path;
+            group = "openbao";
+            reloadServices = ["openbao.service"];
+          };
+        };
+
+        services.openbao = {
+          enable = true;
+          settings = {
+            ui = true;
+            audit = [
+              {
+                type = "file";
+                path = "host";
+                options.file_path = "${cfg.dataDir}/audit.json";
+              }
+            ];
+            api_addr = "https://${cfg.domain}:8200";
+            cluster_addr = "https://127.0.0.1:8201";
+            storage.raft = {
+              path = "${cfg.dataDir}/raft";
+              node_id = config.networking.hostName;
+            };
+            listener = {
+              private = {
+                type = "tcp";
+                address = "${cfg.address}:8200";
+                cluster_address = "127.0.0.1:8201";
+                tls_cert_file = "${certificate}/fullchain.pem";
+                tls_key_file = "${certificate}/key.pem";
+                tls_min_version = "tls12";
+              };
+              maintenance = {
+                type = "tcp";
+                address = "127.0.0.1:8202";
+                cluster_address = "127.0.0.1:8203";
+                tls_disable = true;
+              };
+            };
+          };
+        };
+
+        networking.firewall.interfaces.${cfg.interface}.allowedTCPPorts = [8200];
+        services.logrotate.settings.openbao-audit = {
+          files = ["${cfg.dataDir}/audit.json"];
+          frequency = "weekly";
+          rotate = 8;
+          compress = true;
+          delaycompress = true;
+          missingok = true;
+          notifempty = true;
+          create = "0600 openbao openbao";
+          postrotate = "${pkgs.systemd}/bin/systemctl kill --kill-whom=main --signal=HUP openbao.service";
+        };
+        systemd = {
+          tmpfiles.rules = [
+            "d ${cfg.dataDir} 0700 openbao openbao -"
+            "d ${cfg.dataDir}/raft 0700 openbao openbao -"
+            # Ownership restored on every boot, file modes left untouched.
+            "Z ${cfg.dataDir} - openbao openbao -"
+            "d ${cfg.secretDir} 0700 root root -"
+            "d ${cfg.snapshotDir} 0700 root root -"
           ];
-          api_addr = "https://${cfg.domain}:8200";
-          cluster_addr = "https://127.0.0.1:8201";
-          storage.raft = {
-            path = "${cfg.dataDir}/raft";
-            node_id = config.networking.hostName;
-          };
-          listener = {
-            private = {
-              type = "tcp";
-              address = "${cfg.address}:8200";
-              cluster_address = "127.0.0.1:8201";
-              tls_cert_file = "${certificate}/fullchain.pem";
-              tls_key_file = "${certificate}/key.pem";
-              tls_min_version = "tls12";
+
+          services = {
+            openbao = {
+              wants = ["network-online.target" "tailscaled.service"];
+              requires = ["acme-${cfg.domain}.service"];
+              after = ["network-online.target" "tailscaled.service" "acme-${cfg.domain}.service"];
+              unitConfig.RequiresMountsFor = [cfg.dataDir];
+              serviceConfig = {
+                DynamicUser = lib.mkForce false;
+                ProtectSystem = "strict";
+                ReadWritePaths = [cfg.dataDir];
+              };
             };
-            maintenance = {
-              type = "tcp";
-              address = "127.0.0.1:8202";
-              cluster_address = "127.0.0.1:8203";
-              tls_disable = true;
+
+            openbao-unseal = {
+              description = "Unseal OpenBao with the local host key";
+              after = ["openbao.service"];
+              unitConfig.ConditionPathExists = "${cfg.secretDir}/unseal-key";
+              serviceConfig = {
+                Type = "oneshot";
+                LoadCredential = "unseal-key:${cfg.secretDir}/unseal-key";
+                ExecStart = "${lib.getExe pkgs.python3} ${maintenance} unseal";
+                User = "root";
+                UMask = "0077";
+                ProtectSystem = "strict";
+                ProtectHome = true;
+                PrivateTmp = true;
+                NoNewPrivileges = true;
+              };
+            };
+
+            openbao-snapshot = {
+              description = "Save a consistent OpenBao Raft snapshot";
+              wants = ["openbao-unseal.service"];
+              after = ["openbao.service" "openbao-unseal.service"];
+              unitConfig.ConditionPathExists = "${cfg.secretDir}/snapshot-approle.json";
+              serviceConfig = {
+                Type = "oneshot";
+                LoadCredential = "snapshot-approle.json:${cfg.secretDir}/snapshot-approle.json";
+                ExecStart = "${lib.getExe pkgs.python3} ${maintenance} snapshot ${lib.escapeShellArg cfg.snapshotDir}";
+                User = "root";
+                UMask = "0077";
+                ProtectSystem = "strict";
+                ReadWritePaths = [cfg.snapshotDir];
+                ProtectHome = true;
+                PrivateTmp = true;
+                NoNewPrivileges = true;
+              };
+            };
+          };
+
+          timers = {
+            openbao-unseal = {
+              wantedBy = ["timers.target"];
+              timerConfig = {
+                OnBootSec = "15s";
+                OnUnitActiveSec = "30s";
+              };
+            };
+            openbao-snapshot = {
+              wantedBy = ["timers.target"];
+              timerConfig = {
+                OnCalendar = "03:30";
+                Persistent = true;
+              };
             };
           };
         };
-      };
+      }
 
-      networking.firewall.interfaces.${cfg.interface}.allowedTCPPorts = [8200];
-      services.logrotate.settings.openbao-audit = {
-        files = ["${cfg.dataDir}/audit.json"];
-        frequency = "weekly";
-        rotate = 8;
-        compress = true;
-        delaycompress = true;
-        missingok = true;
-        notifempty = true;
-        create = "0600 openbao openbao";
-        postrotate = "${pkgs.systemd}/bin/systemctl kill --kill-whom=main --signal=HUP openbao.service";
-      };
-      systemd = {
-        tmpfiles.rules = [
-          "d ${cfg.dataDir} 0700 openbao openbao -"
-          "d ${cfg.dataDir}/raft 0700 openbao openbao -"
-          # Ownership restored on every boot, file modes left untouched.
-          "Z ${cfg.dataDir} - openbao openbao -"
-          "d ${cfg.secretDir} 0700 root root -"
-          "d ${cfg.snapshotDir} 0700 root root -"
-        ];
-
-        services = {
-          openbao = {
-            wants = ["network-online.target"];
-            requires = ["acme-${cfg.domain}.service"];
-            after = ["network-online.target" "acme-${cfg.domain}.service"];
-            unitConfig.RequiresMountsFor = [cfg.dataDir];
-            serviceConfig = {
-              DynamicUser = lib.mkForce false;
-              ProtectSystem = "strict";
-              ReadWritePaths = [cfg.dataDir];
-            };
-          };
-
-          openbao-unseal = {
-            description = "Unseal OpenBao with the local host key";
-            after = ["openbao.service"];
-            unitConfig.ConditionPathExists = "${cfg.secretDir}/unseal-key";
-            serviceConfig = {
-              Type = "oneshot";
-              LoadCredential = "unseal-key:${cfg.secretDir}/unseal-key";
-              ExecStart = "${lib.getExe pkgs.python3} ${maintenance} unseal";
-              User = "root";
-              UMask = "0077";
-              ProtectSystem = "strict";
-              ProtectHome = true;
-              PrivateTmp = true;
-              NoNewPrivileges = true;
-            };
-          };
-
-          openbao-snapshot = {
-            description = "Save a consistent OpenBao Raft snapshot";
-            after = ["openbao.service" "openbao-unseal.service"];
-            unitConfig.ConditionPathExists = "${cfg.secretDir}/snapshot-approle.json";
-            serviceConfig = {
-              Type = "oneshot";
-              LoadCredential = "snapshot-approle.json:${cfg.secretDir}/snapshot-approle.json";
-              ExecStart = "${lib.getExe pkgs.python3} ${maintenance} snapshot ${lib.escapeShellArg cfg.snapshotDir}";
-              User = "root";
-              UMask = "0077";
-              ProtectSystem = "strict";
-              ReadWritePaths = [cfg.snapshotDir];
-              ProtectHome = true;
-              PrivateTmp = true;
-              NoNewPrivileges = true;
-            };
-          };
-        };
-
-        timers = {
-          openbao-unseal = {
-            wantedBy = ["timers.target"];
-            timerConfig = {
-              OnBootSec = "15s";
-              OnUnitActiveSec = "30s";
-            };
-          };
-          openbao-snapshot = {
-            wantedBy = ["timers.target"];
-            timerConfig = {
-              OnCalendar = "03:30";
-              Persistent = true;
-            };
-          };
-        };
-      };
-    };
+      (lib.optionalAttrs hasPersistDirs {
+        persist.system.directories = ["/var/lib/acme"];
+      })
+    ]);
   };
 }

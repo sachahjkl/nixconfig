@@ -54,9 +54,19 @@
         width: 0.65rem;
         height: 0.65rem;
         border-radius: 50%;
+        background: #d7c787;
+        box-shadow: 0 0 1rem #d7c787;
+        content: "";
+      }
+
+      .status[data-state="active"]::before {
         background: #b8f397;
         box-shadow: 0 0 1rem #b8f397;
-        content: "";
+      }
+
+      .status[data-state="error"]::before {
+        background: #f28b82;
+        box-shadow: 0 0 1rem #f28b82;
       }
 
       .grid {
@@ -146,16 +156,25 @@
         }).format(bytes / 1_000_000_000);
 
       fetch("/status.json", { cache: "no-store" })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          return response.json();
+        })
         .then((data) => {
-          document.querySelector("#status").textContent = `Cache ${data.service}`;
-          document.querySelector("#used").textContent = formatBytes(data.usedBytes);
+          const status = document.querySelector("#status");
+          status.textContent = `Cache ${data.service}`;
+          status.dataset.state = data.service === "active" ? "active" : "error";
+          document.querySelector("#used").textContent = `${formatBytes(data.usedBytes)} / ${formatBytes(data.totalBytes)}`;
           document.querySelector("#available").textContent = formatBytes(data.availableBytes);
           document.querySelector("#percent").textContent = data.usedPercent;
           document.querySelector("#updated").textContent = new Date(data.updatedAt).toLocaleString();
         })
         .catch(() => {
-          document.querySelector("#status").textContent = "Status unavailable";
+          const status = document.querySelector("#status");
+          status.textContent = "Status unavailable";
+          status.dataset.state = "error";
         });
     </script>
   </body>

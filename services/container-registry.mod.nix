@@ -8,6 +8,7 @@
     cfg = config.services.containerRegistry;
     certificate = config.security.acme.certs.${cfg.domain}.directory;
     hasK3s = lib.hasAttrByPath ["services" "k3s" "enable"] options;
+    hasPersistDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
     k3sEnabled = lib.attrByPath ["services" "k3s" "enable"] false config;
   in {
     imports = [self.nixosModules.sops];
@@ -140,6 +141,10 @@
           };
         };
       }
+
+      (lib.optionalAttrs hasPersistDirs {
+        persist.system.directories = ["/var/lib/acme"];
+      })
 
       # k3s pulls from the registry with the same account; the file holds the password.
       (lib.optionalAttrs hasK3s {

@@ -58,10 +58,6 @@
   in {
     imports = [
       self.nixosModules.sops
-      (lib.mkChangedOptionModule
-        ["services" "nomadPlatform" "githubActions" "owner"]
-        ["services" "nomadPlatform" "githubActions" "owners"]
-        (oldConfig: [oldConfig.services.nomadPlatform.githubActions.owner]))
     ];
 
     options.services.nomadPlatform = {
@@ -171,7 +167,7 @@
 
       sops = {
         secrets = {
-          "nomad/gossip-key" = {
+          "nomad/gossip-key" = lib.mkIf cfg.server {
             inherit (cfg) sopsFile;
             owner = "root";
             group = "root";
@@ -183,7 +179,7 @@
             group = "traefik";
             mode = "0400";
           };
-          "nomad/management-token" = lib.mkIf (cfg.server && cfg.githubActions.enable) {
+          "nomad/management-token" = lib.mkIf (cfg.server && (cfg.ingress || cfg.githubActions.enable)) {
             inherit (cfg) sopsFile;
             key = "nomad/management-token";
             owner = "root";
@@ -216,7 +212,7 @@
               auths."ghcr.io".auth = config.sops.placeholder."nomad/ghcr-pull-auth";
             };
           };
-          "nomad-secrets.json" = {
+          "nomad-secrets.json" = lib.mkIf cfg.server {
             owner = "root";
             group = "root";
             mode = "0400";
@@ -239,7 +235,7 @@
         dropPrivileges = false;
         enableDocker = true;
         extraPackages = [pkgs.cni-plugins];
-        extraSettingsPaths = [secretFile];
+        extraSettingsPaths = lib.optional cfg.server secretFile;
         settings = {
           name = config.networking.hostName;
           inherit (cfg) datacenter region;
@@ -329,10 +325,10 @@
         };
         traefik = lib.mkIf cfg.ingress {
           after = ["nomad.service"];
-          requires = ["nomad.service"];
+          wants = ["nomad.service"];
         };
-        nomad-github-actions-auth = lib.mkIf (cfg.server && cfg.githubActions.enable) {
-          description = "Configure GitHub Actions authentication in Nomad";
+        nomad-github-actions-auth = lib.mkIf (cfg.server && (cfg.ingress || cfg.githubActions.enable)) {
+          description = "Configure Nomad namespaces, Traefik policy, and GitHub Actions authentication";
           after = ["nomad.service"];
           requires = ["nomad.service"];
           wantedBy = ["multi-user.target"];
@@ -357,64 +353,72 @@
 
             ${lib.concatMapStringsSep "\n" (namespace: ''
                 nomad namespace apply ${lib.escapeShellArg namespace}
-                nomad acl policy apply \
-                  -description "Deploy trusted GitHub repositories to ${namespace}" \
-                  github-actions-deploy-${namespace} ${githubActionsPolicies.${namespace}}
               '')
               cfg.namespaces}
 
-            nomad acl policy apply \
-              -description "Allow Traefik to discover application services" \
-              traefik-service-discovery ${traefikPolicy}
+            ${lib.optionalString cfg.ingress ''
+              nomad acl policy apply \
+                -description "Allow Traefik to discover application services" \
+                traefik-service-discovery ${traefikPolicy}
+            ''}
 
-            if nomad acl policy info github-actions-deploy >/dev/null 2>&1; then
-              nomad acl policy delete github-actions-deploy
-            fi
+            ${lib.optionalString cfg.githubActions.enable ''
+              ${lib.concatMapStringsSep "\n" (namespace: ''
+                  nomad acl policy apply \
+                    -description "Deploy trusted GitHub repositories to ${namespace}" \
+                    github-actions-deploy-${namespace} ${githubActionsPolicies.${namespace}}
+                '')
+                cfg.namespaces}
 
-            auth_method_args=(
-              -type JWT
-              -token-locality local
-              -max-token-ttl 15m
-              -token-name-format "\''${value.repository}"
-              -config @${githubActionsAuthConfig}
-            )
-            if nomad acl auth-method info github-actions >/dev/null 2>&1; then
-              nomad acl auth-method update "''${auth_method_args[@]}" github-actions
-            else
-              nomad acl auth-method create -name github-actions "''${auth_method_args[@]}"
-            fi
+              if nomad acl policy info github-actions-deploy >/dev/null 2>&1; then
+                nomad acl policy delete github-actions-deploy
+              fi
 
-            description="Trusted GitHub deployments"
-            selector=${lib.escapeShellArg githubActionsSelector}
-            rule_id="$(
-              nomad acl binding-rule list -json \
-                | jq -r --arg description "$description" \
-                  '.[] | select(.AuthMethod == "github-actions" and .Description == $description) | .ID' \
-                | head -n 1
-            )"
+              auth_method_args=(
+                -type JWT
+                -token-locality local
+                -max-token-ttl 15m
+                -token-name-format "\''${value.repository}"
+                -config @${githubActionsAuthConfig}
+              )
+              if nomad acl auth-method info github-actions >/dev/null 2>&1; then
+                nomad acl auth-method update "''${auth_method_args[@]}" github-actions
+              else
+                nomad acl auth-method create -name github-actions "''${auth_method_args[@]}"
+              fi
 
-            binding_rule_args=(
-              -description "$description"
-              -selector "$selector"
-              -bind-type policy
-              -bind-name "github-actions-deploy-\''${value.environment}"
-            )
-            if [ -n "$rule_id" ]; then
-              nomad acl binding-rule update "''${binding_rule_args[@]}" "$rule_id"
-            else
-              nomad acl binding-rule create \
-                -auth-method github-actions \
-                "''${binding_rule_args[@]}"
-            fi
+              description="Trusted GitHub deployments"
+              selector=${lib.escapeShellArg githubActionsSelector}
+              rule_id="$(
+                nomad acl binding-rule list -json \
+                  | jq -r --arg description "$description" \
+                    '.[] | select(.AuthMethod == "github-actions" and .Description == $description) | .ID' \
+                  | head -n 1
+              )"
 
-            mapfile -t obsolete_rule_ids < <(
-              nomad acl binding-rule list -json \
-                | jq -r --arg description "$description" \
-                  '.[] | select(.AuthMethod == "github-actions" and .Description != $description) | .ID'
-            )
-            for obsolete_rule_id in "''${obsolete_rule_ids[@]}"; do
-              nomad acl binding-rule delete "$obsolete_rule_id"
-            done
+              binding_rule_args=(
+                -description "$description"
+                -selector "$selector"
+                -bind-type policy
+                -bind-name "github-actions-deploy-\''${value.environment}"
+              )
+              if [ -n "$rule_id" ]; then
+                nomad acl binding-rule update "''${binding_rule_args[@]}" "$rule_id"
+              else
+                nomad acl binding-rule create \
+                  -auth-method github-actions \
+                  "''${binding_rule_args[@]}"
+              fi
+
+              mapfile -t obsolete_rule_ids < <(
+                nomad acl binding-rule list -json \
+                  | jq -r --arg description "$description" \
+                    '.[] | select(.AuthMethod == "github-actions" and .Description != $description) | .ID'
+              )
+              for obsolete_rule_id in "''${obsolete_rule_ids[@]}"; do
+                nomad acl binding-rule delete "$obsolete_rule_id"
+              done
+            ''}
           '';
         };
       };

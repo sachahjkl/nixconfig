@@ -50,7 +50,13 @@ _: {
       criticalAction = mkOption {
         type = types.enum ["log" "poweroff"];
         default = "log";
-        description = "Action when the temperature reaches criticalCelsius.";
+        description = "Action when the temperature stays at or above criticalCelsius.";
+      };
+
+      criticalSamples = mkOption {
+        type = types.ints.positive;
+        default = 3;
+        description = "Consecutive critical samples required before running criticalAction.";
       };
     };
 
@@ -86,6 +92,7 @@ _: {
           action=${escapeShellArg cfg.criticalAction}
           warn=${toString cfg.warnCelsius}
           critical=${toString cfg.criticalCelsius}
+          criticalSamples=${toString cfg.criticalSamples}
           interval=${toString cfg.intervalSeconds}
           reportInterval=${toString cfg.reportIntervalSeconds}
 
@@ -109,10 +116,12 @@ _: {
 
           state=""
           lastReport=0
+          criticalStreak=0
 
           while true; do
-            if ! reading=$(readTemperature); then
-              log err "chip=$chip sensor=$sensor not found"
+            if ! reading=$(readTemperature) || ! [[ "$reading" =~ ^-?[0-9]+$ ]]; then
+              log err "chip=$chip sensor=$sensor unreadable"
+              criticalStreak=0
               sleep "$interval"
               continue
             fi
@@ -121,10 +130,13 @@ _: {
 
             if [ "$celsius" -ge "$critical" ]; then
               next="critical"
+              criticalStreak=$(( criticalStreak + 1 ))
             elif [ "$celsius" -ge "$warn" ]; then
               next="warning"
+              criticalStreak=0
             else
               next="ok"
+              criticalStreak=0
             fi
 
             now=$SECONDS
@@ -138,8 +150,8 @@ _: {
               lastReport=$now
             fi
 
-            if [ "$next" = "critical" ] && [ "$action" = "poweroff" ]; then
-              log err "celsius=$celsius reached critical=$critical, powering off"
+            if [ "$next" = "critical" ] && [ "$action" = "poweroff" ] && [ "$criticalStreak" -ge "$criticalSamples" ]; then
+              log err "celsius=$celsius stayed at or above critical=$critical for $criticalStreak samples, powering off"
               systemctl poweroff
             fi
 

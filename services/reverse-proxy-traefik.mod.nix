@@ -2,11 +2,13 @@
   flake.nixosModules.reverseProxyTraefik = {
     config,
     lib,
+    options,
     pkgs,
     ...
   }: let
     cfg = lib.attrByPath ["services" "reverseProxy"] {} config;
     enabled = cfg.enable or false;
+    hasPersistDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
 
     sanitize = value:
       builtins.replaceStrings ["." "-" "/"] ["_" "_" "_"] value;
@@ -20,7 +22,7 @@
         inherit domain;
         inherit (hostCfg) aliases basicAuthFile dockerContainer dockerPort maxRequestBodyBytes pathRoutes robotsNoIndex scheme upstreamHost upstreamPort;
         certResolver =
-          if usesCloudflareDns domain
+          if builtins.all usesCloudflareDns ([domain] ++ hostCfg.aliases)
           then "cloudflare"
           else "letsencrypt";
         serviceName = "direct-${sanitize domain}";
@@ -34,309 +36,329 @@
   in {
     imports = [self.nixosModules.sops];
 
-    config = lib.mkIf enabled {
-      users.users.traefik.uid = 991;
-      users.groups.traefik.gid = 990;
+    config = lib.mkIf enabled (lib.mkMerge [
+      {
+        users.users.traefik.uid = 991;
+        users.groups.traefik.gid = 990;
 
-      persist.system.directories = ["/var/lib/traefik"];
-
-      sops.secrets."cloudflare/traefik-dns" = {
-        sopsFile = cfg.cloudflareDnsSopsFile;
-        key = cfg.cloudflareDnsSopsKey;
-        owner = "traefik";
-        group = "traefik";
-        mode = "0400";
-      };
-
-      sops.templates."traefik-cloudflare.env" = {
-        owner = "traefik";
-        group = "traefik";
-        mode = "0400";
-        content = ''
-          CF_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/traefik-dns"}
-        '';
-      };
-
-      services.traefik = {
-        dynamicConfigFile = "/run/reverse-proxy/routes.yaml";
-        environmentFiles = [config.sops.templates."traefik-cloudflare.env".path];
-        staticConfigOptions = {
-          api.dashboard = false;
-          entryPoints = {
-            control.address = "${cfg.controlAddress}:8080";
-            web = {
-              address = "${cfg.address}:80";
-              http.redirections.entryPoint = {
-                to = "websecure";
-                scheme = "https";
-                permanent = true;
-              };
-            };
-            websecure = {
-              address = "${cfg.address}:443";
-              http = {
-                tls.certResolver = "cloudflare";
-                # Every route on this entry point, from every provider, compresses its responses.
-                middlewares = ["compress@file"];
-              };
-            };
-          };
-          certificatesResolvers = {
-            cloudflare.acme = {
-              email = cfg.acmeEmail;
-              storage = "/var/lib/traefik/acme-cloudflare.json";
-              dnsChallenge = {
-                provider = "cloudflare";
-                resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
-              };
-            };
-            letsencrypt.acme = {
-              email = cfg.acmeEmail;
-              storage = "/var/lib/traefik/acme-http.json";
-              httpChallenge.entryPoint = "web";
-            };
-          };
+        sops.secrets."cloudflare/traefik-dns" = {
+          sopsFile = cfg.cloudflareDnsSopsFile;
+          key = cfg.cloudflareDnsSopsKey;
+          owner = "traefik";
+          group = "traefik";
+          mode = "0400";
         };
-      };
 
-      networking.firewall.allowedTCPPorts = [80 443];
-      networking.firewall.interfaces.${cfg.controlInterface}.allowedTCPPorts = [8080];
-
-      systemd = {
-        tmpfiles.rules = [
-          "d /run/reverse-proxy 0750 root traefik -"
-          "d /var/lib/traefik 0700 traefik traefik -"
-        ];
-
-        services.reverse-proxy-refresh-routes = {
-          description = "Resolve direct Traefik routes";
-          wants = ["docker.service" "network-online.target"];
-          after = ["docker.service" "network-online.target"];
-          before = ["traefik.service"];
-          wantedBy = ["multi-user.target"];
-          restartTriggers = [routeSpecFile];
-          path = with pkgs; [docker python3];
-          serviceConfig = {
-            Type = "oneshot";
-            UMask = "0027";
-          };
-          script = ''
-            set -euo pipefail
-            export ROUTE_SPEC=${lib.escapeShellArg routeSpecFile}
-            export ROUTE_OUTPUT=/run/reverse-proxy/routes.yaml
-
-            python3 - <<'PY'
-            import grp
-            import json
-            import os
-            import subprocess
-            import time
-
-
-            def docker_address(container):
-                for _ in range(60):
-                    result = subprocess.run(
-                        ["docker", "inspect", container],
-                        capture_output=True,
-                        text=True,
-                    )
-                    if result.returncode == 0:
-                        inspect = result.stdout
-                        break
-                    time.sleep(1)
-                else:
-                    raise RuntimeError(
-                        f"Docker container {container} was not available after 60 seconds: "
-                        f"{result.stderr.strip()}"
-                    )
-
-                networks = json.loads(inspect)[0].get("NetworkSettings", {}).get("Networks", {})
-                for network_name in (spec["dockerNetwork"], *networks.keys()):
-                    network = networks.get(network_name)
-                    if network and network.get("IPAddress"):
-                        return network["IPAddress"]
-                raise RuntimeError(f"Docker container {container} has no bridge address")
-
-
-            def host_rule(domain, aliases):
-                return " || ".join(f"Host(`{name}`)" for name in (domain, *aliases))
-
-
-            with open(os.environ["ROUTE_SPEC"], "r", encoding="utf-8") as file:
-                spec = json.load(file)
-
-            routers = {}
-            services = {}
-            # Applied to the whole websecure entry point. Server-sent events must stream
-            # unbuffered, and already-compressed media gains nothing.
-            middlewares = {
-                "compress": {
-                    "compress": {
-                        "encodings": ["zstd", "br", "gzip"],
-                        "excludedContentTypes": [
-                            "text/event-stream",
-                            "image/png",
-                            "image/jpeg",
-                            "image/webp",
-                            "image/avif",
-                            "image/gif",
-                            "font/woff2",
-                            "video/mp4",
-                            "video/webm",
-                            "application/zip",
-                            "application/gzip",
-                            "application/zstd",
-                        ],
-                    }
-                }
-            }
-            uses_insecure_transport = False
-
-            for host in spec["hosts"].values():
-                name = host["serviceName"]
-                middlewares_for_route = []
-
-                if host["dockerContainer"] is not None:
-                    address = docker_address(host["dockerContainer"])
-                    port = host["dockerPort"]
-                else:
-                    address = host["upstreamHost"]
-                    port = host["upstreamPort"]
-
-                load_balancer = {
-                    "passHostHeader": True,
-                    "servers": [{"url": f"{host['scheme']}://{address}:{port}"}],
-                }
-                if host["scheme"] == "https":
-                    load_balancer["serversTransport"] = "insecure"
-                    uses_insecure_transport = True
-
-                services[name] = {"loadBalancer": load_balancer}
-
-                if host["basicAuthFile"] is not None:
-                    middleware = f"{name}-auth"
-                    middlewares[middleware] = {
-                        "basicAuth": {"usersFile": host["basicAuthFile"]}
-                    }
-                    middlewares_for_route.append(middleware)
-
-                if host["maxRequestBodyBytes"] is not None:
-                    middleware = f"{name}-body-limit"
-                    middlewares[middleware] = {
-                        "buffering": {"maxRequestBodyBytes": host["maxRequestBodyBytes"]}
-                    }
-                    middlewares_for_route.append(middleware)
-
-                if host["robotsNoIndex"]:
-                    middleware = f"{name}-robots"
-                    middlewares[middleware] = {
-                        "headers": {
-                            "customResponseHeaders": {
-                                "X-Robots-Tag": "noindex, nofollow"
-                            }
-                        }
-                    }
-                    middlewares_for_route.append(middleware)
-
-                router = {
-                    "entryPoints": ["websecure"],
-                    "rule": host_rule(host["domain"], host["aliases"]),
-                    "service": name,
-                    "tls": {"certResolver": host["certResolver"]},
-                }
-                if middlewares_for_route:
-                    router["middlewares"] = middlewares_for_route
-                routers[name] = router
-
-                for index, path_route in enumerate(host["pathRoutes"]):
-                    path_name = f"{name}-path-{index}"
-                    services[path_name] = {
-                        "loadBalancer": {
-                            "passHostHeader": True,
-                            "servers": [
-                                {
-                                    "url": (
-                                        f"http://{path_route['upstreamHost']}:"
-                                        f"{path_route['upstreamPort']}"
-                                    )
-                                }
-                            ],
-                        }
-                    }
-                    routers[path_name] = {
-                        "entryPoints": ["websecure"],
-                        "priority": path_route["priority"],
-                        "rule": (
-                            f"({host_rule(host['domain'], host['aliases'])})"
-                            f" && ({path_route['rule']})"
-                        ),
-                        "service": path_name,
-                        "tls": {"certResolver": host["certResolver"]},
-                    }
-
-            redirect_domain = spec["defaultDomainRedirect"]
-            if redirect_domain is not None:
-                middlewares["default-domain-redirect"] = {
-                    "redirectRegex": {
-                        "regex": "^https?://[^/]+(.*)",
-                        "replacement": f"https://{redirect_domain}''${{1}}",
-                        "permanent": True,
-                    }
-                }
-                routers["default-domain-redirect"] = {
-                    "entryPoints": ["websecure"],
-                    "middlewares": ["default-domain-redirect"],
-                    "priority": 1,
-                    "rule": "PathPrefix(`/`)",
-                    "service": "noop@internal",
-                    "tls": {"certResolver": "cloudflare"},
-                }
-
-            routers["traefik-api"] = {
-                "entryPoints": ["control"],
-                "priority": 1000,
-                "rule": "PathPrefix(`/api`)",
-                "service": "api@internal",
-            }
-
-            http = {
-                "middlewares": middlewares,
-                "routers": routers,
-                "services": services,
-            }
-            if uses_insecure_transport:
-                http["serversTransports"] = {
-                    "insecure": {"insecureSkipVerify": True}
-                }
-
-            routes = {"http": http}
-
-            output = os.environ["ROUTE_OUTPUT"]
-            temporary = f"{output}.tmp"
-            with open(temporary, "w", encoding="utf-8") as file:
-                json.dump(routes, file, indent=2, sort_keys=True)
-                file.write("\n")
-            os.chown(temporary, 0, grp.getgrnam("traefik").gr_gid)
-            os.chmod(temporary, 0o640)
-            os.replace(temporary, output)
-            PY
+        sops.templates."traefik-cloudflare.env" = {
+          owner = "traefik";
+          group = "traefik";
+          mode = "0400";
+          content = ''
+            CF_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/traefik-dns"}
           '';
         };
 
-        timers.reverse-proxy-refresh-routes = {
-          wantedBy = ["timers.target"];
-          timerConfig = {
-            OnBootSec = "1min";
-            OnUnitActiveSec = "2min";
-            Unit = "reverse-proxy-refresh-routes.service";
+        services.traefik = {
+          enable = true;
+          dynamicConfigFile = "/run/reverse-proxy/routes.yaml";
+          environmentFiles = [config.sops.templates."traefik-cloudflare.env".path];
+          staticConfigOptions = {
+            api.dashboard = false;
+            entryPoints = {
+              control.address = "${cfg.controlAddress}:8080";
+              web = {
+                address = "${cfg.address}:80";
+                http.redirections.entryPoint = {
+                  to = "websecure";
+                  scheme = "https";
+                  permanent = true;
+                };
+              };
+              websecure = {
+                address = "${cfg.address}:443";
+                http = {
+                  tls.certResolver = "cloudflare";
+                  # Every route on this entry point, from every provider, compresses its responses.
+                  middlewares = ["compress@file"];
+                };
+              };
+            };
+            certificatesResolvers = {
+              cloudflare.acme = {
+                email = cfg.acmeEmail;
+                storage = "/var/lib/traefik/acme-cloudflare.json";
+                dnsChallenge = {
+                  provider = "cloudflare";
+                  resolvers = ["1.1.1.1:53" "8.8.8.8:53"];
+                };
+              };
+              letsencrypt.acme = {
+                email = cfg.acmeEmail;
+                storage = "/var/lib/traefik/acme-http.json";
+                httpChallenge.entryPoint = "web";
+              };
+            };
           };
         };
 
-        services.traefik = {
-          requires = ["reverse-proxy-refresh-routes.service"];
-          after = ["reverse-proxy-refresh-routes.service"];
+        networking.firewall.allowedTCPPorts = [80 443];
+        networking.firewall.interfaces.${cfg.controlInterface}.allowedTCPPorts = [8080];
+
+        systemd = {
+          tmpfiles.rules = [
+            "d /run/reverse-proxy 0750 root traefik -"
+            "d /var/lib/traefik 0700 traefik traefik -"
+          ];
+
+          services.reverse-proxy-refresh-routes = {
+            description = "Resolve direct Traefik routes";
+            wants = ["docker.service" "network-online.target"];
+            after = ["docker.service" "network-online.target"];
+            before = ["traefik.service"];
+            wantedBy = ["multi-user.target"];
+            restartTriggers = [routeSpecFile];
+            path = with pkgs; [docker python3];
+            serviceConfig = {
+              Type = "oneshot";
+              UMask = "0027";
+            };
+            script = ''
+              set -euo pipefail
+              export ROUTE_SPEC=${lib.escapeShellArg routeSpecFile}
+              export ROUTE_OUTPUT=/run/reverse-proxy/routes.yaml
+
+              python3 - <<'PY'
+              import grp
+              import json
+              import os
+              import subprocess
+              import sys
+              import time
+
+
+              def docker_address(container):
+                  # Do not stall or abort all routes when one optional Docker container is stopped.
+                  inspect = None
+                  for attempt in range(5):
+                      result = subprocess.run(
+                          ["docker", "inspect", container],
+                          capture_output=True,
+                          text=True,
+                      )
+                      if result.returncode == 0:
+                          inspect = result.stdout
+                          break
+                      if attempt < 4:
+                          time.sleep(1)
+                  if inspect is None:
+                      print(
+                          f"Warning: skipping route for unavailable Docker container {container}: "
+                          f"{result.stderr.strip()}",
+                          file=sys.stderr,
+                      )
+                      return None
+
+                  networks = json.loads(inspect)[0].get("NetworkSettings", {}).get("Networks", {})
+                  for network_name in (spec["dockerNetwork"], *networks.keys()):
+                      network = networks.get(network_name)
+                      if network and network.get("IPAddress"):
+                          return network["IPAddress"]
+                  print(
+                      f"Warning: skipping route for Docker container {container} with no bridge address",
+                      file=sys.stderr,
+                  )
+                  return None
+
+
+              def host_rule(domain, aliases):
+                  return " || ".join(f"Host(`{name}`)" for name in (domain, *aliases))
+
+
+              with open(os.environ["ROUTE_SPEC"], "r", encoding="utf-8") as file:
+                  spec = json.load(file)
+
+              routers = {}
+              services = {}
+              # Applied to the whole websecure entry point. Server-sent events must stream
+              # unbuffered, and already-compressed media gains nothing.
+              middlewares = {
+                  "compress": {
+                      "compress": {
+                          "encodings": ["zstd", "br", "gzip"],
+                          "excludedContentTypes": [
+                              "text/event-stream",
+                              "image/png",
+                              "image/jpeg",
+                              "image/webp",
+                              "image/avif",
+                              "image/gif",
+                              "font/woff2",
+                              "video/mp4",
+                              "video/webm",
+                              "application/zip",
+                              "application/gzip",
+                              "application/zstd",
+                          ],
+                      }
+                  }
+              }
+              uses_insecure_transport = False
+
+              for host in spec["hosts"].values():
+                  name = host["serviceName"]
+                  middlewares_for_route = []
+
+                  if host["dockerContainer"] is not None:
+                      address = docker_address(host["dockerContainer"])
+                      if address is None:
+                          continue
+                      port = host["dockerPort"]
+                  else:
+                      address = host["upstreamHost"]
+                      port = host["upstreamPort"]
+
+                  load_balancer = {
+                      "passHostHeader": True,
+                      "servers": [{"url": f"{host['scheme']}://{address}:{port}"}],
+                  }
+                  if host["scheme"] == "https":
+                      load_balancer["serversTransport"] = "insecure"
+                      uses_insecure_transport = True
+
+                  services[name] = {"loadBalancer": load_balancer}
+
+                  if host["basicAuthFile"] is not None:
+                      middleware = f"{name}-auth"
+                      middlewares[middleware] = {
+                          "basicAuth": {"usersFile": host["basicAuthFile"]}
+                      }
+                      middlewares_for_route.append(middleware)
+
+                  if host["maxRequestBodyBytes"] is not None:
+                      middleware = f"{name}-body-limit"
+                      middlewares[middleware] = {
+                          "buffering": {"maxRequestBodyBytes": host["maxRequestBodyBytes"]}
+                      }
+                      middlewares_for_route.append(middleware)
+
+                  if host["robotsNoIndex"]:
+                      middleware = f"{name}-robots"
+                      middlewares[middleware] = {
+                          "headers": {
+                              "customResponseHeaders": {
+                                  "X-Robots-Tag": "noindex, nofollow"
+                              }
+                          }
+                      }
+                      middlewares_for_route.append(middleware)
+
+                  router = {
+                      "entryPoints": ["websecure"],
+                      "rule": host_rule(host["domain"], host["aliases"]),
+                      "service": name,
+                      "tls": {"certResolver": host["certResolver"]},
+                  }
+                  if middlewares_for_route:
+                      router["middlewares"] = middlewares_for_route
+                  routers[name] = router
+
+                  for index, path_route in enumerate(host["pathRoutes"]):
+                      path_name = f"{name}-path-{index}"
+                      services[path_name] = {
+                          "loadBalancer": {
+                              "passHostHeader": True,
+                              "servers": [
+                                  {
+                                      "url": (
+                                          f"http://{path_route['upstreamHost']}:"
+                                          f"{path_route['upstreamPort']}"
+                                      )
+                                  }
+                              ],
+                          }
+                      }
+                      path_router = {
+                          "entryPoints": ["websecure"],
+                          "priority": path_route["priority"],
+                          "rule": (
+                              f"({host_rule(host['domain'], host['aliases'])})"
+                              f" && ({path_route['rule']})"
+                          ),
+                          "service": path_name,
+                          "tls": {"certResolver": host["certResolver"]},
+                      }
+                      if middlewares_for_route:
+                          path_router["middlewares"] = middlewares_for_route
+                      routers[path_name] = path_router
+
+              redirect_domain = spec["defaultDomainRedirect"]
+              if redirect_domain is not None:
+                  middlewares["default-domain-redirect"] = {
+                      "redirectRegex": {
+                          "regex": "^https?://[^/]+(.*)",
+                          "replacement": f"https://{redirect_domain}''${{1}}",
+                          "permanent": True,
+                      }
+                  }
+                  routers["default-domain-redirect"] = {
+                      "entryPoints": ["websecure"],
+                      "middlewares": ["default-domain-redirect"],
+                      "priority": 1,
+                      "rule": "PathPrefix(`/`)",
+                      "service": "noop@internal",
+                      "tls": {"certResolver": "cloudflare"},
+                  }
+
+              routers["traefik-api"] = {
+                  "entryPoints": ["control"],
+                  "priority": 1000,
+                  "rule": "PathPrefix(`/api`)",
+                  "service": "api@internal",
+              }
+
+              http = {
+                  "middlewares": middlewares,
+                  "routers": routers,
+                  "services": services,
+              }
+              if uses_insecure_transport:
+                  http["serversTransports"] = {
+                      "insecure": {"insecureSkipVerify": True}
+                  }
+
+              routes = {"http": http}
+
+              output = os.environ["ROUTE_OUTPUT"]
+              temporary = f"{output}.tmp"
+              with open(temporary, "w", encoding="utf-8") as file:
+                  json.dump(routes, file, indent=2, sort_keys=True)
+                  file.write("\n")
+              os.chown(temporary, 0, grp.getgrnam("traefik").gr_gid)
+              os.chmod(temporary, 0o640)
+              os.replace(temporary, output)
+              PY
+            '';
+          };
+
+          timers.reverse-proxy-refresh-routes = {
+            wantedBy = ["timers.target"];
+            timerConfig = {
+              OnBootSec = "1min";
+              OnUnitActiveSec = "2min";
+              Unit = "reverse-proxy-refresh-routes.service";
+            };
+          };
+
+          services.traefik = {
+            requires = ["reverse-proxy-refresh-routes.service"];
+            after = ["reverse-proxy-refresh-routes.service"];
+          };
         };
-      };
-    };
+      }
+
+      (lib.optionalAttrs hasPersistDirs {
+        persist.system.directories = ["/var/lib/traefik"];
+      })
+    ]);
   };
 }

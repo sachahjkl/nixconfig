@@ -197,6 +197,46 @@ class MaintenanceTests(unittest.TestCase):
             self.assertEqual((Path(directory) / "raft.snap").read_bytes(), b"snapshot")
             self.assertFalse((Path(directory) / "raft.snap.tmp").exists())
 
+    def test_empty_snapshot_keeps_previous_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            previous = Path(directory) / "raft.snap"
+            previous.write_bytes(b"previous")
+            responses = [
+                io.BytesIO(b'{"auth": {"client_token": "test-token"}}'),
+                io.BytesIO(b""),
+                io.BytesIO(b""),
+            ]
+            with patch.object(openbao_maintenance, "credential", return_value="{}"):
+                with patch.object(
+                    openbao_maintenance, "request", side_effect=responses
+                ):
+                    with self.assertRaises(RuntimeError):
+                        openbao_maintenance.snapshot(directory)
+            self.assertEqual(previous.read_bytes(), b"previous")
+            self.assertFalse((Path(directory) / "raft.snap.tmp").exists())
+
+    def test_revoke_failure_does_not_mask_snapshot_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            responses = [
+                io.BytesIO(b'{"auth": {"client_token": "test-token"}}'),
+                RuntimeError("snapshot failed"),
+                OSError("revoke failed"),
+            ]
+            with patch.object(openbao_maintenance, "credential", return_value="{}"):
+                with patch.object(
+                    openbao_maintenance, "request", side_effect=responses
+                ):
+                    with self.assertRaisesRegex(RuntimeError, "snapshot failed"):
+                        openbao_maintenance.snapshot(directory)
+
+    def test_credential_reads_trimmed_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / "unseal-key").write_text("  secret-value\n")
+            with patch.dict(os.environ, {"CREDENTIALS_DIRECTORY": directory}):
+                self.assertEqual(
+                    openbao_maintenance.credential("unseal-key"), "secret-value"
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

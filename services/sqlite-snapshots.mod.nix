@@ -28,12 +28,18 @@ _: {
     };
 
     config = lib.mkIf cfg.enable {
-      assertions = [
-        {
-          assertion = cfg.databases != {};
-          message = "services.sqliteSnapshots.databases must not be empty when snapshots are enabled.";
-        }
-      ];
+      assertions =
+        [
+          {
+            assertion = cfg.databases != {};
+            message = "services.sqliteSnapshots.databases must not be empty when snapshots are enabled.";
+          }
+        ]
+        ++ mapAttrsToList (name: _: {
+          assertion = builtins.match "[A-Za-z0-9._-]+" name != null;
+          message = "services.sqliteSnapshots.databases.${name}: snapshot name must match [A-Za-z0-9._-]+.";
+        })
+        cfg.databases;
 
       systemd.tmpfiles.rules = ["d ${cfg.directory} 0700 root root -"];
 
@@ -49,14 +55,13 @@ _: {
         };
         script = ''
           set -euo pipefail
-          shopt -s nullglob
 
           snapshot() {
-            local name="$1" pattern="$2" matches
-            # shellcheck disable=SC2206
-            matches=($pattern)
+            local name="$1" pattern="$2"
+            local -a matches=()
+            mapfile -t matches < <(compgen -G "$pattern" || true)
             if [ "''${#matches[@]}" -eq 0 ]; then
-              echo "$name: no database matches $pattern, skipped"
+              echo "Warning: $name: no database matches $pattern, skipped" >&2
               return
             fi
             if [ "''${#matches[@]}" -gt 1 ]; then
@@ -67,7 +72,7 @@ _: {
             local target=${escapeShellArg cfg.directory}/"$name.db"
             local partial="$target.partial"
             rm -f "$partial"
-            sqlite3 -readonly "''${matches[0]}" ".backup '$partial'"
+            sqlite3 -cmd ".timeout 30000" "''${matches[0]}" ".backup '$partial'"
             if [ "$(sqlite3 "$partial" 'PRAGMA integrity_check;')" != "ok" ]; then
               echo "$name: integrity check failed on the snapshot" >&2
               rm -f "$partial"

@@ -42,18 +42,29 @@ def snapshot(directory):
         "auth/approle/login", json.loads(credential("snapshot-approle.json"))
     ) as response:
         token = json.load(response)["auth"]["client_token"]
-    temporary = Path(directory) / "raft.snap.tmp"
+    target_dir = Path(directory)
+    temporary = target_dir / "raft.snap.tmp"
     try:
         with request("sys/storage/raft/snapshot", token=token) as response:
             with temporary.open("wb") as output:
                 shutil.copyfileobj(response, output)
                 output.flush()
                 os.fsync(output.fileno())
-        temporary.replace(Path(directory) / "raft.snap")
+        if temporary.stat().st_size == 0:
+            raise RuntimeError("OpenBao returned an empty Raft snapshot.")
+        temporary.replace(target_dir / "raft.snap")
+        dir_fd = os.open(target_dir, os.O_RDONLY)
+        try:
+            os.fsync(dir_fd)
+        finally:
+            os.close(dir_fd)
     finally:
         temporary.unlink(missing_ok=True)
-        with request("auth/token/revoke-self", {}, token=token):
-            pass
+        try:
+            with request("auth/token/revoke-self", {}, token=token):
+                pass
+        except Exception as exc:
+            print(f"Warning: failed to revoke snapshot token: {exc}", file=sys.stderr)
 
 
 if __name__ == "__main__":

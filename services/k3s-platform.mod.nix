@@ -34,7 +34,10 @@ _: {
         # Traefik chart 40+: the type lives under service.spec; service.type is silently ignored.
         service.spec.type = "NodePort";
         ports = {
-          web.nodePort = cfg.ingressPort;
+          web = {
+            nodePort = cfg.ingressPort;
+            forwardedHeaders.trustedIPs = ["127.0.0.1/32"];
+          };
           websecure.expose.default = false;
         };
       };
@@ -102,18 +105,23 @@ _: {
           manifests.traefik-config.content = traefikConfig;
         };
 
-        fileSystems =
-          lib.mapAttrs (_: subdir: {
-            device = "${cfg.dataDir}/${subdir}";
-            fsType = "none";
-            options = ["bind" "x-systemd.requires-mounts-for=${cfg.dataDir}"];
-          })
-          stateMounts;
-
         systemd = {
           tmpfiles.rules =
             ["d ${cfg.dataDir} 0700 root root -"]
             ++ lib.mapAttrsToList (_: subdir: "d ${cfg.dataDir}/${subdir} 0755 root root -") stateMounts;
+          mounts =
+            lib.mapAttrsToList (where: subdir: {
+              description = "Bind mount k3s ${subdir} from ${cfg.dataDir}";
+              what = "${cfg.dataDir}/${subdir}";
+              inherit where;
+              type = "none";
+              options = "bind";
+              unitConfig.RequiresMountsFor = [cfg.dataDir];
+              after = ["systemd-tmpfiles-setup.service"];
+              requires = ["systemd-tmpfiles-setup.service"];
+              wantedBy = ["multi-user.target"];
+            })
+            stateMounts;
           services.k3s = {
             requires = map mountUnit (lib.attrNames stateMounts);
             after = map mountUnit (lib.attrNames stateMounts);

@@ -8,8 +8,7 @@ _: {
   }: let
     proxyCfg = lib.attrByPath ["services" "reverseProxy"] {} config;
     cfg = proxyCfg.dns or {};
-    proxyEnabled = proxyCfg.enable or false;
-    hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
+    dnsEnabled = (proxyCfg.enable or false) && (cfg.enable or false);
     hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
 
@@ -49,8 +48,9 @@ _: {
             then cfg.defaultTarget
             else dnsCfg.target;
         in
-          lib.optional dnsCfg.enable {
-            inherit domain proxied ttl;
+          lib.optionals dnsCfg.enable (map (name: {
+            domain = name;
+            inherit proxied ttl;
             type = recordType;
             value =
               if recordType == "A"
@@ -59,7 +59,7 @@ _: {
                 then cfg.defaultValue
                 else dnsCfg.value
               else target;
-          })
+          }) ([domain] ++ hostCfg.aliases)))
         (lib.attrByPath ["services" "reverseProxy" "hosts"] {} config));
 
     dnsConfig = pkgs.writeText "cloudflare-dns-config.json" (builtins.toJSON {
@@ -300,7 +300,7 @@ _: {
               raise SystemExit("refusing to push while unmanaged DNS record collisions exist")
 
           for record in plan["deletes"]:
-              zone_name = next(zone for zone in config["zoneNames"] if record["name"] == zone or record["name"].endswith("." + zone))
+              zone_name = resolve_zone(record["name"], config["zoneNames"])
               zone_id = get_zone_id(token, zone_cache, zone_name)
               api_request(token, "DELETE", f"/zones/{zone_id}/dns_records/{record['id']}")
 
@@ -365,8 +365,8 @@ _: {
 
       enable = lib.mkOption {
         type = lib.types.bool;
-        default = false;
-        description = "Enable Cloudflare DNS reconciliation commands.";
+        default = true;
+        description = "Enable Cloudflare DNS reconciliation commands when the reverse proxy is enabled.";
       };
 
       defaultType = lib.mkOption {
@@ -415,7 +415,7 @@ _: {
       };
     };
 
-    config = lib.mkIf proxyEnabled (lib.mkMerge [
+    config = lib.mkIf dnsEnabled (lib.mkMerge [
       {
         assertions =
           [
@@ -440,10 +440,6 @@ _: {
           dnsPush
         ];
       }
-
-      (lib.optionalAttrs (hasPersistDirs && hasUserName) {
-        persist.user.directories = [".local/state/cloudflare-dns"];
-      })
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName) {
         sops.secrets."cloudflare/dns" = {

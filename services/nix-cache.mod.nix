@@ -83,8 +83,8 @@
                 $availableBytes
               }' > ${dashboardRoot}/status.json.tmp
 
+            chmod 0644 ${dashboardRoot}/status.json.tmp
             mv ${dashboardRoot}/status.json.tmp ${dashboardRoot}/status.json
-            chmod 0644 ${dashboardRoot}/status.json
           '';
         };
 
