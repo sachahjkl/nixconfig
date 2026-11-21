@@ -482,34 +482,34 @@
     "gui_toolkit_4": {
       "flake": false,
       "locked": {
-        "lastModified": 1795253259,
-        "narHash": "sha256-1S8csYuzONFXnlEkmEW7Oq2h0uuL4SLRw+QqjopqdjI=",
+        "lastModified": 1795286911,
+        "narHash": "sha256-WFpdop8nFbj9siw7TcitPvdQYQo4xfbAVquHKur4fZ4=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "74d4067ccfe0884b297f83dbaeb38cf30eaf0d58",
+        "rev": "56c6f3ceedc7e063eda022ae433c4e99ff8e8589",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "74d4067ccfe0884b297f83dbaeb38cf30eaf0d58",
+        "rev": "56c6f3ceedc7e063eda022ae433c4e99ff8e8589",
         "type": "github"
       }
     },
     "gui_toolkit_5": {
       "flake": false,
       "locked": {
-        "lastModified": 1795253259,
-        "narHash": "sha256-1S8csYuzONFXnlEkmEW7Oq2h0uuL4SLRw+QqjopqdjI=",
+        "lastModified": 1795286911,
+        "narHash": "sha256-WFpdop8nFbj9siw7TcitPvdQYQo4xfbAVquHKur4fZ4=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "74d4067ccfe0884b297f83dbaeb38cf30eaf0d58",
+        "rev": "56c6f3ceedc7e063eda022ae433c4e99ff8e8589",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "74d4067ccfe0884b297f83dbaeb38cf30eaf0d58",
+        "rev": "56c6f3ceedc7e063eda022ae433c4e99ff8e8589",
         "type": "github"
       }
     },
@@ -644,11 +644,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795255616,
-        "narHash": "sha256-71nUaXOmlYMVbrcDLUTSLdA4cVPB/+D6V4v9KnGgg8g=",
+        "lastModified": 1795287059,
+        "narHash": "sha256-CuL5PlwN8PEjM3TO+d51y+YtC8BlZw9dmTyr+1ukaGY=",
         "ref": "refs/heads/master",
-        "rev": "b38d4c20786f7697dfd364c2b54614d5579e889e",
-        "revCount": 216,
+        "rev": "13cb3de0b0c4cb1632b2f9e9095a63395408dc22",
+        "revCount": 219,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/inspecteur"
@@ -934,11 +934,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795255415,
-        "narHash": "sha256-+kNZd2GuQF2i9nwKx7sFpVInKW3Vaebm9n4XSZyDpaY=",
+        "lastModified": 1795287053,
+        "narHash": "sha256-sH1dzGrGGmNQFpid4TBdfEQmOenBaOIDQMxqjcIJD88=",
         "ref": "refs/heads/master",
-        "rev": "4862b40d44822d533aee9bd1cf5b796a055eb58d",
-        "revCount": 242,
+        "rev": "07d67321a1b2a8151f9544078d6c82a734025f39",
+        "revCount": 245,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/papier"
