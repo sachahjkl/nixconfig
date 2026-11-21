@@ -72,6 +72,11 @@
           ];
         };
 
+        "cache.modus.froment.software" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = config.services.modusCache.statusPort;
+        };
+
         "aubetoile.dev" = {
           dockerContainer = "aubetoile";
           dockerPort = 80;

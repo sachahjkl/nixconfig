@@ -29,6 +29,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabRoutes
       self.nixosModules.nixCache
+      self.nixosModules.modusCache
     ];
 
     extraUserGroups = ["docker"];
@@ -141,6 +142,13 @@ lib.systems.nixosSystem "homelab" {
       nixCache = {
         enable = true;
         signingKeySopsFile = self + /secrets/homelab.yaml;
+      };
+
+      modusCache = {
+        enable = true;
+        dataDir = "/data/modus-cache";
+        port = 5010;
+        statusPort = 5011;
       };
 
       openbaoPlatform = {

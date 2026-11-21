@@ -737,6 +737,29 @@
         "type": "github"
       }
     },
+    "modus": {
+      "inputs": {
+        "git-hooks": [
+          "git-hooks"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795295135,
+        "narHash": "sha256-SxdgFmlerXeEbTXlFU1aUAzKu3AQS3e89xRTJbUZFk8=",
+        "owner": "sachahjkl",
+        "repo": "modus",
+        "rev": "9eae164b105ad32dd77687c3f50907b45c94e784",
+        "type": "github"
+      },
+      "original": {
+        "owner": "sachahjkl",
+        "repo": "modus",
+        "type": "github"
+      }
+    },
     "mt7927": {
       "inputs": {
         "mediatek-mt7927-dkms": "mediatek-mt7927-dkms",
@@ -1020,6 +1043,7 @@
         "home-manager": "home-manager",
         "inspecteur": "inspecteur",
         "llm-agents": "llm-agents",
+        "modus": "modus",
         "mt7927": "mt7927",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
