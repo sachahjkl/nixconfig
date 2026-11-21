@@ -183,10 +183,8 @@
 
     modus = {
       url = "github:sachahjkl/modus";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        git-hooks.follows = "git-hooks";
-      };
+      # Keep modus's pinned nixpkgs so its patched LLVM 18 and Odin reuse the existing store build.
+      inputs.git-hooks.follows = "git-hooks";
     };
 
     llm-agents = {
