@@ -162,6 +162,20 @@
       inputs.git-hooks.follows = "git-hooks";
     };
 
+    # feuille and socle, the other Froment Software programs: git+https for
+    # their gui_toolkit submodule, as above. (atelier has no Nix package: on
+    # Nix each program comes from its own flake, atelier is the other systems'
+    # installer.)
+    feuille = {
+      url = "git+https://github.com/sachahjkl/feuille?submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    socle = {
+      url = "git+https://github.com/sachahjkl/socle?submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     skills = {

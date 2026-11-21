@@ -10,6 +10,8 @@ lib.systems.nixosSystem "house-desktop" {
       self.nixosModules.workstation
       self.nixosModules.hyprland
       self.nixosModules.papier
+      self.nixosModules.feuille
+      self.nixosModules.socle
       self.nixosModules.remoteDesktop
       self.nixosModules.bootvine
       self.nixosModules.shojiwm
