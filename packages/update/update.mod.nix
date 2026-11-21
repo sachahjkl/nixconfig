@@ -16,7 +16,7 @@ _: {
       text = ''
         # Update the flake inputs and every package that pins a version by hand.
         # Usage: nix run .#update [target...]
-        # Targets: inputs moshi hypr-zoom windows-10-theme cf. Default: all targets.
+        # Targets: inputs moshi windows-10-theme cf voxl opencode-telegram-bot. Default: all targets.
 
         root=$(git rev-parse --show-toplevel)
         cd "$root" || exit
@@ -26,7 +26,7 @@ _: {
           nix store prefetch-file --json "$1" | jq -r .hash
         }
 
-        # Replace the first match of a sed expression in a file.
+        # Apply an extended sed expression in place to a file.
         edit() {
           sed -i -E "$2" "$1"
         }
@@ -49,15 +49,31 @@ _: {
           echo "moshi-hook $version"
         }
 
-        update_hypr_zoom() {
-          local file=packages/hypr-zoom/hypr-zoom.mod.nix
-          local tag version hash
-          tag=$(curl -fsS https://api.github.com/repos/FShou/hypr-zoom/releases/latest | jq -r .tag_name)
-          version=''${tag#v}
-          hash=$(prefetch_url "https://github.com/FShou/hypr-zoom/releases/download/$tag/hypr-zoom")
-          edit "$file" "s|version = \"[^\"]+\"|version = \"$version\"|"
+        update_voxl() {
+          local file=packages/voxl/package.nix
+          local repo=tembo/voxl
+          local rev hash
+          rev=$(curl -fsS "https://api.github.com/repos/$repo/commits/HEAD" | jq -r .sha)
+          hash=$(nix flake prefetch --json "github:$repo/$rev" | jq -r .hash)
+          edit "$file" "s|rev = \"[^\"]+\"|rev = \"$rev\"|"
           edit "$file" "s|hash = \"[^\"]+\"|hash = \"$hash\"|"
-          echo "hypr-zoom $version"
+          echo "voxl $rev"
+        }
+
+        update_opencode_telegram_bot() {
+          local file=services/opencode-telegram-bot.mod.nix
+          local repo=grinev/opencode-telegram-bot
+          local tag version prefetched hash store_path npm_hash
+          tag=$(curl -fsS "https://api.github.com/repos/$repo/releases/latest" | jq -r .tag_name)
+          version=''${tag#v}
+          prefetched=$(nix flake prefetch --json "github:$repo/$tag")
+          hash=$(jq -r .hash <<<"$prefetched")
+          store_path=$(jq -r .storePath <<<"$prefetched")
+          npm_hash=$(prefetch-npm-deps "$store_path/package-lock.json")
+          edit "$file" "s|version = \"[^\"]+\"|version = \"$version\"|"
+          edit "$file" "/fetchFromGitHub/,/\};/s|hash = \"[^\"]+\"|hash = \"$hash\"|"
+          edit "$file" "s|npmDepsHash = \"[^\"]+\"|npmDepsHash = \"$npm_hash\"|"
+          echo "opencode-telegram-bot $version"
         }
 
         update_windows_10_theme() {
@@ -98,16 +114,17 @@ _: {
 
         targets=("$@")
         if [ ''${#targets[@]} -eq 0 ]; then
-          targets=(inputs moshi hypr-zoom windows-10-theme cf)
+          targets=(inputs moshi windows-10-theme cf voxl opencode-telegram-bot)
         fi
 
         for target in "''${targets[@]}"; do
           case "$target" in
             inputs) update_inputs ;;
             moshi) update_moshi ;;
-            hypr-zoom) update_hypr_zoom ;;
             windows-10-theme) update_windows_10_theme ;;
             cf) update_cf ;;
+            voxl) update_voxl ;;
+            opencode-telegram-bot) update_opencode_telegram_bot ;;
             *)
               echo "Unknown target: $target" >&2
               exit 1

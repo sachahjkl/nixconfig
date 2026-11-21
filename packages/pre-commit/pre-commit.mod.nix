@@ -17,7 +17,10 @@
         ruff-format.enable = true;
         shellcheck.enable = true;
         statix.enable = true;
-        trim-trailing-whitespace.enable = true;
+        trim-trailing-whitespace = {
+          enable = true;
+          excludes = ["^hosts/.*/report\\.json$"];
+        };
       };
     };
   in {

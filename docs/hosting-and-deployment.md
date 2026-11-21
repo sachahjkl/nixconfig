@@ -9,14 +9,16 @@ It separates stable machine configuration from frequent application releases.
 The platform uses these components:
 
 - NixOS configures the host and the hosting platform.
-- Nomad schedules and supervises application workloads.
-- Traefik discovers healthy Nomad services and terminates public TLS.
-- GHCR stores immutable OCI images.
+- Nomad schedules and supervises standard application workloads (`staging`, `production`, `demo`).
+- k3s (`k3sPlatform`) hosts Kubernetes workloads behind its loopback NodePort ingress, paired with the private container registry (`registry.sacha.house:5443`).
+- Docker (`containerHost`) runs the observability stack and legacy standalone containers.
+- OpenBao (`openbaoPlatform`, `https://bao.sacha.house:8200`) stores private application secrets.
+- Traefik discovers healthy Nomad services, routes direct host/Docker/k3s upstreams, and terminates public TLS.
+- GHCR and the private registry store immutable OCI images.
 - Tailscale gives CI private access to the Nomad API.
 - GitHub Actions builds images and submits Nomad jobs.
 - GitHub Environments control production approvals.
-- SOPS protects bootstrap and recovery secrets.
-- Nomad Variables provide secrets to running workloads.
+- SOPS protects host and bootstrap secrets.
 
 The deployment path is:
 
@@ -149,7 +151,7 @@ Use separate identities when applications need different network access.
 
 Enable Nomad ACLs before accepting remote deployment traffic.
 
-Store the initial management token offline.
+Store the management token in `secrets/homelab.yaml` (`nomad/management-token`) so `nomad-github-actions-auth.service` can reconcile namespaces, policies, and JWT auth bindings; keep an offline copy for recovery.
 
 Create one deployment policy for each trust boundary.
 
@@ -160,9 +162,7 @@ The `github-actions` binding rule accepts a JWT only from the `master` branch of
 The homelab sets this list to `sachahjkl` and `petitpecule`.
 The GitHub Environment name selects the Nomad policy and namespace: `staging`, `production`, or `demo`.
 
-A staging token can update only staging jobs and staging variables.
-
-A production token can update only production jobs and production variables.
+Each environment policy grants write access to its own namespace and `*-<env>-data` host volumes, plus read access across namespaces, agent, and node state.
 
 Protect the production token with a GitHub Environment approval.
 
@@ -390,7 +390,9 @@ Record each recovery exercise with these details:
 
 ## Observability
 
-Collect these Nomad metrics:
+Nomad exposes Prometheus metrics on its API (`telemetry.prometheus_metrics = true`). To monitor Nomad in Grafana, add a Nomad scrape target to `services/observability-stack.mod.nix` (currently Prometheus scrapes `otel-collector`, `loki`, `tempo`, `grafana`, and itself).
+
+Recommended Nomad metrics to track:
 
 - server leadership;
 - client readiness;

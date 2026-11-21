@@ -7,12 +7,12 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: homelab-system
+  group: nixconfig-ci
   cancel-in-progress: true
 
 jobs:
   build-systems:
-    name: Build all NixOS systems
+    name: Check flake and build all NixOS systems
     runs-on:
       - self-hosted
       - nixos
@@ -23,13 +23,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Flake check
+        run: nix flake check "path:$PWD" --no-write-lock-file
+
       - name: Build systems
         run: |
+          set -euo pipefail
           mkdir -p "$HOME/gcroots"
-          nix eval --raw "path:$PWD#nixosConfigurations" \
-            --apply 'configs: builtins.concatStringsSep "\n" (builtins.attrNames configs) + "\n"' |
-            while IFS= read -r host; do
-              nix build \
-                "path:$PWD#nixosConfigurations.$host.config.system.build.toplevel" \
-                --out-link "$HOME/gcroots/$host-system"
-            done
+          mapfile -t hosts < <(
+            nix eval --raw "path:$PWD#nixosConfigurations" \
+              --apply 'configs: builtins.concatStringsSep "\n" (builtins.attrNames configs) + "\n"'
+          )
+          for host in "${hosts[@]}"; do
+            nix build \
+              "path:$PWD#nixosConfigurations.$host.config.system.build.toplevel" \
+              --out-link "$HOME/gcroots/$host-system"
+          done

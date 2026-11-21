@@ -26,16 +26,10 @@ Stop `openbao-unseal.timer` before an intentional maintenance seal.
 
 Open `https://bao.sacha.house:8200/ui/` from a Tailscale device.
 Select the Username (`userpass`) authentication method.
-Enter `sacha` as the username.
-Read the generated password locally on the homelab:
+Enter `sacha` as the username and your configured operator password (stored in your password manager, or locally in `/data/Secrets/openbao/operator-password` if saved during provisioning).
 
-```sh
-sudo cat /data/Secrets/openbao/operator-password
-```
-
-The password file belongs to root and has mode `0400`.
+The local unseal key resides in `/data/Secrets/openbao/unseal-key` (owned by root, mode `0400`).
 Do not paste the password or unseal key into chat, logs, or the repository.
-The local unseal key resides in `/data/Secrets/openbao/unseal-key` with the same file permissions.
 Keep an offline recovery copy of the unseal key.
 The initial root token was revoked after administrator access and snapshots were verified.
 

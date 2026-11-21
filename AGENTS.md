@@ -8,7 +8,7 @@ File placement matters:
 
 - A `*.mod.nix` file in the import tree is not automatically a plain NixOS module.
 - A `*.mod.nix` file must define flake-parts outputs such as `flake.nixosModules.*`, `perSystem`, `imports`, `options`, or `config`.
-- Plain NixOS fragments should either be kept out of the import tree or wrapped/exported correctly.
+- Plain NixOS fragments must stay out of the `*.mod.nix` import tree or be wrapped by a `*.mod.nix` file.
 - Host hardware files in this repo are flake-parts files exporting host-specific `flake.nixosModules.*` entries.
 
 ## Required Patterns
@@ -18,9 +18,7 @@ File placement matters:
 Correct:
 
 ```nix
-{ ... }:
-
-{
+_: {
   flake.nixosModules.someModule = { config, lib, pkgs, ... }: {
     # NixOS module body
   };
@@ -44,15 +42,18 @@ Wrong for a directly imported `*.mod.nix` file:
 
 ### Standalone Module Evaluation
 
-`nix flake check` evaluates exported `flake.nixosModules.*` directly. Do not assume another module has already declared an option unless the module imports it.
+`nix flake check` evaluates exported `flake.nixosModules.*` directly. Do not assume another module has declared an option unless the module imports it.
 
-Use safe lookups when optional config may not exist:
+Use `lib.hasAttrByPath` with `lib.optionalAttrs` when setting optional options, and `lib.attrByPath` when reading optional values (`lib.mkIf false` still checks option existence):
 
 ```nix
 let
-  desktopEnvironment = lib.attrByPath [ "desktop" "environment" ] null config;
+  hasPersistDirs = lib.hasAttrByPath [ "persist" "user" "directories" ] options;
+  steamEnabled = lib.attrByPath [ "gaming" "steam" "enable" ] false config;
 in
-lib.mkIf (desktopEnvironment == "hyprland") { ... }
+lib.optionalAttrs hasPersistDirs {
+  persist.user.directories = lib.mkIf steamEnabled [ ".local/share/Steam" ];
+}
 ```
 
 ### Eager Derivations
@@ -61,11 +62,11 @@ Keep derivations behind conditionals when they are only needed conditionally. Th
 
 ## Secrets
 
-- Agenix recipient rules live in `secrets.nix`.
-- Public recipient keys live in `modules/keys.mod.nix`.
-- The agenix private key is stored in Bitwarden and restored to `~/.ssh/agenix`.
-- Do not use the YubiKey resident `sk-*` SSH key for agenix; age needs a normal decryptable SSH key.
-- `.age` files are safe to commit. Plaintext secrets and private keys are not.
+- All encrypted secrets use `sops-nix` with age recipient rules in `.sops.yaml`.
+- Encrypted payloads live in `secrets/shared.yaml` (cross-host) and `secrets/homelab.yaml` (homelab-only).
+- Use `nix run .#bootstrapAge` to install the age private key into `~/.config/sops/age/keys.txt` and `/persist/var/lib/sops-nix/key.txt` (or `/var/lib/sops-nix/key.txt` on non-preserved hosts).
+- Public SSH admin keys live in `modules/keys.mod.nix`.
+- Encrypted SOPS files are safe to commit. Plaintext secrets and private keys are not.
 
 ## Verification
 
