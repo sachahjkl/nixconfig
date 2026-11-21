@@ -561,11 +561,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1795289031,
-        "narHash": "sha256-B/Gt7U+1BJxnPnvGPcc0IxG+k7K9WL+HZ/Y/UoyeDlY=",
+        "lastModified": 1795290240,
+        "narHash": "sha256-bm6GfJfhCanlJZMoGNU7rornZTseuIgtDru+tCtkm9E=",
         "owner": "anomalyco",
         "repo": "hex",
-        "rev": "da96da03f8bf615794fbd8fa541cfc79c3fa4845",
+        "rev": "96b4f365d4a37680514d1150caeac539d62ac891",
         "type": "github"
       },
       "original": {
