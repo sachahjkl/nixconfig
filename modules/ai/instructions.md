@@ -129,6 +129,7 @@ Every project has the same set of files. This rule applies to every project, wha
 - If the project has no roadmap, create it during the current work. There is no global to-do file: a plan that touches several programs goes in the roadmap of gui_toolkit.
 - Write plain Markdown that a reader understands without a tool: no YAML, no front matter, no metadata fields.
 - Use this shape: the title `# Roadmap`, then the sections `## Now`, `## Next` and `## Later`, in this order. Each section is a list. Give no dates.
+- An optional last section `## Maybe` holds what may be done one day and is not decided: each entry says the ways open and what each waits for.
 - Start each entry with a short bold summary, then one or two sentences on what it gives the user. If a design exists, link its intent file in `src/md`.
 - A work that touches several programs goes in the roadmap of gui_toolkit.
 - When a work is done, remove its entry in the same commit as its changelog fragment.

@@ -153,7 +153,7 @@
       settings = cfg.initialCliSettings;
     };
 
-    upstreamOpencode = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
+    upstreamOpencode = self.packages.${pkgs.stdenv.hostPlatform.system}.opencode2;
     mcpNixos = pkgs.mcp-nixos;
 
     opencodeWrapper = pkgs.writeShellScriptBin "opencode" ''
@@ -200,11 +200,6 @@
         > $out/share/zsh/site-functions/_opencode2
     '';
   in {
-    imports = [
-      self.nixosModules.sops
-      self.nixosModules.skills
-    ];
-
     options.opencode = {
       enable = mkOption {
         type = types.bool;
@@ -301,7 +296,7 @@
           tmpfiles.users.${config.userName}.rules = [
             "d ${config.homeDirectory}/.config/opencode 0700 - - -"
             "d ${extensionDirectory} 0700 - - -"
-            "C ${config.homeDirectory}/.config/opencode/AGENTS.md 0644 - - - ${opencodeAgents}"
+            "L+ ${config.homeDirectory}/.config/opencode/AGENTS.md - - - - ${opencodeAgents}"
             "C ${config.homeDirectory}/.config/opencode/cli.json 0644 - - - ${opencodeCliConfig}"
             "L+ ${extensionDirectory}/skills - - - - ${inputs.skills}"
           ];
@@ -353,6 +348,7 @@
           wants = ["network-online.target"];
           environment = {
             HOME = config.homeDirectory;
+            PATH = lib.mkForce "/run/wrappers/bin:${config.homeDirectory}/.local/bin:/run/current-system/sw/bin";
           };
           serviceConfig = {
             User = config.userName;

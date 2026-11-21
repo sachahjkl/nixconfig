@@ -29,14 +29,12 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelab-hardware
       self.nixosModules.homelabRoutes
       self.nixosModules.nixCache
-      self.nixosModules.ai
     ];
 
-    userName = "sacha";
-    fullName = "Sacha";
     extraUserGroups = ["docker"];
-    users.mutableUsers = lib.mkForce false;
     homeDirectory = "/data/Home/sacha";
+    # /tmp is already on the persistent @data-tmp Btrfs subvolume.
+    persist.tmpDisk.enable = false;
 
     ai = {
       enable = true;
@@ -57,23 +55,17 @@ lib.systems.nixosSystem "homelab" {
       opencodePasswordFile = config.sops.secrets."opencode/server-password".path;
     };
 
-    homelab = {
-      lanInterface = "eno1";
-      dataRoot = "/data";
-      sops.enable = true;
-    };
+    homelab.sops.enable = true;
 
     services = {
       containerHost = {
         enable = true;
         dockerDataRoot = "/data/Docker/storage";
-        sharedNetwork = "services";
       };
 
       observabilityStack = {
         enable = true;
         dataDir = "/data/Docker/appdata/observability";
-        containerNetwork = "services";
         grafanaDomain = "grafana.sacha.house";
         otlpDomain = "otlp.sacha.house";
       };
@@ -119,7 +111,6 @@ lib.systems.nixosSystem "homelab" {
         interface = "ts0";
         namespaces = ["staging" "production" "demo"];
         ghcrPull.enable = true;
-        nodeClass = "general";
         serverAddresses = ["100.106.51.80"];
         address = "100.106.51.80";
         githubActions = {
@@ -167,7 +158,6 @@ lib.systems.nixosSystem "homelab" {
       resticBackup = {
         enable = true;
         paths = [
-          "/root"
           "/persist/var/lib/sops-nix"
           "/data/Secrets"
           "/data/Backups/openbao"
@@ -208,12 +198,10 @@ lib.systems.nixosSystem "homelab" {
       };
     };
 
-    git.signingKey = "~/.ssh/far-from-home.pub";
     systemd.services.restic-backup = {
       requires = ["openbao-snapshot.service" "sqlite-snapshots.service"];
       after = ["openbao-snapshot.service" "sqlite-snapshots.service"];
     };
-    ssh.identityKey = "~/.ssh/far-from-home";
 
     system.autoUpgrade = {
       enable = true;

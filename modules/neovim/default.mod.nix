@@ -44,6 +44,7 @@ _: {
       ]
       (builtins.readFile ./init.lua.in)
     );
+    hasDesktop = lib.hasAttrByPath ["terminal"] options;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasPreservationDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
@@ -64,27 +65,28 @@ _: {
   in {
     config = lib.mkIf enabled (lib.mkMerge [
       {
-        environment.systemPackages = with pkgs; [
-          dotnet-sdk
-          neovim
-          wl-clipboard
-          xclip
-        ];
+        environment.systemPackages =
+          [pkgs.neovim]
+          ++ lib.optionals hasDesktop (with pkgs; [
+            dotnet-sdk
+            wl-clipboard
+            xclip
+          ]);
       }
 
       (lib.optionalAttrs hasPreservationDirs {
         persist.user.directories = [
-          ".cache/nvim"
           ".config/nvim"
           ".local/share/nvim"
-          ".local/state/nvim"
         ];
       })
 
       (lib.optionalAttrs (hasHjemUsers && hasUserName) {
         hjem.users.${config.userName} = {
           xdg.config.files."nvim/init.lua".source = initLua;
-          files.".local/share/applications/nvim.desktop".text = neovimDesktop;
+          files = lib.optionalAttrs hasDesktop {
+            ".local/share/applications/nvim.desktop".text = neovimDesktop;
+          };
         };
       })
     ]);

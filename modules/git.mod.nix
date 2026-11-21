@@ -8,6 +8,8 @@
   }: let
     cfg = config.git;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
+    hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
+    hasUserName = lib.hasAttrByPath ["userName"] options;
     isDark = lib.attrByPath ["theme" "isDark"] true config;
     cornerRadius = lib.attrByPath ["theme" "cornerRadius"] 0 config;
     difft = pkgs.writeShellScriptBin "difft" ''
@@ -134,7 +136,7 @@
 
       signingKey = lib.mkOption {
         type = lib.types.str;
-        default = "~/.ssh/id_ed25519_sk.pub";
+        default = "~/.ssh/far-from-home.pub";
         description = "SSH public key path used for Git commit signing.";
       };
 
@@ -147,13 +149,8 @@
 
     config = lib.mkMerge [
       {
-        persist.user.directories = [
-          ".config/gitui"
-        ];
-
         environment.systemPackages = with pkgs; [
           difft
-          fzf
           git
           git-lfs
           gitui
@@ -166,7 +163,13 @@
         ];
       }
 
-      (lib.optionalAttrs hasHjemUsers {
+      (lib.optionalAttrs hasPersistDirs {
+        persist.user.directories = [
+          ".config/gitui"
+        ];
+      })
+
+      (lib.optionalAttrs (hasHjemUsers && hasUserName) {
         hjem.users.${config.userName} = {
           files.".ssh/allowed_signers".text = lib.concatMapStrings (key: "${cfg.authorEmail} ${key}\n") self.keys-admin;
 

@@ -1,6 +1,7 @@
 {lib, ...}: {
   flake.nixosModules.thunar = {
     config,
+    options,
     pkgs,
     ...
   }: let
@@ -28,11 +29,10 @@
       </actions>
     '';
 
-    hasPreservation =
-      lib.hasAttrByPath ["persist" "enable"] config
-      && config.persist.enable;
+    hasPersistUser = lib.hasAttrByPath ["persist" "user" "directories"] options;
+    hasPreservation = hasPersistUser && config.persist.enable;
 
-    persistentConfigDir = "${toString config.persist.persistentStoragePath}/home/${config.userName}/.config";
+    persistentConfigDir = "${toString config.persist.persistentStoragePath}${config.homeDirectory}/.config";
     homeConfigDir = "${config.homeDirectory}/.config";
     configDir =
       if hasPreservation
@@ -45,45 +45,51 @@
     thunarTargetDir = "${configDir}/Thunar";
     thunarTargetFile = "${thunarTargetDir}/uca.xml";
   in {
-    programs = {
-      # Thunar keeps its settings in xfconf.
-      xfconf.enable = true;
-      thunar = {
-        enable = true;
-        plugins = with pkgs; [
-          thunar-archive-plugin
-          thunar-media-tags-plugin
-          thunar-volman
-        ];
-      };
-    };
+    config = lib.mkMerge [
+      {
+        programs = {
+          # Thunar keeps its settings in xfconf.
+          xfconf.enable = true;
+          thunar = {
+            enable = true;
+            plugins = with pkgs; [
+              thunar-archive-plugin
+              thunar-media-tags-plugin
+              thunar-volman
+            ];
+          };
+        };
 
-    # The file manager of every session but ShojiWM's, which has Classeur.
-    xdg.mime.defaultApplications."inode/directory" = "thunar.desktop";
+        # The file manager of every session but ShojiWM's, which has Classeur.
+        xdg.mime.defaultApplications."inode/directory" = "thunar.desktop";
 
-    persist.user = lib.mkIf hasPreservation {
-      files = [
-        ".config/xfce4/helpers.rc"
-        ".config/Thunar/uca.xml"
-      ];
-      # Thunar's own settings (view, sort, side pane): xfconf writes them.
-      directories = [".config/xfce4/xfconf"];
-    };
+        system.activationScripts.thunarHelpers = lib.stringAfter ["users"] ''
+          install -d -m 0755 -o ${config.userName} -g users ${helpersTargetDir}
+          cat > ${helpersTargetFile} <<'EOF'
+          ${helpersRc}
+          EOF
+          chown ${config.userName}:users ${helpersTargetFile}
+          chmod 0644 ${helpersTargetFile}
 
-    system.activationScripts.thunarHelpers.text = ''
-      install -d -m 0755 -o ${config.userName} -g users ${helpersTargetDir}
-      cat > ${helpersTargetFile} <<'EOF'
-      ${helpersRc}
-      EOF
-      chown ${config.userName}:users ${helpersTargetFile}
-      chmod 0644 ${helpersTargetFile}
+          install -d -m 0755 -o ${config.userName} -g users ${thunarTargetDir}
+          cat > ${thunarTargetFile} <<'EOF'
+          ${ucaXml}
+          EOF
+          chown ${config.userName}:users ${thunarTargetFile}
+          chmod 0644 ${thunarTargetFile}
+        '';
+      }
 
-      install -d -m 0755 -o ${config.userName} -g users ${thunarTargetDir}
-      cat > ${thunarTargetFile} <<'EOF'
-      ${ucaXml}
-      EOF
-      chown ${config.userName}:users ${thunarTargetFile}
-      chmod 0644 ${thunarTargetFile}
-    '';
+      (lib.optionalAttrs hasPersistUser {
+        persist.user = lib.mkIf config.persist.enable {
+          files = [
+            ".config/xfce4/helpers.rc"
+            ".config/Thunar/uca.xml"
+          ];
+          # Thunar's own settings (view, sort, side pane): xfconf writes them.
+          directories = [".config/xfce4/xfconf"];
+        };
+      })
+    ];
   };
 }

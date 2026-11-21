@@ -9,7 +9,6 @@
     ];
     extra-substituters = [
       "https://cache.homelab.sacha.house"
-      "https://hyprland.cachix.org"
       "https://cache.numtide.com"
       "https://nix-community.cachix.org"
       "https://sachahjkl.cachix.org"
@@ -17,10 +16,10 @@
     ];
     extra-trusted-public-keys = [
       "homelab-cache-1:ZaUHSv8slKsAKc9kd0AGI8p1HUjUumfho7ShgUVlnUg="
-      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "sachahjkl.cachix.org-1:cepX7PCUV88hCchnh9prZM5V72wRkCf6oSJL6JfgWs0="
+      "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
     ];
   };
 
@@ -80,17 +79,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager/trunk";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
-
-    wrappers = {
-      url = "github:Lassulus/wrappers";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     wrapper-modules = {
       url = "github:BirdeeHub/nix-wrapper-modules";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -111,12 +99,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    agenix = {
-      url = "github:ryantm/agenix";
+    mt7927 = {
+      url = "github:cmspam/mt7927-nixos";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    mt7927.url = "github:cmspam/mt7927-nixos";
 
     hex = {
       url = "github:anomalyco/hex";
@@ -136,13 +122,18 @@
 
     classeur = {
       url = "git+https://github.com/sachahjkl/classeur?submodules=1";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        git-hooks.follows = "git-hooks";
+      };
     };
 
     papier = {
       url = "git+https://github.com/sachahjkl/papier?submodules=1";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.git-hooks.follows = "git-hooks";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        git-hooks.follows = "git-hooks";
+      };
     };
 
     # inspecteur, the task manager of the Windows 7 configuration
@@ -150,16 +141,20 @@
     # gui_toolkit submodule out.
     inspecteur = {
       url = "git+https://github.com/sachahjkl/inspecteur?submodules=1";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.git-hooks.follows = "git-hooks";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        git-hooks.follows = "git-hooks";
+      };
     };
 
     # cliche, the screen capture of the desktop (github:sachahjkl/cliche), which
     # shojiwm-desktop installs: here so that its release is this system's.
     cliche = {
       url = "git+https://github.com/sachahjkl/cliche?submodules=1";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.git-hooks.follows = "git-hooks";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        git-hooks.follows = "git-hooks";
+      };
     };
 
     # feuille and socle, the other Froment Software programs: git+https for
@@ -168,15 +163,28 @@
     # installer.)
     feuille = {
       url = "git+https://github.com/sachahjkl/feuille?submodules=1";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        git-hooks.follows = "git-hooks";
+      };
     };
 
     socle = {
       url = "git+https://github.com/sachahjkl/socle?submodules=1";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        bootvine.follows = "bootvine";
+        determinate.follows = "determinate";
+        disko.follows = "disko";
+        git-hooks.follows = "git-hooks";
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
     };
 
-    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+      inputs.flake-parts.follows = "flake-parts";
+    };
 
     skills = {
       url = "github:sachahjkl/skills";
@@ -214,7 +222,6 @@
 
         imports =
           [
-            inputs.wrapper-modules.flakeModules.wrappers
             inputs.disko.flakeModules.default
           ]
           ++ filter (path: hasSuffix ".mod.nix" (toString path)) (listFilesRecursive ./.);

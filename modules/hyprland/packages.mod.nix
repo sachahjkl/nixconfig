@@ -11,18 +11,16 @@ _: {
     };
   in {
     environment.systemPackages = with pkgs; [
-      arc-theme
       brightnessctl
       dunst
       grim
       hyprpaper
       hypridle
+      hyprlock
       hyprpicker
       libsForQt5.qt5ct
       networkmanagerapplet
-      papirus-icon-theme
       playerctl
-      pwvucontrol
       qt6.qtwayland
       satty
       smile
@@ -33,9 +31,7 @@ _: {
       wl-clipboard
       wtype
       xdg-user-dirs
-      inter
       rofiPkg
-      hyprlock
     ];
   };
 }

@@ -6,6 +6,7 @@
     pkgs,
     ...
   }: let
+    hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
@@ -31,8 +32,6 @@
       }
 
       (lib.optionalAttrs (hasSopsSecrets && hasUserName) {
-        environment.sessionVariables.NIX_USER_CONF_FILES = config.sops.templates."nix-github.conf".path;
-
         sops.secrets."github/gh-cli" = {
           sopsFile = builtins.path {
             path = self + /secrets/shared.yaml;
@@ -54,10 +53,14 @@
         };
       })
 
+      (lib.optionalAttrs (hasSopsSecrets && hasHjemUsers && hasUserName) {
+        hjem.users.${config.userName}.environment.sessionVariables.NIX_USER_CONF_FILES =
+          config.sops.templates."nix-github.conf".path;
+      })
+
       (lib.optionalAttrs hasPersistDirs {
         persist.user.directories = [
           ".config/gh"
-          ".local/state/gh"
         ];
       })
     ];

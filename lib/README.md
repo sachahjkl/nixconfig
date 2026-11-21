@@ -1,3 +1,5 @@
 # lib
 
-Reserved for future pure helper functions in the ncc-style layout.
+Helper functions exposed via `specialArgs.lib`.
+
+- `systems.nix`: `lib.systems.nixosSystem` wrapper for defining NixOS host configurations.

@@ -20,7 +20,7 @@ _: {
     };
 
     config = lib.mkMerge [
-      (lib.mkIf config.withMoshClient {
+      (lib.mkIf (config.withMoshClient && !config.withMoshServer) {
         environment.systemPackages = [pkgs.mosh];
       })
 

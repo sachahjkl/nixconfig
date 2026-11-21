@@ -10,6 +10,7 @@
     hasHomeDirectory = lib.hasAttrByPath ["homeDirectory"] options;
     hasPersistDirectories = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasSharedSops = lib.hasAttrByPath ["sharedSops" "enable"] options;
+    hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
     hasUserName = lib.hasAttrByPath ["userName"] options;
     npmTokenPath = "/run/secrets/npm-current-token";
     wrappedNpm = pkgs.writeShellScriptBin "npm" ''
@@ -48,16 +49,18 @@
         };
       })
 
-      (lib.mkIf (hasSharedSops && config.sharedSops.enable && hasUserName) {
-        sops.secrets."npm/current-token-november-2026" = {
-          sopsFile = builtins.path {
-            path = self + /secrets/shared.yaml;
-            name = "shared-secrets.yaml";
+      (lib.optionalAttrs (hasSopsSecrets && hasSharedSops && hasUserName) {
+        sops.secrets = lib.mkIf config.sharedSops.enable {
+          "npm/current-token-november-2026" = {
+            sopsFile = builtins.path {
+              path = self + /secrets/shared.yaml;
+              name = "shared-secrets.yaml";
+            };
+            path = npmTokenPath;
+            owner = config.userName;
+            group = "users";
+            mode = "0400";
           };
-          path = npmTokenPath;
-          owner = config.userName;
-          group = "users";
-          mode = "0400";
         };
       })
 

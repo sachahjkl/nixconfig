@@ -1,9 +1,5 @@
 _: {
-  flake.nixosModules.homelabShares = {
-    config,
-    lib,
-    ...
-  }: let
+  flake.nixosModules.homelabShares = {config, ...}: let
     dataRoot = config.homelab.dataRoot;
     lanInterface = config.homelab.lanInterface;
   in {
@@ -78,7 +74,7 @@ _: {
 
       # SSH accepts the LAN and the WireGuard subnet only, never public sources.
       # Stop the shared SSH module from opening port 22 to every source.
-      services.openssh.openFirewall = lib.mkForce false;
+      services.openssh.openFirewall = false;
 
       networking.firewall = {
         extraCommands = ''

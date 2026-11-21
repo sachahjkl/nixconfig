@@ -4,30 +4,12 @@
   lib,
   ...
 }: let
-  commonModule = {lib, ...}: {
+  commonModule = {...}: {
     imports = [
       inputs.nixos-wsl.nixosModules.default
+      self.nixosModules.common
       self.nixosModules.wsl-hardware
-      self.nixosModules.baseUser
-      self.nixosModules.external-preservation
-      self.nixosModules.ai
-      self.nixosModules.editor
-      self.nixosModules.fish
-      self.nixosModules.home-manager
-      self.nixosModules.hjem
-      self.nixosModules.mosh
-      self.nixosModules.moshiHook
-      self.nixosModules.neovim
-      self.nixosModules.nix
-      self.nixosModules.nixCommon
-      self.nixosModules.opencode
-      self.nixosModules.packages
-      self.nixosModules.preservation
-      self.nixosModules.sharedSops
-      self.nixosModules.ssh
-      self.nixosModules.user-home
       self.nixosModules.wslContainers
-      self.nixosModules.xdgStubs
     ];
 
     wsl = {
@@ -42,7 +24,6 @@
 
     userName = "nixos";
     fullName = "NixOS";
-    homeDirectory = "/home/nixos";
 
     ai = {
       enable = true;
@@ -50,17 +31,12 @@
       herdr.enable = true;
     };
 
-    moshi.enable = true;
-
-    git.signingKey = "~/.ssh/far-from-home.pub";
-    ssh.identityKey = "~/.ssh/far-from-home";
-
     sharedSops = {
       enable = true;
       passwordHashSecretName = "shared/password-hash";
     };
 
-    persist.enable = lib.mkForce false;
+    persist.enable = false;
 
     system.stateVersion = "26.05";
   };

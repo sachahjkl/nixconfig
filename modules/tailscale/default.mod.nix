@@ -9,6 +9,7 @@ _: {
     inherit (lib.lists) singleton;
     inherit (lib.meta) getExe;
     inherit (lib.modules) mkAfter mkIf;
+    hasDesktop = lib.hasAttrByPath ["terminal"] options;
     hasPreservationDirs = lib.hasAttrByPath ["persist" "system" "directories"] options;
   in {
     options.network.tailscale = {
@@ -76,7 +77,7 @@ _: {
         systemd.services.tailscaled.serviceConfig.Environment = singleton "TS_DEBUG_FIREWALL_MODE=nftables";
       })
 
-      {
+      (mkIf hasDesktop {
         systemd.user.services.tailscale-systray = {
           description = "Tailscale tray icon";
           wantedBy = ["graphical-session.target"];
@@ -89,7 +90,7 @@ _: {
             RestartSec = 5;
           };
         };
-      }
+      })
     ];
   };
 }

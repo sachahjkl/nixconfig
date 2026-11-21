@@ -64,7 +64,7 @@
         };
         "custom/system" = {
           format = u "F4BC";
-          on-click = "${config.terminal.command} -e ${lib.getExe pkgs.btop}";
+          on-click = "${config.terminal.commandWithShell} ${lib.getExe pkgs.btop}";
           tooltip-format = "System monitor";
         };
         "group/system" = {

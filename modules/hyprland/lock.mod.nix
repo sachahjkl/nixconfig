@@ -21,7 +21,8 @@ _: {
     lockCmd = "pidof hyprlock || ${lib.getExe pkgs.hyprlock}";
     dpmsOn = "hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
     dpmsOff = "hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })'";
-    lockAndDpmsCycle = "${lockCmd}; sleep 5; ${dpmsOff}";
+    # Launch hyprlock in the background so dpmsOff fires 5s after locking, not after unlocking.
+    lockAndDpmsCycle = "(${lockCmd} &) && sleep 5 && ${dpmsOff}";
     inherit (config) userName;
   in {
     hjem.users.${userName}.rum.programs = {
@@ -91,7 +92,7 @@ _: {
               valign = "center";
             }
           ];
-          image = [
+          image = lib.optionals (config.assets.faceIcon != null) [
             {
               shadow_passes = 1;
               path = toString config.assets.faceIcon;
@@ -112,7 +113,7 @@ _: {
         settings = {
           general = {
             lock_cmd = lockCmd;
-            before_sleep_cmd = lockCmd;
+            before_sleep_cmd = "loginctl lock-session";
             after_sleep_cmd = dpmsOn;
           };
           listener =

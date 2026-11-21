@@ -7,6 +7,11 @@
   }: let
     cfg = config.ai;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
+    hasUserName = lib.hasAttrByPath ["userName"] options;
+    instructions = builtins.path {
+      path = self + /modules/ai/instructions.md;
+      name = "ai-instructions.md";
+    };
   in {
     imports = [
       self.nixosModules.claudeCode
@@ -29,26 +34,21 @@
           claudeCode.enable = lib.mkDefault cfg.enable;
           hex.enable = lib.mkDefault cfg.enable;
           omp.enable = lib.mkDefault cfg.enable;
+          skills.enable = lib.mkDefault cfg.enable;
         };
         codex.enable = lib.mkDefault (cfg.enable && cfg.codex.enable);
         herdr.enable = lib.mkDefault (cfg.enable && cfg.herdr.enable);
       }
 
-      (lib.mkIf (cfg.enable && hasHjemUsers) {
-        hjem.users.${config.userName}.files = {
-          ".claude/CLAUDE.md".source = builtins.path {
-            path = self + /modules/ai/instructions.md;
-            name = "ai-instructions.md";
-          };
-          ".config/codex/AGENTS.md".source = builtins.path {
-            path = self + /modules/ai/instructions.md;
-            name = "ai-instructions.md";
-          };
-          ".gemini/GEMINI.md".source = builtins.path {
-            path = self + /modules/ai/instructions.md;
-            name = "ai-instructions.md";
-          };
-        };
+      (lib.optionalAttrs (hasHjemUsers && hasUserName) {
+        hjem.users.${config.userName}.files = lib.mkIf cfg.enable (
+          lib.optionalAttrs cfg.claudeCode.enable {
+            ".claude/CLAUDE.md".source = instructions;
+          }
+          // lib.optionalAttrs config.codex.enable {
+            ".config/codex/AGENTS.md".source = instructions;
+          }
+        );
       })
     ];
   };

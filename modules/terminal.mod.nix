@@ -2,7 +2,6 @@
   flake.nixosModules.terminal = {
     config,
     lib,
-    pkgs,
     ...
   }: let
     terminalNames = builtins.attrNames self.lib.terminals;
@@ -17,9 +16,6 @@
         };
       };
     });
-    xtermCompatWrapper = pkgs.writeShellScriptBin "xterm-${config.terminal.emulatorName}" ''
-      exec ${config.terminal.command} "$@"
-    '';
   in {
     options.terminal = lib.mkOption {
       type = lib.types.submodule ({config, ...}: {
@@ -62,12 +58,6 @@
             internal = true;
           };
 
-          kdeApplication = lib.mkOption {
-            type = lib.types.str;
-            description = "KDE terminal application name.";
-            internal = true;
-          };
-
           openDirCommand = lib.mkOption {
             type = lib.types.str;
             description = "Command used to open a terminal in a directory.";
@@ -79,16 +69,18 @@
             description = "Window class used for the terminal scratchpad.";
             internal = true;
           };
+
+          scratchpadClassFlag = lib.mkOption {
+            type = lib.types.str;
+            description = "CLI flag used to set the scratchpad window class or app ID.";
+            internal = true;
+          };
         };
 
         config = let
           terminal = self.lib.terminals.${config.default};
         in
-          {
-            # Materialize every terminal subtree so per-terminal defaults exist
-            # even before a host explicitly configures them.
-          }
-          // lib.genAttrs terminalNames (_: {})
+          lib.genAttrs terminalNames (_: {})
           // {
             inherit
               (terminal)
@@ -97,15 +89,13 @@
               commandWithShell
               desktop
               emulatorName
-              kdeApplication
               openDirCommand
               scratchpadClass
+              scratchpadClassFlag
               ;
           };
       });
       description = "Shared terminal interface used by desktop integrations.";
     };
-
-    config.environment.systemPackages = [xtermCompatWrapper];
   };
 }

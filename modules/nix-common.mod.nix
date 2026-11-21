@@ -12,7 +12,6 @@
         alejandra
         deadnix
         manix
-        nil
         nix-inspect
         nix-init
         nix-output-monitor

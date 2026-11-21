@@ -40,7 +40,10 @@
             font-name = "${config.theme.fonts.sans} 10";
             cursor-theme = config.theme.cursor;
             cursor-size = mkInt32 config.theme.cursorSize;
-            color-scheme = "prefer-dark";
+            color-scheme =
+              if config.theme.isDark
+              then "prefer-dark"
+              else "default";
           };
         }
       ];
@@ -59,17 +62,12 @@
           "xft-hinting" = 1;
           "xft-hintstyle" = "hintfull";
           "xft-rgba" = "rgb";
-          "application-prefer-dark-theme" = true;
+          "application-prefer-dark-theme" = config.theme.isDark;
         };
       };
 
       xdg.config.files = {
         "qt5ct/qt5ct.conf".text = ''
-          [Appearance]
-          icon_theme=${config.theme.iconTheme}
-        '';
-
-        "qt6ct/qt6ct.conf".text = ''
           [Appearance]
           icon_theme=${config.theme.iconTheme}
         '';

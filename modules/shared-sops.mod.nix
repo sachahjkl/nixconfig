@@ -7,6 +7,7 @@
     ...
   }: let
     cfg = config.sharedSops;
+    isWsl = lib.attrByPath ["wsl" "enable"] false config;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
     hasPasswordHashFile = lib.hasAttrByPath ["passwordHashFile"] options;
     hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
@@ -46,7 +47,7 @@
     };
 
     config = lib.mkIf cfg.enable (lib.mkMerge [
-      {
+      (lib.mkIf (!isWsl) {
         boot = {
           initrd.availableKernelModules = {
             exfat = true;
@@ -57,6 +58,13 @@
           supportedFilesystems.exfat = true;
         };
 
+        environment.systemPackages = [
+          pkgs.cryptsetup
+          pkgs.exfatprogs
+        ];
+      })
+
+      {
         assertions = [
           {
             assertion = cfg.defaultSopsFile != null;
@@ -75,7 +83,7 @@
 
           gnupg.sshKeyPaths = [];
 
-          secrets = lib.mkIf (cfg.passwordHashSecretName != null) {
+          secrets = lib.mkIf (cfg.passwordHashSecretName != null && hasUserName) {
             ${cfg.passwordHashSecretName} =
               {
                 neededForUsers = true;
@@ -86,14 +94,11 @@
               };
           };
         };
-
-        passwordHashFile = lib.mkIf (hasPasswordHashFile && cfg.passwordHashSecretName != null) (lib.mkDefault config.sops.secrets.${cfg.passwordHashSecretName}.path);
-
-        environment.systemPackages = [
-          pkgs.cryptsetup
-          pkgs.exfatprogs
-        ];
       }
+
+      (lib.optionalAttrs hasPasswordHashFile {
+        passwordHashFile = lib.mkIf (cfg.passwordHashSecretName != null) (lib.mkDefault config.sops.secrets.${cfg.passwordHashSecretName}.path);
+      })
 
       (lib.optionalAttrs (hasHjemUsers && hasUserName) {
         hjem.users.${config.userName}.xdg.config.files."sops/age".type = "directory";

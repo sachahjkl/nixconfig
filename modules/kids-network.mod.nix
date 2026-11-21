@@ -2,9 +2,11 @@
   flake.nixosModules.kidsNetwork = {
     config,
     lib,
+    options,
     ...
   }: let
     cfg = config.kidsDesktop.network;
+    hasAdminAccount = lib.hasAttrByPath ["kidsDesktop" "accounts" "administrator" "passwordHashFile"] options;
     tagFlag = "--advertise-tags=${lib.concatStringsSep "," cfg.tailscale.tags}";
   in {
     imports = [self.nixosModules.sops];
@@ -86,13 +88,27 @@
             sshKeyPaths = [];
           };
           gnupg.sshKeyPaths = [];
-          secrets."tailscale/user-authkey" = {
-            owner = "root";
-            group = "root";
-            mode = "0400";
-          };
+          secrets =
+            {
+              "tailscale/user-authkey" = {
+                owner = "root";
+                group = "root";
+                mode = "0400";
+              };
+            }
+            // lib.optionalAttrs hasAdminAccount {
+              "shared/password-hash" = {
+                neededForUsers = true;
+                path = "/run/secrets-for-users/${config.kidsDesktop.accounts.administrator.name}-password-hash";
+              };
+            };
         };
       }
+
+      (lib.optionalAttrs hasAdminAccount {
+        kidsDesktop.accounts.administrator.passwordHashFile =
+          lib.mkDefault config.sops.secrets."shared/password-hash".path;
+      })
 
       (lib.mkIf cfg.familyDns.enable {
         networking = {

@@ -81,7 +81,6 @@ _: {
         ncdu
         restic
         smartmontools
-        vim
       ];
 
       hardware.enableRedistributableFirmware = true;

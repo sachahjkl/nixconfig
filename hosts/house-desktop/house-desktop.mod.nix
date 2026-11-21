@@ -62,14 +62,9 @@ lib.systems.nixosSystem "house-desktop" {
       xserver.videoDrivers = ["nvidia"];
     };
 
-    ai.codex.enable = false;
-
     # This machine is faster than homelab, and homelab runs other services.
     # Build locally instead of on the homelab build machine from the workstation module.
     nix.distributedBuilds = false;
-
-    git.signingKey = "~/.ssh/far-from-home.pub";
-    ssh.identityKey = "~/.ssh/far-from-home";
 
     terminal.default = "foot";
     # kitty at hand too, configured like the default one.
@@ -92,7 +87,6 @@ lib.systems.nixosSystem "house-desktop" {
           hdr = false;
         }
       ];
-      defaultSession = "hyprland-uwsm";
     };
 
     hyprland = {

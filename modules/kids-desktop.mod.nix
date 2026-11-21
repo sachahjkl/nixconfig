@@ -115,10 +115,7 @@
           options = "--delete-older-than 14d";
         };
         optimise.automatic = true;
-        settings.experimental-features = [
-          "flakes"
-          "nix-command"
-        ];
+        settings = import ../nix-config.nix;
       };
 
       nixpkgs.config.allowUnfree = true;

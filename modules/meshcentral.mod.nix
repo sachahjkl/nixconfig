@@ -67,14 +67,25 @@
     };
   };
 
-  flake.nixosModules.meshcentral = {pkgs, ...}: let
+  flake.nixosModules.meshcentral = {
+    lib,
+    options,
+    pkgs,
+    ...
+  }: let
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
+    hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
   in {
-    persist.user.directories = [
-      ".cache/meshcentral"
-      ".local/share/meshcentral"
-    ];
+    config = lib.mkMerge [
+      {
+        environment.systemPackages = [selfPkgs.meshcentral];
+      }
 
-    environment.systemPackages = [selfPkgs.meshcentral];
+      (lib.optionalAttrs hasPersistDirs {
+        persist.user.directories = [
+          ".local/share/meshcentral"
+        ];
+      })
+    ];
   };
 }

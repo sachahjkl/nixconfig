@@ -98,8 +98,14 @@ def main [
     jj new $symbol
   }
 
-  exec $env.EDITOR (match $target.line {
-    null => $target.file
-    $line => $"($target.file):($line)"
-  })
+  match $target.line {
+    null => { exec $env.EDITOR $target.file }
+    $line => {
+      if ($env.EDITOR | path basename) in ["nvim" "vim" "vi"] {
+        exec $env.EDITOR $"+($line)" $target.file
+      } else {
+        exec $env.EDITOR $"($target.file):($line)"
+      }
+    }
+  }
 }

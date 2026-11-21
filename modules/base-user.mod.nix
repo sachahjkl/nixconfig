@@ -1,11 +1,9 @@
-{self, ...}: {
+_: {
   flake.nixosModules.baseUser = {
     config,
     lib,
     ...
   }: {
-    imports = [self.nixosModules.secrets];
-
     options = {
       passwordHashFile = lib.mkOption {
         type = lib.types.nullOr lib.types.path;
@@ -16,7 +14,7 @@
       localPasswordHash = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
         default = null;
-        description = "Fallback declarative password hash when not using agenix secrets.";
+        description = "Fallback declarative password hash when passwordHashFile is unset.";
       };
 
       nixConfigPath = lib.mkOption {
@@ -39,7 +37,7 @@
 
       homeDirectory = lib.mkOption {
         type = lib.types.str;
-        default = "/home/sacha";
+        default = "/home/${config.userName}";
         description = "Primary local home directory.";
       };
 

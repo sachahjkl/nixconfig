@@ -11,15 +11,12 @@
     hasHomeDirectory = lib.hasAttrByPath ["homeDirectory"] options;
     hasFishAliases = lib.hasAttrByPath ["programs" "fish" "shellAliases"] options;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
-    hasPreservationDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
     hasPreservationFiles = lib.hasAttrByPath ["persist" "system" "files"] options;
     hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
   in {
-    imports = [self.nixosModules.yubikeySshKeys];
-
     options.ssh.identityKey = lib.mkOption {
       type = lib.types.str;
-      default = "~/.ssh/id_ed25519_sk";
+      default = "~/.ssh/far-from-home";
       description = "Primary SSH identity key path.";
     };
 
@@ -33,7 +30,7 @@
               type = "ed25519";
             }
           ];
-          openFirewall = true;
+          openFirewall = lib.mkDefault true;
           settings = {
             KbdInteractiveAuthentication = false;
             PasswordAuthentication = false;
@@ -49,7 +46,7 @@
         users.users.${config.userName}.openssh.authorizedKeys.keys = authorizedKeys;
       })
 
-      (lib.optionalAttrs hasPreservationFiles (let
+      (lib.optionalAttrs hasPreservationFiles (lib.mkIf config.persist.enable (let
         persistentSshDir = "${toString config.persist.persistentStoragePath}/etc/ssh";
         persistentEd25519Key = "${persistentSshDir}/ssh_host_ed25519_key";
         persistentEd25519Pub = "${persistentSshDir}/ssh_host_ed25519_key.pub";
@@ -85,11 +82,7 @@
           "z ${persistentSshDir}/ssh_host_ed25519_key 0600 root root -"
           "z ${persistentSshDir}/ssh_host_ed25519_key.pub 0644 root root -"
         ];
-      }))
-
-      (lib.optionalAttrs hasPreservationDirs {
-        persist.user.directories = [".cache/ssh"];
-      })
+      })))
 
       (lib.optionalAttrs (hasUserName && hasHomeDirectory) {
         systemd.tmpfiles.rules = [

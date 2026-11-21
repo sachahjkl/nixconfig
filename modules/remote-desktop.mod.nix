@@ -155,7 +155,6 @@
 
       (lib.mkIf cfg.wayvnc.enable {
         sops.secrets."remote-desktop/wayvnc-password" = secret;
-        persist.user.directories = [".local/state/wayvnc"];
         environment.systemPackages = [pkgs.wayvnc];
 
         systemd.user.services.wayvnc = {

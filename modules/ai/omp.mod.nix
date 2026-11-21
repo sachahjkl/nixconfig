@@ -8,6 +8,8 @@
   }: let
     cfg = config.ai.omp;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
+    hasPersistDirs = lib.hasAttrByPath ["persist" "user" "directories"] options;
+    hasUserName = lib.hasAttrByPath ["userName"] options;
     selfPkgs = self.packages.${pkgs.stdenv.hostPlatform.system};
 
     upstreamOmp = selfPkgs.omp;
@@ -131,29 +133,33 @@
 
     options.ai.omp.enable = lib.mkEnableOption "Oh My Pi terminal coding agent";
 
-    config = lib.mkIf cfg.enable {
-      sops.secrets = lib.mkIf (config.sops.defaultSopsFile != null) {
-        "ai/opencode-api-key" = {
-          sopsFile = builtins.path {
-            path = self + /secrets/shared.yaml;
-            name = "shared-secrets.yaml";
+    config = lib.mkIf cfg.enable (lib.mkMerge [
+      {
+        sops.secrets = lib.mkIf (config.sops.defaultSopsFile != null && hasUserName) {
+          "ai/opencode-api-key" = {
+            sopsFile = builtins.path {
+              path = self + /secrets/shared.yaml;
+              name = "shared-secrets.yaml";
+            };
+            owner = config.userName;
+            mode = "0400";
           };
-          owner = config.userName;
-          mode = "0400";
         };
-      };
 
-      environment.systemPackages = [
-        wrappedOmp
-        ompCompletions
-      ];
+        environment.systemPackages = [
+          wrappedOmp
+          ompCompletions
+        ];
+      }
 
-      persist.user.directories = [
-        ".omp"
-      ];
+      (lib.optionalAttrs hasPersistDirs {
+        persist.user.directories = [
+          ".omp"
+        ];
+      })
 
-      hjem.users.${config.userName} = lib.mkIf hasHjemUsers {
-        files = {
+      (lib.optionalAttrs (hasHjemUsers && hasUserName) {
+        hjem.users.${config.userName}.files = {
           ".omp/agent/config.yml".source = ompConfig;
           ".omp/agent/AGENTS.md".source = builtins.path {
             path = self + /modules/ai/instructions.md;
@@ -161,7 +167,7 @@
           };
           ".omp/agent/models.yml".source = ompModels;
         };
-      };
-    };
+      })
+    ]);
   };
 }

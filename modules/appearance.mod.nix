@@ -69,12 +69,6 @@
           description = "Shared Rofi theme name.";
         };
 
-        kvantumTheme = lib.mkOption {
-          type = lib.types.str;
-          default = "Windows-10-Dark";
-          description = "Shared Kvantum theme name.";
-        };
-
         fonts = {
           sans = lib.mkOption {
             type = lib.types.str;
@@ -93,12 +87,6 @@
               type = lib.types.number;
               default = 14;
               description = "Shared normal font size.";
-            };
-
-            big = lib.mkOption {
-              type = lib.types.number;
-              default = 20;
-              description = "Shared large font size.";
             };
           };
         };

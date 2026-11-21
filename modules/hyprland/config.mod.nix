@@ -89,22 +89,10 @@
 
     config = lib.mkMerge [
       {
-        environment.sessionVariables = {
-          XCURSOR_THEME = config.theme.cursor;
-          XCURSOR_SIZE = toString config.theme.cursorSize;
-          HYPRCURSOR_SIZE = toString config.theme.cursorSize;
-          QT_QPA_PLATFORM = "wayland";
-          QT_QPA_PLATFORMTHEME = "qt5ct";
-          QT_STYLE_OVERRIDE = "kvantum";
-          NIXOS_OZONE_WL = "1";
-          QT_SCALE_FACTOR = "1";
-        };
-
         hjem.users.${userName}.xdg.config.files = {
-          "hypr/scripts/screenshot.sh".source = "${self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot}/bin/screenshot";
           "hypr/hyprland.lua".text = ''
             local terminal = "${config.terminal.command}"
-            local scratchpadTerminal = "[workspace special:magic silent; float; size 1200 1000; move 80 80] ${config.terminal.command} --class=${config.terminal.scratchpadClass} --title Scratchpad"
+            local scratchpadTerminal = "[workspace special:magic silent; float; size 1200 1000; move 80 80] ${config.terminal.command} ${config.terminal.scratchpadClassFlag}=${config.terminal.scratchpadClass} --title Scratchpad"
             local fileManager = "uwsm app -- thunar"
             local menu = "uwsm app -- ${lib.getExe rofiPkg} -show drun -show-icons -run-command \"uwsm app -- {cmd}\""
             local mainMod = "SUPER"
@@ -294,36 +282,12 @@
                 float = true,
             })
 
-            hl.curve("easeOutQuint",   { type = "bezier", points = { {0.23, 1},    {0.32, 1}    } })
-            hl.curve("easeInOutCubic", { type = "bezier", points = { {0.65, 0.05}, {0.36, 1}    } })
-            hl.curve("linear",         { type = "bezier", points = { {0, 0},       {1, 1}       } })
-            hl.curve("almostLinear",   { type = "bezier", points = { {0.5, 0.5},   {0.75, 1}    } })
-            hl.curve("quick",          { type = "bezier", points = { {0.15, 0},    {0.1, 1}     } })
-
-            hl.animation({ leaf = "global",        enabled = true,  speed = 10,   bezier = "default" })
-            hl.animation({ leaf = "border",        enabled = true,  speed = 5.39, bezier = "easeOutQuint" })
-            hl.animation({ leaf = "windows",       enabled = true,  speed = 4.79, bezier = "easeOutQuint" })
-            hl.animation({ leaf = "windowsIn",     enabled = true,  speed = 4.1,  bezier = "easeOutQuint", style = "popin 87%" })
-            hl.animation({ leaf = "windowsOut",    enabled = true,  speed = 1.49, bezier = "linear",       style = "popin 87%" })
-            hl.animation({ leaf = "fadeIn",        enabled = true,  speed = 1.73, bezier = "almostLinear" })
-            hl.animation({ leaf = "fadeOut",       enabled = true,  speed = 1.46, bezier = "almostLinear" })
-            hl.animation({ leaf = "fade",          enabled = true,  speed = 3.03, bezier = "quick" })
-            hl.animation({ leaf = "layers",        enabled = true,  speed = 3.81, bezier = "easeOutQuint" })
-            hl.animation({ leaf = "layersIn",      enabled = true,  speed = 4,    bezier = "easeOutQuint", style = "fade" })
-            hl.animation({ leaf = "layersOut",     enabled = true,  speed = 1.5,  bezier = "linear",       style = "fade" })
-            hl.animation({ leaf = "fadeLayersIn",  enabled = true,  speed = 1.79, bezier = "almostLinear" })
-            hl.animation({ leaf = "fadeLayersOut", enabled = true,  speed = 1.39, bezier = "almostLinear" })
-            hl.animation({ leaf = "workspaces",    enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
-            hl.animation({ leaf = "workspacesIn",  enabled = true,  speed = 1.21, bezier = "almostLinear", style = "fade" })
-            hl.animation({ leaf = "workspacesOut", enabled = true,  speed = 1.94, bezier = "almostLinear", style = "fade" })
-
             hl.bind(mainMod .. " + RETURN", hl.dsp.exec_cmd(terminal))
             hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.window.close())
             hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.fullscreen())
             hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("pidof hyprlock || ${lib.getExe pkgs.hyprlock}"))
             hl.bind("PRINT", hl.dsp.exec_cmd("${lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.screenshot}"))
             hl.bind("CTRL + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
-            hl.bind("CTRL + SHIFT + PRINT", hl.dsp.exec_cmd("grim -g \"$(slurp -d)\" - | satty -f - " .. satty_args))
             hl.bind("CTRL + SHIFT + SPACE", hl.dsp.exec_cmd("hex dictation toggle"))
             hl.bind("SUPER + V", hl.dsp.exec_cmd("papier toggle"))
             hl.bind("SUPER + semicolon", hl.dsp.exec_cmd("uwsm app -- ${lib.getExe pkgs.smile}"))
@@ -368,8 +332,8 @@
             hl.bind(mainMod .. " + SHIFT + quotedbl",  hl.dsp.window.move({ workspace = 3 }))
             hl.bind(mainMod .. " + SHIFT + apostrophe",hl.dsp.window.move({ workspace = 4 }))
             hl.bind(mainMod .. " + SHIFT + parenleft", hl.dsp.window.move({ workspace = 5 }))
-            hl.bind(mainMod .. " + SHIFT + egrave",    hl.dsp.window.move({ workspace = 6 }))
-            hl.bind(mainMod .. " + SHIFT + minus",     hl.dsp.window.move({ workspace = 7 }))
+            hl.bind(mainMod .. " + SHIFT + minus",     hl.dsp.window.move({ workspace = 6 }))
+            hl.bind(mainMod .. " + SHIFT + egrave",    hl.dsp.window.move({ workspace = 7 }))
             hl.bind(mainMod .. " + SHIFT + underscore",hl.dsp.window.move({ workspace = 8 }))
             hl.bind(mainMod .. " + SHIFT + ccedilla",  hl.dsp.window.move({ workspace = 9 }))
             hl.bind(mainMod .. " + SHIFT + agrave",    hl.dsp.window.move({ workspace = 10 }))

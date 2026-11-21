@@ -13,7 +13,6 @@
       self.nixosModules.git
       self.nixosModules.golang
       self.nixosModules.hunk
-      self.nixosModules.meshcentral
       self.nixosModules.nodejs
       self.nixosModules.tmux
     ];
@@ -23,7 +22,7 @@
         htop.enable = true;
         nh = {
           enable = true;
-          package = selfPkgs.nh;
+          package = pkgs.nh;
           flake = config.nixConfigPath;
           clean = {
             enable = true;
@@ -61,13 +60,12 @@
         broot
         btop
         chafa
-        direnv
         eza
         fastfetch
         fd
         hexyl
         jq
-        selfPkgs.lf
+        lf
         pcre2
         procs
         ripgrep

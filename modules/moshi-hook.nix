@@ -12,7 +12,7 @@
   hasSopsSecrets = lib.hasAttrByPath ["sops" "secrets"] options;
   hasUserName = lib.hasAttrByPath ["userName"] options;
   moshiHookPkg = self.packages.${pkgs.stdenv.hostPlatform.system}.moshiHook;
-  hookTargets = ["claude" "opencode" "gemini" "antigravity" "copilot" "omp"];
+  hookTargets = ["claude" "opencode" "omp"];
   pairingTokenPath = "/run/secrets/moshi-pairing-token";
   # The generated OpenCode plugin always asks Moshi for approval. This function
   # lets it skip the request when OpenCode runs with session.permissions set to
@@ -49,8 +49,10 @@
           inside = 0
         }
       ' "$plugin" > "$plugin.tmp"
-      mv "$plugin.tmp" "$plugin"
-      if ! ${lib.getExe pkgs.gnugrep} -q 'if (moshiAutoaccept()) return null' "$plugin"; then
+      if ${lib.getExe pkgs.gnugrep} -q 'if (moshiAutoaccept()) return null' "$plugin.tmp"; then
+        mv "$plugin.tmp" "$plugin"
+      else
+        rm -f "$plugin.tmp"
         printf 'moshi-sync-hooks: could not patch the OpenCode plugin\n' >&2
       fi
     fi
@@ -65,7 +67,7 @@
 
     ${lib.getExe moshiHookPkg} pair --token "$1"
     ${lib.getExe moshiSyncHooks}
-    systemctl --user restart moshi-hook.service
+    ${pkgs.systemd}/bin/systemctl --user restart moshi-hook.service
     ${lib.getExe moshiHookPkg} status || true
   '';
   moshiPairFromSecret = pkgs.writeShellScriptBin "moshi-pair-from-secret" ''
@@ -76,7 +78,7 @@
       exit 1
     fi
 
-    ${lib.getExe moshiPair} "$(tr -d '\n' < ${lib.escapeShellArg pairingTokenPath})"
+    ${lib.getExe moshiPair} "$(${pkgs.coreutils}/bin/tr -d '\n' < ${lib.escapeShellArg pairingTokenPath})"
   '';
 in {
   imports = [self.nixosModules.sops];
@@ -92,17 +94,15 @@ in {
         moshiPairFromSecret
       ];
 
-      # SSH and Mosh shells here do not get XDG_RUNTIME_DIR from PAM. Without it,
-      # the Moshi CLI looks for /tmp/moshi-hook.sock instead of the daemon socket.
-      environment.sessionVariables.XDG_RUNTIME_DIR = "/run/user/$UID";
-
       systemd.user.services.moshi-hook = {
         description = "Moshi hook daemon";
         wantedBy = ["default.target"];
         after = ["network.target"];
         # The daemon runs netstat to find OpenCode servers.
         path = [pkgs.nettools];
-        unitConfig.ConditionUser = config.userName;
+        unitConfig = lib.optionalAttrs hasUserName {
+          ConditionUser = config.userName;
+        };
         serviceConfig = {
           Type = "simple";
           ExecStartPre = lib.getExe moshiSyncHooks;
@@ -133,17 +133,20 @@ in {
     })
 
     (lib.optionalAttrs (hasHjemUsers && hasUserName) {
-      hjem.users.${config.userName}.rum.programs.fish.functions = {
-        moshi-sync = ''
+      hjem.users.${config.userName} = {
+        # SSH and Mosh shells here do not get XDG_RUNTIME_DIR from PAM. Without it,
+        # the Moshi CLI looks for /tmp/moshi-hook.sock instead of the daemon socket.
+        files.".config/fish/conf.d/xdg-runtime-dir.fish".text = ''
+          if not set -q XDG_RUNTIME_DIR
+            set -l runtime_dir "/run/user/"(id -u)
+            if test -d "$runtime_dir"
+              set -gx XDG_RUNTIME_DIR "$runtime_dir"
+            end
+          end
+        '';
+
+        rum.programs.fish.functions.moshi-sync = ''
           ${lib.getExe moshiSyncHooks}
-        '';
-
-        moshi-pair = ''
-          ${lib.getExe moshiPair} $argv
-        '';
-
-        moshi-pair-from-secret = ''
-          ${lib.getExe moshiPairFromSecret}
         '';
       };
     })

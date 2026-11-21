@@ -20,7 +20,7 @@ _: {
     keyDir = ./yubikey-ssh-keys;
   in {
     config = lib.mkIf (hasUserName && hasHomeDirectory) {
-      system.activationScripts.yubikeySshKeys.text = ''
+      system.activationScripts.yubikeySshKeys = lib.stringAfter ["users"] ''
         install -d -m 0700 -o ${config.userName} -g users ${config.homeDirectory}/.ssh
         install -m 0600 -o ${config.userName} -g users ${keyDir}/id_ed25519_sk ${config.homeDirectory}/.ssh/id_ed25519_sk
         install -m 0644 -o ${config.userName} -g users ${keyDir}/id_ed25519_sk.pub ${config.homeDirectory}/.ssh/id_ed25519_sk.pub

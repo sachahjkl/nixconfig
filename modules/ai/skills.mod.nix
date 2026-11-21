@@ -5,7 +5,9 @@
     options,
     ...
   }: let
+    cfg = config.ai.skills;
     hasHjemUsers = lib.hasAttrByPath ["hjem" "users"] options;
+    hasUserName = lib.hasAttrByPath ["userName"] options;
     skillEntries = builtins.readDir inputs.skills;
     skillNames = lib.filter (
       name:
@@ -16,7 +18,6 @@
     skillRoots = [
       ".agents/skills"
       ".claude/skills"
-      ".gemini/skills"
     ];
     skillFiles = lib.listToAttrs (
       lib.concatMap (
@@ -30,8 +31,11 @@
       skillRoots
     );
   in {
-    config = lib.mkIf hasHjemUsers {
-      hjem.users.${config.userName}.files = skillFiles;
+    key = "nixconfig:skills";
+    options.ai.skills.enable = lib.mkEnableOption "shared AI skill definitions";
+
+    config = lib.optionalAttrs (hasHjemUsers && hasUserName) {
+      hjem.users.${config.userName}.files = lib.mkIf cfg.enable skillFiles;
     };
   };
 }

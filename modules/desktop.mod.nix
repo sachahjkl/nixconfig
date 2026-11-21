@@ -13,7 +13,6 @@
       self.nixosModules.flatpak
       self.nixosModules.fonts
       self.nixosModules.mimeapps
-      self.nixosModules.obsStudio
       self.nixosModules.theming
       self.nixosModules.thunar
       self.nixosModules.wallpaper
@@ -80,9 +79,9 @@
     };
 
     xdg = {
-      terminal-exec.settings = {
+      terminal-exec = {
         enable = true;
-        default = lib.mkDefault [config.terminal.desktop];
+        settings.default = lib.mkDefault [config.terminal.desktop];
       };
       portal = {
         enable = true;

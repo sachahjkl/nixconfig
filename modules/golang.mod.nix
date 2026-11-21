@@ -19,17 +19,14 @@ _: {
         ];
       }
 
-      (lib.optionalAttrs hasHomeDirectory {
-        environment = {
-          extraInit = ''
-            export PATH="${config.homeDirectory}/.local/share/go/bin:$PATH"
+      (lib.optionalAttrs (hasHjemUsers && hasHomeDirectory && hasUserName) {
+        hjem.users.${config.userName} = {
+          environment.sessionVariables.GOPATH = "${config.homeDirectory}/.local/share/go";
+          xdg.data.files."go".type = "directory";
+          files.".config/fish/conf.d/golang.fish".text = ''
+            fish_add_path --global --move ${config.homeDirectory}/.local/share/go/bin
           '';
-          sessionVariables.GOPATH = "${config.homeDirectory}/.local/share/go";
         };
-      })
-
-      (lib.optionalAttrs (hasHjemUsers && hasUserName) {
-        hjem.users.${config.userName}.xdg.data.files."go".type = "directory";
       })
 
       (lib.optionalAttrs hasPersistDirectories {

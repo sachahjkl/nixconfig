@@ -6,8 +6,6 @@ _: {
   }: let
     desktopEssentials = with pkgs; [
       baobab
-      file-roller
-      gthumb
       hunspell
       hunspellDicts.en-us
       hunspellDicts.fr-any
@@ -52,7 +50,6 @@ _: {
         alsa-utils
         audacity
         efibootmgr
-        file-roller
         fff
         ffmpeg-full
         gparted
@@ -76,7 +73,6 @@ _: {
     persist.user = {
       directories = [
         ".audacity-data"
-        ".cache/zed"
         ".config/equibop"
         ".config/vlc"
         ".config/zed"
