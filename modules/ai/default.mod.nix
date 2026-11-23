@@ -14,6 +14,7 @@
     };
   in {
     imports = [
+      self.nixosModules.antigravity
       self.nixosModules.claudeCode
       self.nixosModules.codex
       self.nixosModules.hex
@@ -31,6 +32,7 @@
     config = lib.mkMerge [
       {
         ai = {
+          antigravity.enable = lib.mkDefault cfg.enable;
           claudeCode.enable = lib.mkDefault cfg.enable;
           hex.enable = lib.mkDefault cfg.enable;
           omp.enable = lib.mkDefault cfg.enable;
@@ -44,6 +46,9 @@
         hjem.users.${config.userName}.files = lib.mkIf cfg.enable (
           lib.optionalAttrs cfg.claudeCode.enable {
             ".claude/CLAUDE.md".source = instructions;
+          }
+          // lib.optionalAttrs cfg.antigravity.enable {
+            ".gemini/GEMINI.md".source = instructions;
           }
           // lib.optionalAttrs config.codex.enable {
             ".config/codex/AGENTS.md".source = instructions;
