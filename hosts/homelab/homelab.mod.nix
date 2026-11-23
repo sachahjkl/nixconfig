@@ -1,5 +1,6 @@
 {
   self,
+  inputs,
   lib,
   ...
 }:
@@ -150,6 +151,9 @@ lib.systems.nixosSystem "homelab" {
         port = 5010;
         statusPort = 5011;
         endpoint = "cache.modus.systems:5010";
+        # The cache signing key of the publisher of modus: its release workflow
+        # uploads the files of each release and the realisation of the test recipe.
+        authorizedKeyFiles = ["${inputs.modus}/resources/keys/cache_signing_key.public"];
       };
 
       openbaoPlatform = {
