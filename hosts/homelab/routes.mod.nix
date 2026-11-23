@@ -23,6 +23,7 @@
         };
         acmeZoneNames = [
           "froment.software"
+          "modus.systems"
           "sacha.house"
         ];
         defaultType = "CNAME";
@@ -37,9 +38,15 @@
           "www.froment.software" = "froment.software";
           "www.sacha.house" = "sacha.house";
         };
+        # The site of modus is served by GitHub Pages behind the Cloudflare proxy.
+        proxiedCnames = {
+          "modus.systems" = "sachahjkl.github.io";
+          "www.modus.systems" = "sachahjkl.github.io";
+        };
         zoneNames = [
           "sacha.house"
           "froment.software"
+          "modus.systems"
         ];
       };
       hosts = {
@@ -70,6 +77,11 @@
               upstreamPort = 5001;
             }
           ];
+        };
+
+        "cache.modus.systems" = {
+          upstreamHost = "127.0.0.1";
+          upstreamPort = config.services.modusCache.statusPort;
         };
 
         "cache.modus.froment.software" = {

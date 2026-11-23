@@ -28,6 +28,14 @@ _: {
           ttl = cfg.defaultTTL;
         })
         cfg.cnames)
+      ++ (lib.mapAttrsToList (domain: target: {
+          inherit domain;
+          type = "CNAME";
+          value = target;
+          proxied = true;
+          ttl = cfg.defaultTTL;
+        })
+        cfg.proxiedCnames)
       ++ lib.flatten (lib.mapAttrsToList
         (domain: hostCfg: let
           dnsCfg = hostCfg.dns;
@@ -397,6 +405,12 @@ _: {
       cnames = lib.mkOption {
         type = lib.types.attrsOf lib.types.str;
         default = {};
+      };
+
+      proxiedCnames = lib.mkOption {
+        type = lib.types.attrsOf lib.types.str;
+        default = {};
+        description = "CNAME records served through the Cloudflare proxy, for a host that the proxy fronts (for example a site of GitHub Pages).";
       };
 
       zoneNames = lib.mkOption {

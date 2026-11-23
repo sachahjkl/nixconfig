@@ -149,6 +149,7 @@ lib.systems.nixosSystem "homelab" {
         dataDir = "/data/modus-cache";
         port = 5010;
         statusPort = 5011;
+        endpoint = "cache.modus.systems:5010";
       };
 
       openbaoPlatform = {
