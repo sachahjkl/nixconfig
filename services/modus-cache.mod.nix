@@ -7,14 +7,6 @@
   }: let
     cfg = config.services.modusCache;
     modusPkg = inputs.modus.packages.${pkgs.stdenv.hostPlatform.system}.modustool;
-    dashboardPage = builtins.path {
-      path = ./modus-cache/dashboard.html;
-      name = "modus-cache-dashboard.html";
-    };
-    dashboardFiles = pkgs.runCommand "modus-cache-dashboard" {} ''
-      install -Dm444 ${dashboardPage} $out/index.html
-    '';
-    dashboardRoot = "/run/modus-cache-dashboard";
     authorizedKeyArgs = lib.optionalString (cfg.authorizedKeyFiles != []) (
       " " + lib.concatMapStringsSep " " (keyFile: "--authorized-key ${toString keyFile}") cfg.authorizedKeyFiles
     );
@@ -43,13 +35,19 @@
       statusPort = lib.mkOption {
         type = lib.types.port;
         default = 5011;
-        description = "Loopback HTTP port for the read-only cache status page.";
+        description = "Loopback HTTP port where cache-serve itself serves the page of the public object cache and status.json.";
       };
 
       endpoint = lib.mkOption {
         type = lib.types.str;
-        default = "cache.modus.froment.software:5010";
-        description = "Public host:port endpoint shown on the status page.";
+        default = "cache.modus.systems:5010";
+        description = "Public host:port endpoint that the page names.";
+      };
+
+      siteAddress = lib.mkOption {
+        type = lib.types.str;
+        default = "https://modus.systems";
+        description = "Address of the site of modus, whose style sheet, fonts and mark the page uses.";
       };
 
       authorizedKeyFiles = lib.mkOption {
@@ -83,127 +81,41 @@
           "Z ${cfg.dataDir} - modus-cache modus-cache -"
         ];
 
-        services = {
-          modus-cache = {
-            description = "Modus content-addressed object cache server";
-            wants = ["network-online.target"];
-            after = ["network-online.target"];
-            wantedBy = ["multi-user.target"];
-            unitConfig.RequiresMountsFor = [cfg.dataDir];
-            serviceConfig = {
-              User = "modus-cache";
-              Group = "modus-cache";
-              ExecStart = "${modusPkg}/bin/modustool cache-serve --dir ${cfg.dataDir} --listen ${cfg.listenAddress}:${toString cfg.port}${authorizedKeyArgs}";
-              Restart = "always";
-              RestartSec = "5s";
-              NoNewPrivileges = true;
-              PrivateTmp = true;
-              PrivateDevices = true;
-              ProtectSystem = "strict";
-              ProtectHome = true;
-              ReadWritePaths = [cfg.dataDir];
-              ProtectKernelTunables = true;
-              ProtectKernelModules = true;
-              ProtectControlGroups = true;
-              RestrictAddressFamilies = ["AF_INET" "AF_INET6"];
-              RestrictNamespaces = true;
-              RestrictRealtime = true;
-              LockPersonality = true;
-              MemoryDenyWriteExecute = true;
-              CapabilityBoundingSet = "";
-              AmbientCapabilities = "";
-              SystemCallFilter = ["@system-service" "~@privileged" "~@resources"];
-              UMask = "0027";
-            };
-          };
-
-          modus-cache-dashboard = {
-            description = "Update the modus object cache status page";
-            after = ["modus-cache.service"];
-            wantedBy = ["multi-user.target"];
-            path = [pkgs.coreutils pkgs.findutils pkgs.jq pkgs.systemd];
-            serviceConfig.Type = "oneshot";
-            script = ''
-              set -euo pipefail
-              install -d -m 0755 ${dashboardRoot}
-              ln -sfn ${dashboardFiles}/index.html ${dashboardRoot}/index.html
-
-              data_dir=${lib.escapeShellArg cfg.dataDir}
-              object_count=0
-              if [ -d "$data_dir/objects" ]; then
-                object_count="$(find "$data_dir/objects" -maxdepth 1 -type f | wc -l)"
-              fi
-
-              realisation_count=0
-              if [ -d "$data_dir/realisations" ]; then
-                realisation_count="$(find "$data_dir/realisations" -maxdepth 1 -type f | wc -l)"
-              fi
-
-              cache_bytes=0
-              if [ -d "$data_dir" ]; then
-                cache_bytes="$(du --bytes --summarize "$data_dir" | cut -f1)"
-              fi
-
-              df_target="$data_dir"
-              if [ ! -d "$df_target" ]; then
-                df_target="/"
-              fi
-              read -r total used available percent < <(
-                df --block-size=1 --output=size,used,avail,pcent "$df_target" | tail -n 1
-              )
-              service_status="$(systemctl is-active modus-cache.service || true)"
-
-              jq -n \
-                --arg service "$service_status" \
-                --arg endpoint ${lib.escapeShellArg cfg.endpoint} \
-                --arg protocol "MOCQ/MOCR" \
-                --arg usedPercent "$percent" \
-                --arg updatedAt "$(date --iso-8601=seconds)" \
-                --argjson objectCount "$object_count" \
-                --argjson realisationCount "$realisation_count" \
-                --argjson cacheBytes "$cache_bytes" \
-                --argjson totalBytes "$total" \
-                --argjson usedBytes "$used" \
-                --argjson availableBytes "$available" \
-                '{
-                  $service,
-                  $endpoint,
-                  $protocol,
-                  $objectCount,
-                  $realisationCount,
-                  $cacheBytes,
-                  $usedPercent,
-                  $updatedAt,
-                  $totalBytes,
-                  $usedBytes,
-                  $availableBytes
-                }' > ${dashboardRoot}/status.json.tmp
-
-              chmod 0644 ${dashboardRoot}/status.json.tmp
-              mv ${dashboardRoot}/status.json.tmp ${dashboardRoot}/status.json
-            '';
-          };
-
-          modus-cache-dashboard-server = {
-            description = "Serve the modus object cache status page to Traefik";
-            requires = ["modus-cache-dashboard.service"];
-            after = ["modus-cache-dashboard.service"];
-            wantedBy = ["multi-user.target"];
-            serviceConfig = {
-              DynamicUser = true;
-              ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString cfg.statusPort} --bind 127.0.0.1 --directory ${dashboardRoot}";
-              Restart = "on-failure";
-            };
-          };
-        };
-
-        timers.modus-cache-dashboard = {
-          description = "Refresh the modus object cache status page";
-          wantedBy = ["timers.target"];
-          timerConfig = {
-            OnBootSec = "1min";
-            OnUnitActiveSec = "1min";
-            Unit = "modus-cache-dashboard.service";
+        # cache-serve serves the page of the public object cache itself, so the
+        # counts come from the server and no scan of the store runs.
+        services.modus-cache = {
+          description = "Modus content-addressed object cache server and its page";
+          wants = ["network-online.target"];
+          after = ["network-online.target"];
+          wantedBy = ["multi-user.target"];
+          unitConfig.RequiresMountsFor = [cfg.dataDir];
+          serviceConfig = {
+            User = "modus-cache";
+            Group = "modus-cache";
+            ExecStart = "${modusPkg}/bin/modustool cache-serve --dir ${cfg.dataDir} --listen ${cfg.listenAddress}:${toString cfg.port} --status-listen 127.0.0.1:${toString cfg.statusPort} --endpoint ${cfg.endpoint} --site ${cfg.siteAddress}${authorizedKeyArgs}";
+            Restart = "always";
+            RestartSec = "5s";
+            NoNewPrivileges = true;
+            PrivateTmp = true;
+            PrivateDevices = true;
+            ProtectSystem = "strict";
+            ProtectHome = true;
+            ReadWritePaths = [cfg.dataDir];
+            ProtectKernelTunables = true;
+            ProtectKernelModules = true;
+            ProtectControlGroups = true;
+            RestrictAddressFamilies = ["AF_INET" "AF_INET6"];
+            RestrictNamespaces = true;
+            RestrictRealtime = true;
+            LockPersonality = true;
+            MemoryDenyWriteExecute = true;
+            CapabilityBoundingSet = "";
+            AmbientCapabilities = "";
+            # The page runs on its own thread, and the thread library of Odin
+            # sets the scheduling of each new thread: sched_setscheduler, which
+            # ~@resources forbids, so it is allowed again by name.
+            SystemCallFilter = ["@system-service" "~@privileged" "~@resources" "sched_setscheduler"];
+            UMask = "0027";
           };
         };
       };
