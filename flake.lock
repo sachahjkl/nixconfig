@@ -86,11 +86,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795330608,
-        "narHash": "sha256-3XUdc+HOiaT9APyJk91n/FyN7v7y8VjRbLZdbMZ62Gk=",
+        "lastModified": 1795518334,
+        "narHash": "sha256-t3tTJ+z91WwH0I7cuTsrHj2WARg6cpCBllvheV6Tavs=",
         "ref": "refs/heads/master",
-        "rev": "4b4ba7755a02a1a15d8938ad35e021b28c1e3603",
-        "revCount": 338,
+        "rev": "2be5e40e4c6e5e853819fd84f5cf13c2b0dca226",
+        "revCount": 340,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/classeur"
@@ -454,17 +454,17 @@
     "gui_toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1795304904,
-        "narHash": "sha256-SoBWzLscvr7Jd2Ii1/mLHVRXpRKRD92cQ0eDx3Qkcnk=",
+        "lastModified": 1795516392,
+        "narHash": "sha256-bUPKivEQY+31mS+oR/0YvOSQYa5sEDSgm2SVxclgYo8=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "21bd0781d2623a235c704edcb1781cbbeb95d739",
+        "rev": "4661c582b745f1761340398c1bef25717c579bd0",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "21bd0781d2623a235c704edcb1781cbbeb95d739",
+        "rev": "4661c582b745f1761340398c1bef25717c579bd0",
         "type": "github"
       }
     },
