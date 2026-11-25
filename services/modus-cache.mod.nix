@@ -23,13 +23,13 @@
       listenAddress = lib.mkOption {
         type = lib.types.str;
         default = "0.0.0.0";
-        description = "Address on which the object cache TCP server listens.";
+        description = "Address on which the object cache TCP and UDP (QUIC) server listens.";
       };
 
       port = lib.mkOption {
         type = lib.types.port;
         default = 5010;
-        description = "TCP port for the framed MOCQ/MOCR object cache protocol.";
+        description = "TCP and UDP (QUIC) port for the framed MOCQ/MOCR object cache protocol.";
       };
 
       statusPort = lib.mkOption {
@@ -59,7 +59,7 @@
       openFirewall = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Open the object cache TCP port in the firewall.";
+        description = "Open the object cache TCP and UDP (QUIC) port in the firewall.";
       };
     };
 
@@ -74,6 +74,7 @@
       };
 
       networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [cfg.port];
+      networking.firewall.allowedUDPPorts = lib.mkIf cfg.openFirewall [cfg.port];
 
       systemd = {
         tmpfiles.rules = [

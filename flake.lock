@@ -745,11 +745,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1795429743,
-        "narHash": "sha256-7eToQDLKwUDg0jl/PGHqTeBAC//+v1mpv/UHqEh2MKo=",
+        "lastModified": 1795587685,
+        "narHash": "sha256-OvIt5LhyEd0HJZQ7NpmUofDuZs7PwBuccvnyUrGnW+c=",
         "owner": "sachahjkl",
         "repo": "modus",
-        "rev": "1224a3f582661c8f8c326fdbbefb6be4792d55ee",
+        "rev": "5de939ac98c2dc03e6986c83e5531e7ec1a4f1f3",
         "type": "github"
       },
       "original": {
