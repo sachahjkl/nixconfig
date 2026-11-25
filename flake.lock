@@ -112,11 +112,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795600333,
-        "narHash": "sha256-PezgagswopD/KdsMgB6Z1OFsLso/9P9hrLJh2OvndEs=",
+        "lastModified": 1795637906,
+        "narHash": "sha256-99WYyvWcf8xhogVXqifDC7AYJGc/qsdgk2TaKUQUgWA=",
         "ref": "refs/heads/master",
-        "rev": "7131fe1e280a7d9c768f764b7196ed4a41a1d102",
-        "revCount": 161,
+        "rev": "99345ed270d507e8bca4680644d4c480333db3ef",
+        "revCount": 164,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/cliche"
@@ -471,17 +471,17 @@
     "gui_toolkit_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1795527612,
-        "narHash": "sha256-edni1l7C7ldlG3Kp7qld4teCj/w0l4ZV9eqjwrbzTxY=",
+        "lastModified": 1795624324,
+        "narHash": "sha256-evnby96+7oRTVadAbXY5i/LY9Knd0LKn5Q/3fBMcIU0=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "a0afaab767feee4fa86165816c55aa02a7c8de3f",
+        "rev": "e2d9b10a066245a97b9f6ee9031960a761f41fc4",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "a0afaab767feee4fa86165816c55aa02a7c8de3f",
+        "rev": "e2d9b10a066245a97b9f6ee9031960a761f41fc4",
         "type": "github"
       }
     },
