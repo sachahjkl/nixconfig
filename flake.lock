@@ -505,17 +505,17 @@
     "gui_toolkit_4": {
       "flake": false,
       "locked": {
-        "lastModified": 1795688984,
-        "narHash": "sha256-nKkmX/CUMyBg/CR57NC6c63vosZz5rAv9tSc4R6izVk=",
+        "lastModified": 1795709226,
+        "narHash": "sha256-d/P1WZYnb+aAA0vtjmNEmvD5a0YVCbiY+tRRjZ0v9LU=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "248af439e8efd39b28364dddfc9fca7a3bfaa905",
+        "rev": "336ec625a7f4f9c27714082fc92883be55f71bd5",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "248af439e8efd39b28364dddfc9fca7a3bfaa905",
+        "rev": "336ec625a7f4f9c27714082fc92883be55f71bd5",
         "type": "github"
       }
     },
@@ -682,11 +682,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795689677,
-        "narHash": "sha256-DYKYhhSnLxEJmr2/oCJntHftXQzgIy116JEAUUp0au0=",
+        "lastModified": 1795709733,
+        "narHash": "sha256-kyyqqkYc8kP3FAegMJdn1+Sv8gyaC9fZT5IE6jNUjc0=",
         "ref": "refs/heads/master",
-        "rev": "c392bac2e6d94ce6da510c2077a17f5af42c9c89",
-        "revCount": 232,
+        "rev": "c701db4a6a28ffd7e7cbdef72c2308e23f022e47",
+        "revCount": 234,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/inspecteur"
