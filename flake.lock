@@ -252,11 +252,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795341736,
-        "narHash": "sha256-9aWWEGs6XP9K3Pn0/0KBcoDrPYF3AuzWPHPRQ2uXO5c=",
+        "lastModified": 1795673963,
+        "narHash": "sha256-96GbzC0E7EXi9gVKtvtw7kP8bzXEDIKkHqLp4XGMc6c=",
         "ref": "refs/heads/master",
-        "rev": "a489406711df229f2ad7ca6744ccbff8a402ec3c",
-        "revCount": 44,
+        "rev": "c658b199cae05d78c496e9e5496be8e5e5869e52",
+        "revCount": 47,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/feuille"
@@ -488,17 +488,17 @@
     "gui_toolkit_3": {
       "flake": false,
       "locked": {
-        "lastModified": 1795340229,
-        "narHash": "sha256-Ors3bv14NOGZIDS2FY/fwfPD8H4h+DkCqJ5zCbirNqM=",
+        "lastModified": 1795644555,
+        "narHash": "sha256-ZPZhf+/f8SkWYEzRh8dxz1psWm9RAo1quWeW/ITAJYA=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "a0c90cbe289ad0f025a4b2183648481b7d0774c9",
+        "rev": "813dfda22882bdb10e79fc1833a3060b656790be",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "a0c90cbe289ad0f025a4b2183648481b7d0774c9",
+        "rev": "813dfda22882bdb10e79fc1833a3060b656790be",
         "type": "github"
       }
     },
