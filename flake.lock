@@ -252,11 +252,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795673963,
-        "narHash": "sha256-96GbzC0E7EXi9gVKtvtw7kP8bzXEDIKkHqLp4XGMc6c=",
+        "lastModified": 1795684238,
+        "narHash": "sha256-fCuhqBBsAXgRFjuNmnFnBKcAUKiA22GXrapTSmIRP24=",
         "ref": "refs/heads/master",
-        "rev": "c658b199cae05d78c496e9e5496be8e5e5869e52",
-        "revCount": 47,
+        "rev": "71f21807bd658eabc382e0e91e339bfdae702e7f",
+        "revCount": 49,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/feuille"
