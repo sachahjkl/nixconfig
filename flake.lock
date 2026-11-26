@@ -86,11 +86,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795709444,
-        "narHash": "sha256-QP1UB23eyOQnNdpXapAHP/fMSN5MTNmOrHyCu06SyAM=",
+        "lastModified": 1795725336,
+        "narHash": "sha256-jR9B4BVqkln9V46h/u7xbp55vlPihIChxdNsoN9y0DY=",
         "ref": "refs/heads/master",
-        "rev": "743932df5b0b88d5e4ee07b6ad5d1726681fc103",
-        "revCount": 349,
+        "rev": "bab87870e3fe7967c3d9a111b2a71d914030e53e",
+        "revCount": 351,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/classeur"
@@ -454,17 +454,17 @@
     "gui_toolkit": {
       "flake": false,
       "locked": {
-        "lastModified": 1795709226,
-        "narHash": "sha256-d/P1WZYnb+aAA0vtjmNEmvD5a0YVCbiY+tRRjZ0v9LU=",
+        "lastModified": 1795723828,
+        "narHash": "sha256-a3s9QCPKaVEj+Vnx49ySsSi4V2vAwyKW7JfdwOLqEw0=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "336ec625a7f4f9c27714082fc92883be55f71bd5",
+        "rev": "43beab8eaae8acbcb0a7d57add78631f58b36031",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "336ec625a7f4f9c27714082fc92883be55f71bd5",
+        "rev": "43beab8eaae8acbcb0a7d57add78631f58b36031",
         "type": "github"
       }
     },
@@ -539,16 +539,16 @@
     "gui_toolkit_6": {
       "flake": false,
       "locked": {
-        "lastModified": 1795516392,
-        "narHash": "sha256-bUPKivEQY+31mS+oR/0YvOSQYa5sEDSgm2SVxclgYo8=",
+        "lastModified": 1795723828,
+        "narHash": "sha256-a3s9QCPKaVEj+Vnx49ySsSi4V2vAwyKW7JfdwOLqEw0=",
         "owner": "sachahjkl",
         "repo": "gui_toolkit",
-        "rev": "4661c582b745f1761340398c1bef25717c579bd0",
+        "rev": "43beab8eaae8acbcb0a7d57add78631f58b36031",
         "type": "github"
       },
       "original": {
         "owner": "sachahjkl",
-        "ref": "v0.352.0",
+        "ref": "v0.361.0",
         "repo": "gui_toolkit",
         "type": "github"
       }
@@ -1201,11 +1201,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795519364,
-        "narHash": "sha256-HCxr1IOpqEK9R2rmuoX6fQbapCSI0chY8f4qKETqpmY=",
+        "lastModified": 1795725556,
+        "narHash": "sha256-bBvpGcMBfT4f4muu14tSXzLNDW6AUnRGaNbAzNN5FJ8=",
         "ref": "refs/heads/master",
-        "rev": "123cb01c290d627754b47ea2f54bd0c70aed4990",
-        "revCount": 42,
+        "rev": "c4e90ce7e16b26c353231da6a7acf0ca1cbf940f",
+        "revCount": 45,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/sachahjkl/socle"
