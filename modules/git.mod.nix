@@ -233,7 +233,8 @@
               rerere.autoupdate = true;
               core = {
                 excludesfile = "~/.gitignore";
-                fsmonitor = true;
+                # No fsmonitor: these repositories are small, and its socket in
+                # .git breaks Nix path: URLs, which copy the whole directory.
                 untrackedCache = true;
               };
               rebase = {
