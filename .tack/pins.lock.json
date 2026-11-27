@@ -6,7 +6,7 @@
     "deploy-rs": "github:serokell/deploy-rs?rev=1cec0527bd09074bbee6d4461900ce5d58267217",
     "determinate": "https://api.flakehub.com/f/pinned/DeterminateSystems/determinate/3.24.3/01a1f12b-29f0-7623-8ebb-9b32a98f9538/source.tar.gz",
     "disko": "github:nix-community/disko?rev=44761d4f745b95e037458a0e57133c5700c8e320",
-    "feuille": "git+https://github.com/sachahjkl/feuille?submodules=1&rev=9d60127f2f37886b12c5082c33bb5b80d617205f",
+    "feuille": "git+https://github.com/sachahjkl/feuille?submodules=1",
     "flake-parts": "github:hercules-ci/flake-parts?rev=ea2630b7470978622c7689a1ff75d2b389175399",
     "git-hooks": "github:cachix/git-hooks.nix?rev=204b6977e00caac19e2313015a598543ca7be150",
     "hex": "github:anomalyco/hex?rev=96b4f365d4a37680514d1150caeac539d62ac891",
@@ -83,9 +83,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/feuille",
     "ref": "HEAD",
-    "rev": "9d60127f2f37886b12c5082c33bb5b80d617205f",
-    "narHash": "sha256-vIpazG97Dd/6Z/SJw+1VeJ8Y0c7Q2DqRjcmBkqMKPOM=",
-    "lastModified": 1795725115
+    "rev": "50ce66324049849c9097a57e3767fe5d433f3683",
+    "narHash": "sha256-YOizBgmJvfYORPlIYaYR/oc1TfHLdEE0W/vOT8/0hO4=",
+    "lastModified": 1795766881
   },
   "flake-parts": {
     "type": "github",
