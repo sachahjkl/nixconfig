@@ -260,3 +260,11 @@ submodules = true
 [inputs.galerie.follows]
 git-hooks = "git-hooks"
 nixpkgs = "nixpkgs"
+
+[inputs.plume]
+url = "git+https://github.com/sachahjkl/plume"
+submodules = true
+
+[inputs.plume.follows]
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"

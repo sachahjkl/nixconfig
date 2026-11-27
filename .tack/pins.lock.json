@@ -23,6 +23,7 @@
     "nixos-wsl": "github:nix-community/NixOS-WSL/main?rev=05721a428830972f025a8575b1a19c418d422d1b",
     "nixpkgs": "github:NixOS/nixpkgs/nixos-26.05?rev=ab5c18fdedfc8f9bbc9d773f10a540790e2787a7",
     "papier": "git+https://github.com/sachahjkl/papier?submodules=1&rev=07d67321a1b2a8151f9544078d6c82a734025f39",
+    "plume": "git+https://github.com/sachahjkl/plume",
     "preservation": "github:nix-community/preservation?rev=00be7f7dd1a11ae0605386f2272288de7cf33abe",
     "shojiwm": "github:sachahjkl/ShojiWM/integration?rev=b06f1b7525414feb98f1679186009859bc947085",
     "shojiwm-desktop": "github:sachahjkl/shojiwm-desktop?rev=f0a92352619aee477c3bc42f0ea5e23f8eee2d71",
@@ -229,6 +230,15 @@
     "rev": "07d67321a1b2a8151f9544078d6c82a734025f39",
     "narHash": "sha256-fFp6SwFKzNWaSFnIsHMR2d74y4jrqy/SH7KFOtOGDAQ=",
     "lastModified": 1795287053
+  },
+  "plume": {
+    "type": "git",
+    "url": "https://github.com/sachahjkl/plume",
+    "ref": "HEAD",
+    "rev": "e8f1652685932c59e12b07f5d1c749308bc04578",
+    "narHash": "sha256-H8whnDjCJrzGHkKDTPYjrP9GU1dPh7TxXYtksDV9Nfg=",
+    "lastModified": 1795777935,
+    "submodules": true
   },
   "preservation": {
     "type": "github",
