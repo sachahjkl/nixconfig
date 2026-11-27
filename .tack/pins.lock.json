@@ -235,9 +235,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/plume",
     "ref": "HEAD",
-    "rev": "e8f1652685932c59e12b07f5d1c749308bc04578",
-    "narHash": "sha256-H8whnDjCJrzGHkKDTPYjrP9GU1dPh7TxXYtksDV9Nfg=",
-    "lastModified": 1795777935,
+    "rev": "d6cf58ab3101951d324b9f920aa1a1a4fc792297",
+    "narHash": "sha256-TcXqSvAybAJe2Z8+i0hVZYbIcd5Xx7isAk38wlSrEmA=",
+    "lastModified": 1795780436,
     "submodules": true
   },
   "preservation": {
