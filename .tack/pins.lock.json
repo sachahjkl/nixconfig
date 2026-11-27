@@ -103,9 +103,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/galerie",
     "ref": "HEAD",
-    "rev": "5e8a3b74e683132385dd7c1e00c452db6c7d48a7",
-    "narHash": "sha256-0nwwJxIDciNh5DplZlU4j4//aQJu3omwmYJtIrgq2PM=",
-    "lastModified": 1795773834,
+    "rev": "26922b18a38582459178c4f00ba4aaae952a161a",
+    "narHash": "sha256-R/VlyE3Pe6HjyakKN6R05NgUzuGRNkUV6Tbj4NyIBNo=",
+    "lastModified": 1795804832,
     "submodules": true
   },
   "git-hooks": {
