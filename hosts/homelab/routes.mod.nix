@@ -36,12 +36,12 @@
           "*.sacha.house" = "homelab.sacha.house";
           "sacha.house" = "homelab.sacha.house";
           "www.froment.software" = "froment.software";
+          # Tower's site (github.com/sachahjkl/tower): GitHub Pages, not proxied, so GitHub issues its certificate.
+          "tower.froment.software" = "sachahjkl.github.io";
           "www.sacha.house" = "sacha.house";
         };
         # The site of modus is served by GitHub Pages behind the Cloudflare proxy.
         proxiedCnames = {
-          # Tower's site (github.com/sachahjkl/tower), GitHub Pages behind the Cloudflare proxy.
-          "tower.froment.software" = "sachahjkl.github.io";
           "modus.systems" = "sachahjkl.github.io";
           "www.modus.systems" = "sachahjkl.github.io";
         };
