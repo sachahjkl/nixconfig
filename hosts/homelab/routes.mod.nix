@@ -40,6 +40,8 @@
         };
         # The site of modus is served by GitHub Pages behind the Cloudflare proxy.
         proxiedCnames = {
+          # Tower's site (github.com/sachahjkl/tower), GitHub Pages behind the Cloudflare proxy.
+          "tower.froment.software" = "sachahjkl.github.io";
           "modus.systems" = "sachahjkl.github.io";
           "www.modus.systems" = "sachahjkl.github.io";
         };
