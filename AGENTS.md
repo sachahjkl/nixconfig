@@ -85,6 +85,24 @@ statix check .
 
 Enter `nix develop` once after cloning to install the repository pre-commit hooks.
 
+## Changelog
+
+- `CHANGELOG.md` follows Keep a Changelog and semantic versioning. Do not edit it by hand.
+- Write each change that a user can see as one fragment in `changelog.d/`, in the same commit as the change. `changelog.d/README.md` gives the format.
+- If a change has no effect that a user can see, write no fragment.
+
+## Roadmap
+
+- `ROADMAP.md` holds the planned work: `# Roadmap`, then `## Now`, `## Next` and `## Later`, each a list. An optional `## Maybe` comes last.
+- Start each entry with a bold summary, then one or two sentences on what it gives the user. Give no dates. If a design exists, link its intent file.
+- When a work is done, remove its entry in the same commit as its changelog fragment.
+
+## Intent
+
+- This repo follows https://srcmd.org. It has no `src`, so the intent folder is `docs/md/`. Read `docs/md/README.md` first.
+- Change the intent first, then the Nix code. A change of design changes its intent file in the same commit.
+- `docs/md/README.md` lists every other file of the folder in its `## File Index`.
+
 ## Best Practices
 
 - Prefer small structural changes.
