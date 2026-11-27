@@ -18,6 +18,7 @@
       self.nixosModules.opencode
       self.nixosModules.packages
       self.nixosModules.preservation
+      self.nixosModules.rex
       self.nixosModules.sharedSops
       self.nixosModules.ssh
       self.nixosModules.user-home

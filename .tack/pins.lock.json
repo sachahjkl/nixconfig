@@ -25,6 +25,7 @@
     "papier": "git+https://github.com/sachahjkl/papier?submodules=1&rev=07d67321a1b2a8151f9544078d6c82a734025f39",
     "plume": "git+https://github.com/sachahjkl/plume",
     "preservation": "github:nix-community/preservation?rev=00be7f7dd1a11ae0605386f2272288de7cf33abe",
+    "rex": "https://pkgs.superlogical.com/rex/nix/preview.tar.gz",
     "shojiwm": "github:sachahjkl/ShojiWM/integration?rev=b06f1b7525414feb98f1679186009859bc947085",
     "shojiwm-desktop": "github:sachahjkl/shojiwm-desktop?rev=f0a92352619aee477c3bc42f0ea5e23f8eee2d71",
     "skills": "github:sachahjkl/skills?rev=d8633a9fc2508bd1384d04e2c40dd79374046319",
@@ -248,6 +249,12 @@
     "narHash": "sha256-s/A2rSO2Ndf8Y5yiouesnI/3Zkn9pmVGF2NxFxOUvx8=",
     "lastModified": 1792953443,
     "public": true
+  },
+  "rex": {
+    "type": "tarball",
+    "url": "https://pkgs.superlogical.com/rex/nix/preview/0.1.0-preview.25.tar.gz",
+    "narHash": "sha256-q+hfY4e/AtTHOuH8tom0GDmay7Jta+WrpZnGmQoKKuA=",
+    "lastModified": 1795649243
   },
   "shojiwm": {
     "type": "github",

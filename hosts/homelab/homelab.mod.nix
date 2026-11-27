@@ -58,6 +58,7 @@ lib.systems.nixosSystem "homelab" {
     };
 
     homelab.sops.enable = true;
+    rex.server.enable = true;
 
     services = {
       containerHost = {

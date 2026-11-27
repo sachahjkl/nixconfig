@@ -33,6 +33,8 @@ lib.systems.nixosSystem "house-desktop" {
       };
     };
 
+    rex.server.enable = true;
+
     gaming.steam.gamescopeSession.enable = true;
     gaming.streaming.sunshine = {
       enable = true;

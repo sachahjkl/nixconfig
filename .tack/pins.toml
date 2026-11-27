@@ -268,3 +268,9 @@ submodules = true
 [inputs.plume.follows]
 git-hooks = "git-hooks"
 nixpkgs = "nixpkgs"
+
+[inputs.rex]
+url = "https://pkgs.superlogical.com/rex/nix/preview.tar.gz"
+
+[inputs.rex.follows]
+nixpkgs = "nixpkgs"
