@@ -15,6 +15,7 @@
 
     environment.systemPackages = with pkgs; [
       cachix
+      inputs.tack.packages.${pkgs.stdenv.hostPlatform.system}.default
       nix-melt
       nix-prefetch
     ];

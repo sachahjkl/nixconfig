@@ -3,6 +3,8 @@
     preCommitCheck = inputs.git-hooks.lib.${pkgs.stdenv.hostPlatform.system}.run {
       package = pkgs.prek;
       src = ../..;
+      # tack writes the files in .tack, so the hooks leave them alone.
+      excludes = ["^\\.tack/"];
       hooks = {
         actionlint.enable = true;
         alejandra.enable = true;

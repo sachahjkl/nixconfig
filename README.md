@@ -255,7 +255,10 @@ nix build 'path:/home/sacha/Projects/nixconfig#nixosConfigurations.house-desktop
 
 ## Updating Packages
 
-Update flake inputs and hand-pinned packages:
+The inputs are tack pins in `.tack/pins.toml`, locked in `.tack/pins.lock.json`.
+Use `tack look` to see available updates, and `tack undo` to revert the last update.
+
+Update the inputs and hand-pinned packages:
 
 ```bash
 nix run .#update
@@ -264,6 +267,6 @@ nix run .#update
 Or update only `opencode2` from `llm-agents`:
 
 ```bash
-nix flake update llm-agents
+tack update llm-agents
 nix build 'path:/home/sacha/Projects/nixconfig#opencode2' --no-link
 ```

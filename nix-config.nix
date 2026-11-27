@@ -12,6 +12,7 @@
     "https://nix-community.cachix.org"
     "https://sachahjkl.cachix.org"
     "https://install.determinate.systems"
+    "https://cache.manic.systems"
   ];
   extra-trusted-public-keys = [
     "homelab-cache-1:ZaUHSv8slKsAKc9kd0AGI8p1HUjUumfho7ShgUVlnUg="
@@ -19,6 +20,7 @@
     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     "sachahjkl.cachix.org-1:cepX7PCUV88hCchnh9prZM5V72wRkCf6oSJL6JfgWs0="
     "cache.flakehub.com-3:hJuILl5sVK4iKm86JzgdXW12Y2Hwd5G07qKtHTOcDCM="
+    "cache.manic.systems-1:s6OZanN8Us8vRi0jVivP3qlMn0cYHBjBALKrNe5nH8s="
   ];
   flake-registry = "";
   http-connections = 50;

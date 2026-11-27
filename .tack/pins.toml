@@ -1,0 +1,254 @@
+# tack pins
+# edit by hand or with tack add / rm / alias
+# nix reads pins.lock.json
+# this file drives tack update
+
+# shorturl schemes
+# scheme rest expands rest into {path}
+[shorturls]
+# gh = "github:{path}"
+
+# all_follow maps input names at every depth to the top-level pin they follow
+# opt out per-input with exclude_follow, scope with flake: or tack:
+[all_follow]
+# nixpkgs = "nixpkgs"
+# nixpkgs = ["nixpkgs-stable", "nixpkgs-unstable"]
+
+# recursively omit selected upstream inputs from every top-level pin
+[omit_inputs]
+# names = ["flake-compat", "tack:cachix"]
+
+# signers name the public keys pins can require, as an ssh key line, an
+# armored pgp key, a file under .tack holding either, or an array of those.
+# `tack signer add <name> --github <user>` fills one in from GitHub
+[signers]
+# alice = "ssh-ed25519 AAAA..."
+
+# default fetch_mode for fetch pins ("eval" or "build")
+# [tack]
+# fetch_mode = "build"
+# type = "fetch"
+
+# inputs.<name> fields
+#   url             required, shorturl ok, ?rev=<sha> pins an exact commit
+#   type            flake (default), fetch, or fixed, overrides [tack] type
+#   flake           legacy false means type = "fetch"
+#   follows         { child = "pin" } immediate-input override map, or a
+#                   "pin/input" string in place of every other field to make
+#                   this pin that input
+#   exclude_follow  all_follow names to skip, flake:/tack: scoped or *
+#   omit_inputs     upstream input names to omit recursively for this pin
+#   keep_inputs     omitted input names to allow recursively for this pin
+#   dir             subdir holding flake.nix
+#   submodules      fetch git submodules
+#   unpack          fixed-only tarball or file
+#   fetch_mode      fetch-only "eval" (default) or "build" to defer fetching to build time
+#   signers         names from [signers], one of whom must have signed the locked commit
+#   patches         patch urls or files relative to this dir, applied in order
+#   tag             follow the newest tag like "v{version}", where {version} is numbers
+#                   joined by `.` `-` or `_`, so non-numeric tags like "v2.1-rc1" are
+#                   skipped, needs a github, gitlab or network git url with
+#                   no ref or rev, not file://, or for a fixed pin a release
+#                   download url naming the asset with {tag} or {version}. a trailing
+#                   * matches anything after, like a build hash in "b{version}-*". a
+#                   named placeholder like {commit} matches letters and digits and can
+#                   also be used in the url
+#   tags_from       fixed-only repo url or http(s) page to read tag's tags from, for an
+#                   asset that isn't a release download
+[inputs]
+
+[inputs.bootvine]
+url = "git+https://codeberg.org/wvhulle/bootvine"
+
+[inputs.bootvine.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.classeur]
+url = "git+https://github.com/sachahjkl/classeur?submodules=1"
+
+[inputs.classeur.follows]
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"
+
+[inputs.cliche]
+url = "git+https://github.com/sachahjkl/cliche?submodules=1"
+
+[inputs.cliche.follows]
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"
+
+[inputs.deploy-rs]
+url = "github:serokell/deploy-rs"
+
+[inputs.deploy-rs.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.determinate]
+url = "https://flakehub.com/f/DeterminateSystems/determinate/3"
+
+[inputs.disko]
+url = "github:nix-community/disko"
+
+[inputs.disko.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.feuille]
+url = "git+https://github.com/sachahjkl/feuille?submodules=1"
+
+[inputs.feuille.follows]
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"
+
+[inputs.flake-parts]
+url = "github:hercules-ci/flake-parts"
+
+[inputs.git-hooks]
+url = "github:cachix/git-hooks.nix"
+
+[inputs.git-hooks.follows]
+nixpkgs = "nixpkgs"
+
+# Hex needs rustc 1.97, and nixpkgs 26.05 has rustc 1.95, so it keeps its own nixpkgs.
+# The Hex nixpkgs pin has a glibc that is not older than the system glibc.
+[inputs.hex]
+url = "github:anomalyco/hex"
+
+[inputs.hex.follows]
+home-manager = "home-manager"
+
+[inputs.hjem]
+url = "github:feel-co/hjem"
+
+[inputs.hjem.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.hjem-rum]
+url = "github:snugnug/hjem-rum"
+
+[inputs.hjem-rum.follows]
+hjem = "hjem"
+nixpkgs = "nixpkgs"
+
+# Hokum builds with nixos-unstable's Rust, newer than nixpkgs 26.05's, so
+# it keeps its own nixpkgs, as Hex does.
+[inputs.hokum]
+url = "github:anomalyco/hokum"
+
+[inputs.home-manager]
+url = "github:nix-community/home-manager/release-26.05"
+
+[inputs.home-manager.follows]
+nixpkgs = "nixpkgs"
+
+# inspecteur, the task manager of the Windows 7 configuration.
+# git+https for the gui_toolkit submodule: a github: URL leaves it out.
+# classeur, papier, cliche, feuille and socle use git+https for the same reason.
+[inputs.inspecteur]
+url = "git+https://github.com/sachahjkl/inspecteur?submodules=1"
+
+[inputs.inspecteur.follows]
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"
+
+[inputs.llm-agents]
+url = "github:numtide/llm-agents.nix"
+
+[inputs.llm-agents.follows]
+flake-parts = "flake-parts"
+
+# Keep modus's pinned nixpkgs so its patched LLVM 18 and Odin reuse the existing store build.
+[inputs.modus]
+url = "github:sachahjkl/modus"
+
+[inputs.modus.follows]
+git-hooks = "git-hooks"
+
+[inputs.mt7927]
+url = "github:cmspam/mt7927-nixos"
+
+[inputs.mt7927.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.nix-index-database]
+url = "github:Mic92/nix-index-database"
+
+[inputs.nix-index-database.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.nixos-wsl]
+url = "github:nix-community/NixOS-WSL/main"
+
+[inputs.nixos-wsl.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.nixpkgs]
+url = "github:NixOS/nixpkgs/nixos-26.05"
+
+[inputs.papier]
+url = "git+https://github.com/sachahjkl/papier?submodules=1"
+
+[inputs.papier.follows]
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"
+
+[inputs.preservation]
+url = "github:nix-community/preservation"
+
+# main, the branch the checkout of house-desktop follows: its portal must speak
+# the same protocol as the configuration that runs. It brings ShojiWM (the
+# author's fork, its fixes waiting for review in FORK.md) and its NixOS module.
+# The follows share one build of each program with the rest of this system.
+[inputs.shojiwm-desktop]
+url = "github:sachahjkl/shojiwm-desktop"
+
+[inputs.shojiwm-desktop.follows]
+shojiwm = "shojiwm"
+classeur = "classeur"
+cliche = "cliche"
+flake-parts = "flake-parts"
+git-hooks = "git-hooks"
+inspecteur = "inspecteur"
+nixpkgs = "nixpkgs"
+papier = "papier"
+
+# ShojiWM, the window manager that shojiwm-desktop builds. A top-level pin, so
+# that it can move ahead of the revision in the lock of shojiwm-desktop.
+[inputs.shojiwm]
+url = "github:sachahjkl/ShojiWM/integration"
+
+[inputs.shojiwm.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.skills]
+url = "github:sachahjkl/skills"
+
+[inputs.skills.follows]
+flake-parts = "flake-parts"
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"
+
+[inputs.socle]
+url = "git+https://github.com/sachahjkl/socle?submodules=1"
+
+[inputs.socle.follows]
+bootvine = "bootvine"
+determinate = "determinate"
+disko = "disko"
+git-hooks = "git-hooks"
+home-manager = "home-manager"
+nixpkgs = "nixpkgs"
+
+[inputs.sops-nix]
+url = "github:Mic92/sops-nix"
+
+[inputs.sops-nix.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.wrapper-modules]
+url = "github:BirdeeHub/nix-wrapper-modules"
+
+[inputs.wrapper-modules.follows]
+nixpkgs = "nixpkgs"
+
+[inputs.tack]
+url = "github:manic-systems/tack"

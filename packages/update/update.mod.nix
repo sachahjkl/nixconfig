@@ -1,5 +1,9 @@
 _: {
-  perSystem = {pkgs, ...}: let
+  perSystem = {
+    inputs',
+    pkgs,
+    ...
+  }: let
     update = pkgs.writeShellApplication {
       name = "update";
       runtimeInputs = with pkgs; [
@@ -11,6 +15,7 @@ _: {
         nix
         nodejs_22
         prefetch-npm-deps
+        inputs'.tack.packages.default
       ];
       # Bash `${` is written `''${` inside this Nix string.
       text = ''
@@ -32,7 +37,7 @@ _: {
         }
 
         update_inputs() {
-          nix flake update
+          tack update
         }
 
         update_moshi() {

@@ -91,7 +91,7 @@ Apply these to every task, before you write code:
 - Check dependency documentation and types before deciding that a dependency lacks a capability.
 - Make architectural decisions for the long term. Do not accept temporary solutions that require later replacement.
 - Reorganise folders, files and the functions in them freely when another hierarchy fits better, in gui_toolkit and in the programs.
-- After a release of a program that nixconfig installs, once its CI is green: in nixconfig, run `git pull --rebase --autostash`, then `nix flake update <program>`, commit, push, then `nh os switch --hostname house-desktop --no-nom .`.
+- After a release of a program that nixconfig installs, once its CI is green: in nixconfig, run `git pull --rebase --autostash`, then `tack update <program>`, commit, push, then `nh os switch --hostname house-desktop --no-nom .`.
 
 ## Interface Design
 
