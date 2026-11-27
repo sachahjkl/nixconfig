@@ -112,6 +112,14 @@
                 User deploy
                 IdentitiesOnly yes
                 IdentityFile ~/.ssh/far-from-home
+
+              # The Windows VM on the homelab (services/windows-vm.mod.nix), on the tailnet only.
+              Host windows-vm
+                HostName homelab
+                Port 2222
+                User dev
+                IdentitiesOnly yes
+                IdentityFile ~/.ssh/far-from-home
             '';
           };
 

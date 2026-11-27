@@ -21,4 +21,6 @@ This folder records the intent of this configuration: the purpose, the design de
 
 ## File Index
 
-The folder has no other file yet. Each new intent file gets one line here: a link and a short description.
+Each intent file gets one line here: a link and a short description.
+
+- [windows-vm.md](windows-vm.md): the Windows 11 VM on the homelab for Windows builds and tests over ssh.

@@ -31,6 +31,7 @@ lib.systems.nixosSystem "homelab" {
       self.nixosModules.homelabRoutes
       self.nixosModules.nixCache
       self.nixosModules.modusCache
+      self.nixosModules.windowsVm
     ];
 
     extraUserGroups = ["docker"];
@@ -139,6 +140,13 @@ lib.systems.nixosSystem "homelab" {
         acmeEmail = "sacha@sacha.house";
         cloudflareSopsFile = self + /secrets/shared.yaml;
         credentialsSopsFile = self + /secrets/homelab.yaml;
+      };
+
+      # Windows 11 for the Windows builds and tests of gui_toolkit (docs/md/windows-vm.md).
+      windowsVm = {
+        enable = true;
+        dataDir = "/data/VMs/windows";
+        address = "100.106.51.80";
       };
 
       nixCache = {
