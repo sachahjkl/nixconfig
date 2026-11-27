@@ -39,8 +39,8 @@
         users.users.${userName}.extraGroups = [rexCfg.group];
 
         # A client looks for the account's personal server under $XDG_RUNTIME_DIR/rex and
-        # starts one there if none runs. This server runs as the owner, so make it his
-        # personal server: every session, local or over ssh://, then reaches it, and it
+        # starts one there if none runs. This server runs as the owner, so make it the
+        # owner's personal server: every session, local or over ssh://, then reaches it, and it
         # outlives logouts without linger. The unit sets the same directory for itself.
         environment.sessionVariables.REX_RUNTIME_DIR = "/run/rex";
       })
