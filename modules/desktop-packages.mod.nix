@@ -1,6 +1,7 @@
 _: {
   flake.nixosModules.desktop-packages = {
     config,
+    lib,
     pkgs,
     ...
   }: let
@@ -90,6 +91,25 @@ _: {
         ".config/equibop-flags.conf"
       ];
     };
+
+    # dconf is not persisted, so GNOME Text Editor gets these settings at each
+    # boot. .editorconfig and modelines still override the indentation.
+    programs.dconf.profiles.user.databases = [
+      {
+        settings."org/gnome/TextEditor" = with lib.gvariant; {
+          use-system-font = false;
+          custom-font = "${config.theme.fonts.mono} 12";
+          style-variant = "follow";
+          show-line-numbers = true;
+          highlight-current-line = true;
+          highlight-matching-brackets = true;
+          indent-style = "space";
+          tab-width = mkUint32 4;
+          spellcheck = false;
+          discover-settings = true;
+        };
+      }
+    ];
 
     hjem.users.${config.userName}.rum.programs = {
       # Disabled on purpose so Zed keeps a writable user-managed config.
