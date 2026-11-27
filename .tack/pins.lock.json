@@ -8,6 +8,7 @@
     "disko": "github:nix-community/disko?rev=44761d4f745b95e037458a0e57133c5700c8e320",
     "feuille": "git+https://github.com/sachahjkl/feuille?submodules=1",
     "flake-parts": "github:hercules-ci/flake-parts?rev=ea2630b7470978622c7689a1ff75d2b389175399",
+    "galerie": "git+https://github.com/sachahjkl/galerie",
     "git-hooks": "github:cachix/git-hooks.nix?rev=204b6977e00caac19e2313015a598543ca7be150",
     "hex": "github:anomalyco/hex?rev=96b4f365d4a37680514d1150caeac539d62ac891",
     "hjem": "github:feel-co/hjem?rev=2a28f37d253ea3866f85eabe482c68a84fc32ed5",
@@ -95,6 +96,15 @@
     "narHash": "sha256-V1h85lUaJBQoHFrB2vpXZOE0Ju1MYSnIpsehoVZYlDo=",
     "lastModified": 1793576659,
     "public": true
+  },
+  "galerie": {
+    "type": "git",
+    "url": "https://github.com/sachahjkl/galerie",
+    "ref": "HEAD",
+    "rev": "5e8a3b74e683132385dd7c1e00c452db6c7d48a7",
+    "narHash": "sha256-0nwwJxIDciNh5DplZlU4j4//aQJu3omwmYJtIrgq2PM=",
+    "lastModified": 1795773834,
+    "submodules": true
   },
   "git-hooks": {
     "type": "github",

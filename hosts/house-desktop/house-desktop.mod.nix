@@ -11,6 +11,7 @@ lib.systems.nixosSystem "house-desktop" {
       self.nixosModules.hyprland
       self.nixosModules.papier
       self.nixosModules.feuille
+      self.nixosModules.galerie
       self.nixosModules.socle
       self.nixosModules.remoteDesktop
       self.nixosModules.bootvine

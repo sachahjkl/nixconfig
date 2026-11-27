@@ -252,3 +252,11 @@ nixpkgs = "nixpkgs"
 
 [inputs.tack]
 url = "github:manic-systems/tack"
+
+[inputs.galerie]
+url = "git+https://github.com/sachahjkl/galerie"
+submodules = true
+
+[inputs.galerie.follows]
+git-hooks = "git-hooks"
+nixpkgs = "nixpkgs"
