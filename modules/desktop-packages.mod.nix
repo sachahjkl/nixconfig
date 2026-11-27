@@ -74,6 +74,11 @@ _: {
     persist.user = {
       directories = [
         ".audacity-data"
+        # The Froment Software programs (Tower, papier, classeur, cliche...): their
+        # settings, data and state, which the root's tmpfs lost at each boot.
+        ".config/FromentSoftware"
+        ".local/share/FromentSoftware"
+        ".local/state/FromentSoftware"
         ".config/equibop"
         ".config/vlc"
         ".config/zed"
