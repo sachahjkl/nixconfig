@@ -4,7 +4,8 @@ _: {
     formatter = pkgs.writeShellApplication {
       name = "alejandra";
       runtimeInputs = [pkgs.alejandra];
-      text = ''exec alejandra --exclude .tack "$@"'';
+      # alejandra matches excludes against the walked paths, which start with ./
+      text = ''exec alejandra --exclude ./.tack "$@"'';
     };
   };
 }
