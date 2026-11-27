@@ -12,6 +12,19 @@
       needsTerminal = true;
     };
 
+    lite-xl = {
+      id = "lite-xl";
+      command = "lite-xl";
+      commandWithFile = "lite-xl";
+      # Lite XL opens a file but takes no line or column argument.
+      commandWithLine = "lite-xl {file}";
+      commandWithLocation = "lite-xl {file}";
+      watchCommand = "lite-xl";
+      desktop = "default-editor.desktop";
+      icon = "lite-xl";
+      needsTerminal = false;
+    };
+
     vscode = {
       id = "vscode";
       command = "code";

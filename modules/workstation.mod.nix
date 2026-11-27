@@ -64,6 +64,9 @@
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM+2UxmrXUSQ6n+7g9TxNeE1+jMyaeSl/ykFJvvSYRPl";
     };
 
-    editor.vscode.enable = true;
+    editor = {
+      vscode.enable = true;
+      graphical = "lite-xl";
+    };
   };
 }

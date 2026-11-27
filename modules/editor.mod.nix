@@ -33,7 +33,13 @@
           default = lib.mkOption {
             type = lib.types.enum editorNames;
             default = "neovim";
-            description = "Which editor to use as the system default.";
+            description = "Editor for EDITOR, VISUAL and GIT_EDITOR. It must work without a display, for SSH sessions.";
+          };
+
+          graphical = lib.mkOption {
+            type = lib.types.enum editorNames;
+            inherit (config) default;
+            description = "Editor that opens text files from the desktop and from default-editor.";
           };
 
           id = lib.mkOption {
@@ -112,7 +118,7 @@
       editorLaunchers
       ++ [
         (pkgs.writeShellScriptBin "default-editor" ''
-          exec ${config.editor.id}-editor "$@"
+          exec ${config.editor.graphical}-editor "$@"
         '')
       ];
   };

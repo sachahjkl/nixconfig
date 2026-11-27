@@ -1,4 +1,4 @@
-_: {
+{self, ...}: {
   flake.nixosModules.mimeapps = {
     config,
     lib,
@@ -6,16 +6,17 @@ _: {
     ...
   }: let
     user = config.userName;
-    editorExec = "${config.editor.id}-editor";
+    graphicalEditor = self.lib.editors.${config.editor.graphical};
+    editorExec = "${graphicalEditor.id}-editor";
     editorDesktop = ''
       [Desktop Entry]
-      Name=Editor (${config.editor.id})
+      Name=Editor (${graphicalEditor.id})
       Comment=Edit files with the current editor
       TryExec=${editorExec}
       Exec=${editorExec} %F
       Type=Application
       Terminal=false
-      Icon=${config.editor.icon}
+      Icon=${graphicalEditor.icon}
       Categories=Utility;TextEditor;
       MimeType=text/plain;text/markdown;text/xml;text/x-python;text/x-script.python;text/x-shellscript;application/json;application/toml;application/x-shellscript;
       StartupNotify=true
