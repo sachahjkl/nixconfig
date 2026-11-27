@@ -2,7 +2,7 @@
   "$declared": {
     "bootvine": "git+https://codeberg.org/wvhulle/bootvine?rev=958cfa1b54451a7481f315de76bcf5a4400e2793",
     "classeur": "git+https://github.com/sachahjkl/classeur?submodules=1&rev=bab87870e3fe7967c3d9a111b2a71d914030e53e",
-    "cliche": "git+https://github.com/sachahjkl/cliche?submodules=1&rev=a0a8c62cda381d58377222aa639d79d1a4eae197",
+    "cliche": "git+https://github.com/sachahjkl/cliche?submodules=1",
     "deploy-rs": "github:serokell/deploy-rs?rev=1cec0527bd09074bbee6d4461900ce5d58267217",
     "determinate": "https://api.flakehub.com/f/pinned/DeterminateSystems/determinate/3.24.3/01a1f12b-29f0-7623-8ebb-9b32a98f9538/source.tar.gz",
     "disko": "github:nix-community/disko?rev=44761d4f745b95e037458a0e57133c5700c8e320",
@@ -51,9 +51,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/cliche",
     "ref": "HEAD",
-    "rev": "a0a8c62cda381d58377222aa639d79d1a4eae197",
-    "narHash": "sha256-8SqY316QMShXxDtdyAS8LJre4jEscKSgRygBluXxHRg=",
-    "lastModified": 1795732554
+    "rev": "9731c585f576c1d4ac94797fd295d44ab742e972",
+    "narHash": "sha256-8gpPtFOz3ECSzMYOC1IfV7WQxH6l7EQspXmFovtMxBE=",
+    "lastModified": 1795770127
   },
   "deploy-rs": {
     "type": "github",
