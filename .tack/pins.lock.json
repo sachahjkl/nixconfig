@@ -53,9 +53,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/cliche",
     "ref": "HEAD",
-    "rev": "6cadc578ed32d2bc307f88f748a200ae7bfe08bf",
-    "narHash": "sha256-dKv7YJjYuNUIRZwdvMd0cn+67JNBQmnCFSN8xeXyss4=",
-    "lastModified": 1795786156
+    "rev": "757341c263724f758070462efdb13bb4cd516f96",
+    "narHash": "sha256-KeFGRECnpIqEGKwxs5q5XSMC1bVxkVzRld2E0vNSKGE=",
+    "lastModified": 1795792103
   },
   "deploy-rs": {
     "type": "github",
