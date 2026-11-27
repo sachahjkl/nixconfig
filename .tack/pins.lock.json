@@ -86,9 +86,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/feuille",
     "ref": "HEAD",
-    "rev": "3b887bb69b55af1c9a37f64a7d438fc2861c7355",
-    "narHash": "sha256-dCoCE77hzZyp/rSVtz5+PB6cjq6c6LieBNXpq34BpsA=",
-    "lastModified": 1795799946
+    "rev": "46da522d409e56e5f06ccba4a15ca7a899fdc83e",
+    "narHash": "sha256-ghyYq/5TnwBEIvOqY8VVeOovZZTPI+rTFilXh11ey+A=",
+    "lastModified": 1795812502
   },
   "flake-parts": {
     "type": "github",
