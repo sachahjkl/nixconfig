@@ -66,7 +66,7 @@
 
     editor = {
       vscode.enable = true;
-      graphical = "lite-xl";
+      graphical = "gnome-text-editor";
     };
   };
 }

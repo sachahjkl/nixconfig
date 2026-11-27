@@ -68,14 +68,13 @@ _: {
         xdg-utils
         zed-editor
         neovide
-        lite-xl
+        gnome-text-editor
       ]);
 
     persist.user = {
       directories = [
         ".audacity-data"
         ".config/equibop"
-        ".config/lite-xl"
         ".config/vlc"
         ".config/zed"
         ".local/share/TelegramDesktop"

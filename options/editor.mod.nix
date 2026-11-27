@@ -12,16 +12,17 @@
       needsTerminal = true;
     };
 
-    lite-xl = {
-      id = "lite-xl";
-      command = "lite-xl";
-      commandWithFile = "lite-xl";
-      # Lite XL opens a file but takes no line or column argument.
-      commandWithLine = "lite-xl {file}";
-      commandWithLocation = "lite-xl {file}";
-      watchCommand = "lite-xl";
+    gnome-text-editor = {
+      id = "gnome-text-editor";
+      command = "gnome-text-editor";
+      commandWithFile = "gnome-text-editor";
+      # GNOME Text Editor opens a file but takes no line or column argument.
+      commandWithLine = "gnome-text-editor {file}";
+      commandWithLocation = "gnome-text-editor {file}";
+      # A separate instance exits when its window closes, so a caller can wait.
+      watchCommand = "gnome-text-editor --standalone";
       desktop = "default-editor.desktop";
-      icon = "lite-xl";
+      icon = "org.gnome.TextEditor";
       needsTerminal = false;
     };
 
