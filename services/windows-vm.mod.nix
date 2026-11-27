@@ -94,6 +94,8 @@
         backend = "docker";
         containers.windows-vm = {
           image = "docker.io/dockurr/windows:6.06";
+          # Started on demand (systemctl start docker-windows-vm) and stopped after use: it takes 6 GB of 14.
+          autoStart = false;
           environment = {
             # Windows 11 Enterprise evaluation: no key, 90 days, then a new installation.
             VERSION = "11e";

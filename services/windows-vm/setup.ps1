@@ -51,16 +51,14 @@ powercfg /change monitor-timeout-ac 0
 powercfg /hibernate off
 Set-RegistryValue 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU' NoAutoUpdate 1
 Set-RegistryValue 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' LongPathsEnabled 1
-Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force
+# The setting holds, but the cmdlet throws when this process's -ExecutionPolicy Bypass overrides it.
+try { Set-ExecutionPolicy RemoteSigned -Scope LocalMachine -Force } catch { Write-Host 'execution policy: RemoteSigned (overridden in this process)' }
 # Defender scans every object file of a build: exclude the build folders.
 try { Add-MpPreference -ExclusionPath C:\src, C:\tools, $env:USERPROFILE } catch { Write-Warning "Defender exclusions: $_" }
 
 Write-Host '== OpenSSH server'
 if (-not (Get-Service sshd -ErrorAction SilentlyContinue)) {
-  try { Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0 | Out-Null } catch { Write-Warning "OpenSSH capability: $_" }
-}
-if (-not (Get-Service sshd -ErrorAction SilentlyContinue)) {
-  # Windows Update was not reachable: the MSI of Win32-OpenSSH, pinned.
+  # The MSI of Win32-OpenSSH, pinned: the Windows capability comes from Windows Update, which hung with NoAutoUpdate set.
   $msi = Get-File 'https://github.com/PowerShell/Win32-OpenSSH/releases/download/10.4.0.0p1-Preview/OpenSSH-Win64-v10.4.0.0.msi' openssh.msi '788d8643464a01eb63640a2fd746f9ed23d106b5a901a35f88dc8cd40e446ac9'
   $p = Start-Process msiexec.exe -ArgumentList '/i', $msi, '/qn', '/norestart' -Wait -PassThru
   if ($p.ExitCode -notin 0, 3010) { throw "OpenSSH MSI: $($p.ExitCode)" }
