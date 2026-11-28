@@ -46,9 +46,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/classeur",
     "ref": "HEAD",
-    "rev": "8b7a685997c8c349d70c4e90c27029c7dd98b264",
-    "narHash": "sha256-h1/uWrIXqwgjPIvGF2KNuqXyKDuq4FNimz5uU/K5NZU=",
-    "lastModified": 1795816126
+    "rev": "0bdc39c75f7746d490c2388b0bc460a7e881275d",
+    "narHash": "sha256-ko1tZN8+tEzvDWdzZuGNAVbXZOAJ8OZhkku2/Cnss+4=",
+    "lastModified": 1795870608
   },
   "cliche": {
     "type": "git",
