@@ -29,7 +29,7 @@
     "shojiwm": "github:sachahjkl/ShojiWM/integration?rev=b06f1b7525414feb98f1679186009859bc947085",
     "shojiwm-desktop": "github:sachahjkl/shojiwm-desktop?rev=f0a92352619aee477c3bc42f0ea5e23f8eee2d71",
     "skills": "github:sachahjkl/skills?rev=d8633a9fc2508bd1384d04e2c40dd79374046319",
-    "socle": "git+https://github.com/sachahjkl/socle?submodules=1&rev=c4e90ce7e16b26c353231da6a7acf0ca1cbf940f",
+    "socle": "git+https://github.com/sachahjkl/socle?submodules=1",
     "sops-nix": "github:Mic92/sops-nix?rev=7c637afdccdf9bcf35c4a2d67b58a77c1fd843a4",
     "tack": "github:manic-systems/tack",
     "wrapper-modules": "github:BirdeeHub/nix-wrapper-modules?rev=e1e6cc3094ce733b82a0b4345c1bd3eb0776a709"
@@ -86,9 +86,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/feuille",
     "ref": "HEAD",
-    "rev": "46da522d409e56e5f06ccba4a15ca7a899fdc83e",
-    "narHash": "sha256-ghyYq/5TnwBEIvOqY8VVeOovZZTPI+rTFilXh11ey+A=",
-    "lastModified": 1795812502
+    "rev": "383b488772163cc9f3f45361166110c9910c8b58",
+    "narHash": "sha256-haGyQouhFtxti+QB5xVv/t/miOSLLegXIvkoc7rmRPA=",
+    "lastModified": 1795825627
   },
   "flake-parts": {
     "type": "github",
@@ -103,9 +103,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/galerie",
     "ref": "HEAD",
-    "rev": "26922b18a38582459178c4f00ba4aaae952a161a",
-    "narHash": "sha256-R/VlyE3Pe6HjyakKN6R05NgUzuGRNkUV6Tbj4NyIBNo=",
-    "lastModified": 1795804832,
+    "rev": "d1ea41ae0521ed964dab0d9bd6d14db800dbfe27",
+    "narHash": "sha256-1KiZipxSNwr20gDnklICb2/ieqRVUMCeTD8kp7EbnT8=",
+    "lastModified": 1795825647,
     "submodules": true
   },
   "git-hooks": {
@@ -236,9 +236,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/plume",
     "ref": "HEAD",
-    "rev": "d6cf58ab3101951d324b9f920aa1a1a4fc792297",
-    "narHash": "sha256-TcXqSvAybAJe2Z8+i0hVZYbIcd5Xx7isAk38wlSrEmA=",
-    "lastModified": 1795780436,
+    "rev": "e839cdcef6e371a3d4000a6405be430c9fc8714e",
+    "narHash": "sha256-UfCP5XjsTk9saos9tv6NbhZunjn+sxsFRBRnz6jyo4A=",
+    "lastModified": 1795825617,
     "submodules": true
   },
   "preservation": {
@@ -287,9 +287,9 @@
     "type": "git",
     "url": "https://github.com/sachahjkl/socle",
     "ref": "HEAD",
-    "rev": "c4e90ce7e16b26c353231da6a7acf0ca1cbf940f",
-    "narHash": "sha256-4eIQhSpDmCrqVVNXfOZOSoDQMEWh2HO1irzyJec0Kj4=",
-    "lastModified": 1795725556
+    "rev": "6f22d4bafed53e85f2a3964722b3337a0f983649",
+    "narHash": "sha256-H67eEq3MIeBfsum+/nCn6FdQPkkkk7jFnWAcAAh1P8I=",
+    "lastModified": 1795825424
   },
   "sops-nix": {
     "type": "github",
